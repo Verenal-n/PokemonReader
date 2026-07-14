@@ -101,7 +101,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ppill{background:rgba(126,206,255,.15);color:#7eceff;font-size:12px;font-weight:600;padding:8px;border-radius:10px;text-align:center;margin-bottom:10px;}
 .shelf-wrap{width:100%;display:flex;flex-direction:column;gap:0;background:#111009;border-radius:10px;padding:0;}
 .shelf-row{display:flex;flex-direction:column;}
+.shelf-label{font-size:9px;color:#a08a5c;padding:0 10px;margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em;}
 .shelf-books{display:flex;align-items:flex-end;gap:5px;padding:16px 10px 0;height:192px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent;}
+.shelf-books.compact{height:165px;}
 .shelf-books::-webkit-scrollbar{height:3px;}.shelf-books::-webkit-scrollbar-track{background:transparent;}.shelf-books::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px;}
 .shelf-plank{width:100%;height:13px;background:linear-gradient(180deg,#7a5a32 0%,#5a3e1e 35%,#3e2a10 100%);box-shadow:0 6px 16px rgba(0,0,0,.7),inset 0 2px 0 rgba(255,255,255,.07);border-top:2px solid #9a7a4a;flex-shrink:0;margin-top:0;}
 .book-wrap{position:relative;display:flex;flex-direction:row;flex-shrink:0;cursor:pointer;transition:transform .18s;}
@@ -168,8 +170,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <span id="save-status" style="font-size:11px;font-weight:700;visibility:hidden;display:inline-block;width:14px;text-align:center;flex-shrink:0"></span>
       <div class="rpill" id="hdr-bookpoints" onclick="openSidePanel()" title="Книжкові бали — трать на лов">📘0</div>
       <div class="rpill" id="hdr-coins" title="Монети — трать у Магазині">🪙0</div>
-      <div class="rpill" id="hdr-caught" title="Спіймано видів">🐾0</div>
-      <div class="rpill" id="hdr-megas" title="Мега-еволюції">🐉0</div>
       <div class="rpill" id="hdr-books" title="Прочитано книг за весь час">📚0</div>
       <div class="rpill" onclick="openSidePanel()">☰</div>
     </div>
@@ -280,6 +280,7 @@ const CHAINS=[
   {id:'volbeat', loc:'butterfly', stages:[S('Volbeat',313)]},
   {id:'yanma', loc:'butterfly', stages:[S('Yanma',193),S('Yanmega',469)]},
   {id:'heracross', loc:'butterfly', stages:[S('Heracross',214),S('Mega Heracross',10051,true)]},
+  {id:'vivillon', loc:'butterfly', stages:[S('Vivillon',666)]},
 
   // ── CAVES (30) ────────────────────────────────────────────
   {id:'geodude', loc:'caves', stages:[S('Geodude',74),S('Graveler',75),S('Golem',76)]},
@@ -322,7 +323,9 @@ function catchableStages(locId){
   const d=pd();const out=[];
   chainsForLoc(locId).forEach(chain=>{
     const idx=nextStageIdx(d,chain);
-    if(idx<chain.stages.length) out.push({chain,idx});
+    if(idx>=chain.stages.length)return;
+    const weight=chain.stages[idx].mega?1:4;
+    for(let i=0;i<weight;i++) out.push({chain,idx});
   });
   return out;
 }
@@ -342,6 +345,13 @@ function megasCaughtIn(d,locIds){
   locIds.forEach(l=>chainsForLoc(l).forEach(c=>{const idx=d.progress[c.id];if(idx!==undefined&&c.stages[idx].mega)n++;}));
   return n;
 }
+function markCompletion(d,chain,idx){
+  if(idx!==chain.stages.length-1)return;
+  if(!d.completedOrder)d.completedOrder=[];
+  const i=d.completedOrder.indexOf(chain.id);
+  if(i>=0)d.completedOrder.splice(i,1);
+  d.completedOrder.push(chain.id);
+}
 function isLocComplete(locId){
   const d=pd();const chains=chainsForLoc(locId);
   if(!chains.length)return false;
@@ -358,13 +368,13 @@ const LOCS={
     unlockReq:{type:'keyChain',chainId:'pikachu',stageIdx:1}},
   forest:{id:'forest',name:'Ліс Вірідіан',mLabel:'Вірідіан',emoji:'🌲',cx:242,cy:62,
     color:'#064e3b',stroke:'#34d399',badge:'Зона 2',badgeBg:'rgba(52,211,153,.2)',badgeTxt:'#34d399',
-    unlockReq:{type:'locMega',loc:'pallet'}},
+    unlockReq:{type:'keyChain',chainId:'abra',stageIdx:3}},
   glade:{id:'glade',name:'Поляна',mLabel:'Поляна',emoji:'🌸',cx:328,cy:122,
     color:'#3b0764',stroke:'#a78bfa',badge:'Зона 3',badgeBg:'rgba(167,139,250,.2)',badgeTxt:'#a78bfa',
     unlockReq:{type:'locMega',loc:'forest'}},
   butterfly:{id:'butterfly',name:'Поляна метеликів',mLabel:'Метелики',emoji:'🦋',cx:242,cy:182,
     color:'#500724',stroke:'#f9a8d4',badge:'Зона 3',badgeBg:'rgba(249,168,212,.2)',badgeTxt:'#f9a8d4',
-    unlockReq:{type:'locMega',loc:'glade'}},
+    unlockReq:{type:'keyChain',chainId:'pinsir',stageIdx:1}},
   caves:{id:'caves',name:'Печери',mLabel:'Печери',emoji:'⛏️',cx:398,cy:62,
     color:'#1c1917',stroke:'#a8a29e',badge:'Зона 4',badgeBg:'rgba(168,162,158,.2)',badgeTxt:'#a8a29e',
     unlockReq:{type:'count',locs:['oak','pallet','forest','glade','butterfly'],need:21}},
@@ -426,7 +436,7 @@ function initState(){
     if(!state.players[p.id]) state.players[p.id]={
       coins:0, bookPoints:0, booksRead:0,
       location:'oak', region:'kanto', unlockedLocs:['oak'],
-      progress:{}, books:[],
+      progress:{}, completedOrder:[], books:[],
     };
   });
 }
@@ -519,8 +529,6 @@ function renderRes(){
   const d=pd();
   document.getElementById('hdr-bookpoints').textContent='📘'+d.bookPoints;
   document.getElementById('hdr-coins').textContent='🪙'+d.coins;
-  document.getElementById('hdr-caught').textContent='🐾'+Object.keys(d.progress).length;
-  document.getElementById('hdr-megas').textContent='🐉'+megasCaughtIn(d,ALL_KANTO_LOCS);
   document.getElementById('hdr-books').textContent='📚'+(d.booksRead||0);
 }
 
@@ -528,12 +536,20 @@ function renderRes(){
 function renderDex(){
   const d=pd();
   const held=CHAINS.filter(c=>d.progress[c.id]!==undefined);
-  document.getElementById('dex-count').textContent=held.length+' спіймано';
+  document.getElementById('dex-count').innerHTML=`🐾 ${held.length} &nbsp; 🐉 ${megasCaughtIn(d,ALL_KANTO_LOCS)}`;
   const grid=document.getElementById('dex-grid');
   const completeEl=document.getElementById('dex-complete');
   if(!held.length){grid.innerHTML='<div class="dex-empty">Ще нікого не спіймано.<br>Прочитай книгу і почни ловити!</div>';completeEl.innerHTML='';return;}
   const inProgress=held.filter(c=>d.progress[c.id]<c.stages.length-1);
   const done=held.filter(c=>d.progress[c.id]===c.stages.length-1);
+  const order=d.completedOrder||[];
+  done.sort((a,b)=>{
+    const ai=order.indexOf(a.id),bi=order.indexOf(b.id);
+    if(ai===-1&&bi===-1)return 0;
+    if(ai===-1)return 1;
+    if(bi===-1)return -1;
+    return bi-ai;
+  });
   grid.innerHTML=inProgress.map(chain=>{
     const idx=d.progress[chain.id];const stage=chain.stages[idx];
     const dots=chain.stages.length>1?`<div class="evo-dots">${chain.stages.map((s,i)=>`<div class="evo-dot ${i<=idx?'filled':''}"></div>`).join('')}</div>`:'';
@@ -722,6 +738,7 @@ function doCatch(){
   d.bookPoints--;
   const pick=pool[ri(0,pool.length-1)];
   d.progress[pick.chain.id]=pick.idx;
+  markCompletion(d,pick.chain,pick.idx);
   const stage=pick.chain.stages[pick.idx];
   renderRes();renderDex();renderActions();renderMap();
   const opened=checkUnlocks();
@@ -760,6 +777,7 @@ function buyChainStage(chainId,idx){
   const price=stagePrice(chain,idx);
   if(d.coins<price)return;
   d.coins-=price;d.progress[chainId]=idx;
+  markCompletion(d,chain,idx);
   closeModal();renderRes();renderDex();renderActions();renderMap();
   const opened=checkUnlocks();
   if(opened.length)renderMap();
@@ -959,13 +977,22 @@ function _buildLibraryHTML(){
   if(!books.length){
     return header+`<div style="text-align:center;padding:40px 0;color:#778;font-size:13px;line-height:2">📚<br>Ще немає книжок.<br>Додай першу книгу!</div>`;
   }
-  const reversed=[...books].map((b,i)=>({b,i})).reverse();
-  const PER_ROW=4;
-  const rows=[];
-  for(let r=0;r<reversed.length;r+=PER_ROW)rows.push(reversed.slice(r,r+PER_ROW));
+  // Fixed 3 shelves by size — each one scrolls sideways instead of spawning new rows.
+  const SHELVES=[
+    {label:'Менші книги · до 300 стор.',    test:p=>p<300,              cls:'compact'},
+    {label:'Середні книги · 300–700 стор.', test:p=>p>=300&&p<700,      cls:''},
+    {label:'Цеглини · 700+ стор.',          test:p=>p>=700,             cls:''},
+  ];
+  const withIdx=[...books].map((b,i)=>({b,i})).reverse(); // newest first within each shelf
   let shelves='';
-  rows.forEach(row=>{
-    shelves+=`<div class="shelf-row"><div class="shelf-books">${row.map(({b,i})=>_renderBookHTML(b,i,0.72)).join('')}</div><div class="shelf-plank"></div></div>`;
+  SHELVES.forEach(sh=>{
+    const items=withIdx.filter(({b})=>sh.test(b.pages||0));
+    if(!items.length)return;
+    shelves+=`<div class="shelf-row">
+      <div class="shelf-label">${sh.label} · ${items.length}</div>
+      <div class="shelf-books ${sh.cls}">${items.map(({b,i})=>_renderBookHTML(b,i,0.72)).join('')}</div>
+      <div class="shelf-plank"></div>
+    </div>`;
   });
   return header+`<div class="shelf-wrap">${shelves}</div>`;
 }
