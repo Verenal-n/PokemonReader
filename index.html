@@ -165,7 +165,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="hdr-loc" id="hdr-loc"></div>
     </div>
     <div class="hdr-res">
-      <span id="save-status" style="font-size:11px;font-weight:700;display:none;padding:0 4px"></span>
+      <span id="save-status" style="font-size:11px;font-weight:700;visibility:hidden;display:inline-block;width:14px;text-align:center;flex-shrink:0"></span>
       <div class="rpill" id="hdr-bookpoints" onclick="openSidePanel()" title="Книжкові бали — трать на лов">📘0</div>
       <div class="rpill" id="hdr-coins" title="Монети — трать у Магазині">🪙0</div>
       <div class="rpill" id="hdr-caught" title="Спіймано видів">🐾0</div>
@@ -353,10 +353,10 @@ const LOCS={
   oak:{id:'oak',name:"Лабораторія Оука",mLabel:'Лабораторія',emoji:'🧪',cx:46,cy:122,
     color:'#1e3a1e',stroke:'#4ade80',badge:'Старт',badgeBg:'rgba(74,222,128,.2)',badgeTxt:'#4ade80',
     unlockReq:null},
-  pallet:{id:'pallet',name:'Pallet Town',mLabel:'Pallet',emoji:'🏘️',cx:148,cy:122,
+  pallet:{id:'pallet',name:'Місто Палет',mLabel:'Палет',emoji:'🏘️',cx:148,cy:122,
     color:'#166534',stroke:'#4ade80',badge:'Зона 1',badgeBg:'rgba(74,222,128,.15)',badgeTxt:'#4ade80',
     unlockReq:{type:'keyChain',chainId:'pikachu',stageIdx:1}},
-  forest:{id:'forest',name:'Viridian Forest',mLabel:'Forest',emoji:'🌲',cx:242,cy:62,
+  forest:{id:'forest',name:'Ліс Вірідіан',mLabel:'Вірідіан',emoji:'🌲',cx:242,cy:62,
     color:'#064e3b',stroke:'#34d399',badge:'Зона 2',badgeBg:'rgba(52,211,153,.2)',badgeTxt:'#34d399',
     unlockReq:{type:'locMega',loc:'pallet'}},
   glade:{id:'glade',name:'Поляна',mLabel:'Поляна',emoji:'🌸',cx:328,cy:122,
@@ -661,7 +661,7 @@ function renderMap(){
 function showLockedHint(locId){
   const loc=_anyLoc(locId);if(!loc)return;
   const hint=unlockHintText(loc);
-  qM(()=>mHTML(`<div class="m-emoji">${loc.emoji}</div><div class="m-title">🔒 ${loc.name}</div><div class="m-desc">${hint||'Виконай умову для відкриття'}</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Зрозуміло</button></div>`));
+  qM(()=>mHTML(`<div style="margin-bottom:10px">${locIconEl(loc.id,72)}</div><div class="m-title" style="text-align:center">🔒 ${loc.name}</div><div class="m-desc">${hint||'Виконай умову для відкриття'}</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Зрозуміло</button></div>`));
 }
 
 function onLocClick(locId){
@@ -686,9 +686,10 @@ function renderActions(){
   const chains=chainsForLoc(loc.id);
   let desc='';
   if(chains.length){
-    const caught=chains.filter(c=>d.progress[c.id]!==undefined).length;
+    const totalSpecies=chains.reduce((s,c)=>s+c.stages.length,0);
+    const caughtSpecies=chains.reduce((s,c)=>{const idx=d.progress[c.id];return s+(idx!==undefined?idx+1:0);},0);
     const allDone=chains.every(c=>d.progress[c.id]===c.stages.length-1);
-    desc='Спіймано: '+caught+'/'+chains.length+(allDone?' ✓':'');
+    desc='Спіймано: '+caughtSpecies+'/'+totalSpecies+(allDone?' ✓':'');
   }
   document.getElementById('act-desc').textContent=desc;
   const ab=document.getElementById('act-badge');
@@ -703,7 +704,7 @@ function renderActions(){
     if(!pool.length){
       html=`<button class="catch-btn done">✓ Усі покемони тут спіймані!</button>`;
     } else {
-      html=`<button class="catch-btn" onclick="doCatch()">🎣 Ловити покемона <span class="catch-cost">1📘</span></button>`;
+      html=`<button class="catch-btn" onclick="doCatch()">Ловити покемона <span class="catch-cost">1📘</span></button>`;
     }
   }
   document.getElementById('act-list').innerHTML=html;
@@ -1060,10 +1061,10 @@ function showToast(msg){
 function showSaveStatus(s){
   const el=document.getElementById('save-status');if(!el)return;
   clearTimeout(_saveTimer);
-  if(s==='saving'){el.textContent='💾';el.style.color='#fbbf24';el.style.display='inline';}
-  else if(s==='saved'){el.textContent='✓';el.style.color='#4ade80';el.style.display='inline';_saveTimer=setTimeout(()=>el.style.display='none',2000);}
-  else if(s==='error'){el.textContent='⚠️';el.style.color='#ef4444';el.style.display='inline';_saveTimer=setTimeout(()=>el.style.display='none',3500);}
-  else{el.style.display='none';}
+  if(s==='saving'){el.textContent='💾';el.style.color='#fbbf24';el.style.visibility='visible';}
+  else if(s==='saved'){el.textContent='✓';el.style.color='#4ade80';el.style.visibility='visible';_saveTimer=setTimeout(()=>el.style.visibility='hidden',2000);}
+  else if(s==='error'){el.textContent='⚠️';el.style.color='#ef4444';el.style.visibility='visible';_saveTimer=setTimeout(()=>el.style.visibility='hidden',3500);}
+  else{el.style.visibility='hidden';}
 }
 
 let _jsonpSeq=0;
