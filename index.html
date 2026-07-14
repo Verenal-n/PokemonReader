@@ -25,10 +25,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .back-btn{background:none;border:none;cursor:pointer;font-size:18px;color:#7eceff;padding:2px 6px;}
 .hdr-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;overflow:hidden;}
 .hdr-info{flex:1;min-width:0;}
-.hdr-name{font-size:13px;font-weight:600;color:#fff;}
+.hdr-name{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .hdr-loc{font-size:10px;color:#7eceff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.hdr-res{display:flex;gap:4px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;max-width:190px;}
-.rpill{background:rgba(255,255,255,.1);border-radius:20px;padding:3px 8px;font-size:10px;font-weight:600;color:#fff;white-space:nowrap;cursor:pointer;}
+.hdr-res{display:flex;gap:4px;flex-shrink:0;flex-wrap:nowrap;justify-content:flex-end;}
+.rpill{background:rgba(255,255,255,.1);border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600;color:#fff;white-space:nowrap;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-align:center;}
 .rpill-menu{padding:7px 13px;font-size:16px;line-height:1;}
 .rpill:hover{background:rgba(255,255,255,.2);}
 
@@ -113,7 +113,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .book-cover{position:relative;overflow:hidden;flex-shrink:0;}
 .book-cover::before{content:'';position:absolute;top:0;left:0;bottom:0;width:9px;background:linear-gradient(90deg,rgba(0,0,0,.38) 0%,rgba(0,0,0,.08) 70%,transparent 100%);z-index:2;pointer-events:none;}
 .book-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
-.book-cover-inner{position:absolute;inset:0;display:flex;flex-direction:column;padding:6px 5px 5px;}
+.book-cover-inner{position:absolute;inset:0;display:flex;flex-direction:column;padding:12px 5px 7px;}
 .book-pages-edge{position:absolute;top:3px;right:-5px;bottom:3px;width:5px;background:repeating-linear-gradient(180deg,#f2ede4 0px,#f2ede4 1.2px,#d5d0c6 1.2px,#d5d0c6 2px);border-radius:0 1px 1px 0;box-shadow:1px 0 4px rgba(0,0,0,.35);z-index:-1;}
 .book-tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);white-space:nowrap;background:#241a0e;border:1px solid rgba(201,168,106,.35);border-radius:6px;padding:4px 8px;font-size:10px;color:#c9a86a;z-index:30;pointer-events:none;}
 .book-wrap:hover .book-tooltip{display:block;}
@@ -971,7 +971,7 @@ function _renderBookPreviewHTML(book){
     </div>
     <div style="width:${cw}px;height:${h}px;background:${coverGrad};position:relative;overflow:hidden;box-shadow:2px 2px 0 rgba(0,0,0,.3),4px 5px 0 rgba(0,0,0,.18),6px 10px 20px rgba(0,0,0,.55)">
       ${coverUrl?`<img src="${coverUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`:''}
-      ${!coverUrl?`<div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:6px 5px 5px">
+      ${!coverUrl?`<div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:12px 5px 7px">
         <div style="font-size:8px;opacity:.5;text-transform:uppercase;letter-spacing:.08em;color:#fff;margin-bottom:auto">${book.author||''}</div>
         <div style="font-size:${tsz}px;font-weight:800;text-align:center;color:#fff;white-space:normal;word-break:break-word;flex:1;display:flex;align-items:center;justify-content:center">${book.title}</div>
         <div style="font-size:8px;opacity:.45;color:#fff;text-align:right">${p} стор.</div>
@@ -992,7 +992,7 @@ function _renderBookHTML(book, i, sc=1){
   const fsz=Math.max(6,Math.round(8*sc));
   const spineGrad=`linear-gradient(90deg,${bot} 0%,${spine} 40%,${top} 100%)`;
   const coverGrad=`linear-gradient(150deg,${top} 0%,${bot} 100%)`;
-  const spineText=sw>=10?`<span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:${Math.max(6,sw>14?Math.round(9*sc):Math.round(8*sc))}px;font-weight:700;color:rgba(255,255,255,.75);white-space:normal;word-break:break-word;text-align:center;overflow:visible;max-height:${h-10}px">${book.title}</span>`:'';
+  const spineText=sw>=10?`<span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:${Math.max(6,sw>14?Math.round(9*sc):Math.round(8*sc))}px;font-weight:700;color:rgba(255,255,255,.75);white-space:normal;word-break:break-word;text-align:center;overflow:visible;max-height:${h-20}px">${book.title}</span>`:'';
   const textOverlay=!coverUrl?`<div class="book-cover-inner">
     <div style="font-size:${fsz}px;opacity:.5;text-transform:uppercase;letter-spacing:.06em;color:#fff;margin-bottom:auto">${book.author||''}</div>
     <div style="font-size:${tsz}px;font-weight:800;text-align:center;color:#fff;white-space:normal;word-break:break-word;overflow:visible;flex:1;display:flex;align-items:center;justify-content:center">${book.title}</div>
