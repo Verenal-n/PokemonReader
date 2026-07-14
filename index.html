@@ -24,10 +24,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .hdr{background:rgba(0,0,0,.45);padding:9px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;}
 .back-btn{background:none;border:none;cursor:pointer;font-size:18px;color:#7eceff;padding:2px 6px;}
 .hdr-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;overflow:hidden;}
-.hdr-info{flex:1;min-width:0;}
+.hdr-info{display:none;}
 .hdr-name{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .hdr-loc{font-size:10px;color:#7eceff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.hdr-res{display:flex;gap:4px;flex-shrink:0;flex-wrap:nowrap;justify-content:flex-end;}
+.hdr-res{display:flex;gap:4px;flex-shrink:0;flex-wrap:nowrap;justify-content:flex-end;margin-left:auto;}
 .rpill{background:rgba(255,255,255,.1);border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600;color:#fff;white-space:nowrap;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-align:center;}
 .rpill-menu{padding:7px 13px;font-size:16px;line-height:1;}
 .rpill:hover{background:rgba(255,255,255,.2);}
@@ -176,7 +176,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
   <div class="main-content">
-    <div class="sec-title"><span>Колекція</span><span id="dex-count" style="font-weight:400;color:#888;font-size:10px;text-transform:none;letter-spacing:0"></span></div>
+    <div class="sec-title"><span>Колекція</span><span id="dex-count" style="font-weight:600;color:#ccc;font-size:15px;text-transform:none;letter-spacing:0"></span></div>
     <div class="dex-grid" id="dex-grid"></div>
     <div id="dex-complete"></div>
     <div class="map-card"><div id="map-region-tabs"></div><svg id="map-svg" class="map-svg" viewBox="0 0 460 240" xmlns="http://www.w3.org/2000/svg">
