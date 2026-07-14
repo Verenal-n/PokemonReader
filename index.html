@@ -115,8 +115,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .book-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 .book-cover-inner{position:absolute;inset:0;}
 .book-pages-edge{position:absolute;top:3px;right:-5px;bottom:3px;width:5px;background:repeating-linear-gradient(180deg,#f2ede4 0px,#f2ede4 1.2px,#d5d0c6 1.2px,#d5d0c6 2px);border-radius:0 1px 1px 0;box-shadow:1px 0 4px rgba(0,0,0,.35);z-index:-1;}
-.book-tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);white-space:nowrap;background:#241a0e;border:1px solid rgba(201,168,106,.35);border-radius:6px;padding:4px 8px;font-size:10px;color:#c9a86a;z-index:30;pointer-events:none;}
-.book-wrap:hover .book-tooltip{display:block;}
 
 /* EVO DOTS */
 .evo-dots{display:flex;gap:2px;justify-content:center;margin-top:3px;}
@@ -1007,7 +1005,6 @@ function _renderBookHTML(book, i, sc=1){
     <div style="position:absolute;bottom:6px;left:5px;right:5px;font-size:${fsz}px;opacity:.45;color:#fff;text-align:right">${p} стор.</div>
   </div>`:'';
   return`<div class="book-wrap" style="height:${h}px" onclick="openBookDetail(${i})" title="">
-    <div class="book-tooltip">${book.title} · ${p} стор.</div>
     <div class="book-spine" style="width:${sw}px;height:${h}px;background:${spineGrad};box-shadow:inset 2px 0 4px rgba(255,255,255,.06),inset -2px 0 6px rgba(0,0,0,.45),-2px 2px 8px rgba(0,0,0,.55)">${spineText}</div>
     <div class="book-cover" style="width:${cw}px;height:${h}px;background:${coverGrad};box-shadow:2px 2px 0 rgba(0,0,0,.3),3px 4px 0 rgba(0,0,0,.18),5px 8px 16px rgba(0,0,0,.55),inset -3px 0 10px rgba(0,0,0,.22)">
       ${coverUrl?`<img src="${coverUrl}" onerror="this.style.display='none'">`:''}
@@ -1021,7 +1018,7 @@ function _buildLibraryHTML(){
   const d=pd();
   const books=d.books||[];
   const totalPages=books.reduce((s,b)=>s+(b.pages||0),0);
-  const header=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+  const header=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
     <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#7eceff;font-weight:600">Моя Бібліотека</div>
     <div style="font-size:11px;color:#778">${books.length} книг · ${totalPages} стор.</div></div>`;
   if(!books.length){
