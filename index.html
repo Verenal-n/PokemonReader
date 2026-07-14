@@ -377,13 +377,13 @@ const LOCS={
     unlockReq:{type:'keyChain',chainId:'pinsir',stageIdx:1}},
   caves:{id:'caves',name:'Печери',mLabel:'Печери',emoji:'⛏️',cx:398,cy:62,
     color:'#1c1917',stroke:'#a8a29e',badge:'Зона 4',badgeBg:'rgba(168,162,158,.2)',badgeTxt:'#a8a29e',
-    unlockReq:{type:'count',locs:['oak','pallet','forest','glade','butterfly'],need:21}},
+    unlockReq:{type:'count',locs:['oak','pallet','forest','glade','butterfly'],need:30}},
   shore:{id:'shore',name:'Морський берег',mLabel:'Берег',emoji:'🌊',cx:440,cy:122,
     color:'#0c2a4a',stroke:'#38bdf8',badge:'Зона 5',badgeBg:'rgba(56,189,248,.2)',badgeTxt:'#38bdf8',
-    unlockReq:{type:'count',locs:['oak','pallet','forest','glade','butterfly','caves'],need:36}},
+    unlockReq:{type:'count',locs:['oak','pallet','forest','glade','butterfly','caves'],need:47}},
   map2:{id:'map2',name:'Регіон Джото',mLabel:'Регіон Джото',emoji:'🌏',cx:398,cy:182,
     color:'#172554',stroke:'#60a5fa',badge:'Карта 2',badgeBg:'rgba(96,165,250,.2)',badgeTxt:'#60a5fa',
-    unlockReq:{type:'megaCount',locs:['oak','pallet','forest','glade','butterfly','caves','shore'],need:8}},
+    unlockReq:{type:'megaCount',locs:['oak','pallet','forest','glade','butterfly','caves','shore'],need:12}},
 };
 const ALL_KANTO_LOCS=Object.keys(LOCS);
 const SHOP_NODE={cx:40,cy:205,color:'#3f2a0e',stroke:'#fbbf24'};
@@ -406,7 +406,14 @@ function unlockHintText(loc){
   const d=pd();
   if(req.type==='keyChain'){
     const chain=CHAINS.find(c=>c.id===req.chainId);const stage=chain.stages[req.stageIdx];
-    return`Потрібен ключовий покемон: <b>${stage.name}</b>.<br>Злови його — і локація відкриється!`;
+    const cur=d.progress[req.chainId];
+    const seq=chain.stages.map((s,i)=>{
+      if(i===req.stageIdx)return`<b style="color:#fbbf24">${s.name}</b>`;
+      if(cur!==undefined&&i<=cur)return`${s.name} ✓`;
+      return s.name;
+    }).join(' → ');
+    const srcLoc=LOCS[chain.loc];
+    return`Потрібен ключовий покемон: <b>${stage.name}</b>.<br><span style="font-size:11px;opacity:.85">${seq}</span><br>Злови його в «${srcLoc?srcLoc.name:''}» або докупи в 🛒 Магазині.`;
   }
   if(req.type==='locMega'){
     const locName=LOCS[req.loc]?.name||req.loc;
@@ -677,7 +684,11 @@ function renderMap(){
 function showLockedHint(locId){
   const loc=_anyLoc(locId);if(!loc)return;
   const hint=unlockHintText(loc);
-  qM(()=>mHTML(`<div style="margin-bottom:10px">${locIconEl(loc.id,72)}</div><div class="m-title" style="text-align:center">🔒 ${loc.name}</div><div class="m-desc">${hint||'Виконай умову для відкриття'}</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Зрозуміло</button></div>`));
+  const req=loc.unlockReq;
+  const btns=req&&req.type==='keyChain'
+    ?`<div class="m-btns"><button class="btn-cancel" onclick="closeModal()">Зрозуміло</button><button class="btn-ok" onclick="closeModal();openShop()">🛒 Магазин</button></div>`
+    :`<div class="m-btns"><button class="btn-ok" onclick="closeModal()">Зрозуміло</button></div>`;
+  qM(()=>mHTML(`<div style="margin-bottom:10px">${locIconEl(loc.id,72)}</div><div class="m-title" style="text-align:center">🔒 ${loc.name}</div><div class="m-desc">${hint||'Виконай умову для відкриття'}</div>${btns}`));
 }
 
 function onLocClick(locId){
@@ -749,6 +760,11 @@ function doCatch(){
 }
 
 // ═══════════ SHOP (buy pokemon for coins) ═══════════
+function chainKeyLoc(chainId){
+  const d=pd();
+  return Object.values(LOCS).find(loc=>!d.unlockedLocs.includes(loc.id)&&loc.unlockReq&&loc.unlockReq.type==='keyChain'&&loc.unlockReq.chainId===chainId);
+}
+
 function openShop(){
   const d=pd();
   const rows=[];
@@ -759,12 +775,26 @@ function openShop(){
       rows.push({chain,idx,stage:chain.stages[idx],price:stagePrice(chain,idx)});
     });
   });
-  const html=rows.map(r=>`<div class="shop-row">
+  rows.sort((a,b)=>{
+    const ak=chainKeyLoc(a.chain.id)&&a.idx===chainKeyLoc(a.chain.id).unlockReq.stageIdx?1:0;
+    const bk=chainKeyLoc(b.chain.id)&&b.idx===chainKeyLoc(b.chain.id).unlockReq.stageIdx?1:0;
+    return bk-ak;
+  });
+  const html=rows.map(r=>{
+    const keyLoc=chainKeyLoc(r.chain.id);
+    let keyNote='';
+    if(keyLoc){
+      keyNote=r.idx===keyLoc.unlockReq.stageIdx
+        ?`<div style="margin-top:3px;font-size:9px;font-weight:700;color:#4ade80">🔑 Відкриє «${keyLoc.name}»!</div>`
+        :`<div style="margin-top:3px;font-size:9px;color:#fbbf24">→ веде до ключа «${keyLoc.name}»</div>`;
+    }
+    return`<div class="shop-row" ${keyLoc&&r.idx===keyLoc.unlockReq.stageIdx?'style="background:rgba(74,222,128,.06);border-radius:8px;padding:8px 6px;margin:0 -6px"':''}>
       <img class="sh-emoji" src="${img(r.stage.pid)}" style="width:28px;height:28px;image-rendering:pixelated" onerror="this.style.display='none'">
-      <div class="sh-info"><div class="sh-name">${r.stage.name}</div><div class="sh-desc">${r.chain.stages.length>1?'Стадія '+(r.idx+1)+'/'+r.chain.stages.length:'Локація: '+(LOCS[r.chain.loc]?.name||'')}</div></div>
+      <div class="sh-info"><div class="sh-name">${r.stage.name}</div><div class="sh-desc">${r.chain.stages.length>1?'Стадія '+(r.idx+1)+'/'+r.chain.stages.length:'Локація: '+(LOCS[r.chain.loc]?.name||'')}</div>${keyNote}</div>
       <div style="text-align:right;flex-shrink:0"><div class="sh-price">🪙${r.price}</div>
       <button class="sh-btn" onclick="buyChainStage('${r.chain.id}',${r.idx})" ${d.coins<r.price?'disabled':''}>Купити</button></div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   mHTML(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
     <div class="m-title" style="margin:0">🛒 Магазин</div>
     <div style="font-size:14px;font-weight:700;color:#fbbf24">🪙${d.coins}</div>
