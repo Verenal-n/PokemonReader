@@ -11,7 +11,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .screen{display:none;min-height:100vh;flex-direction:column;}.screen.active{display:flex;}
 
 /* SELECT */
-.sel-bg{background:url('start.png') center top/cover no-repeat;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 1rem calc(1rem + env(safe-area-inset-bottom, 0px));overflow-y:auto;}
+.sel-bg{background:url('start.png') center top/cover no-repeat;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 1rem calc(3.5rem + env(safe-area-inset-bottom, 0px));overflow-y:auto;}
 .sel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
 .sel-card{background:rgba(10,15,35,.72);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(6px);border-radius:16px;padding:1.25rem .75rem;cursor:pointer;text-align:center;transition:all .2s;}
 .sel-card:hover{background:rgba(255,255,255,.14);transform:translateY(-2px);}
@@ -241,7 +241,7 @@ const CHAINS=[
   {id:'rattata', loc:'pallet', stages:[S('Rattata',19),S('Raticate',20)]},
   {id:'purrloin', loc:'pallet', stages:[S('Purrloin',509),S('Liepard',510)]},
   {id:'chansey', loc:'pallet', stages:[S('Chansey',113),S('Blissey',242)]},
-  {id:'abra', loc:'pallet', stages:[S('Abra',63),S('Kadabra',64),S('Alakazam',65),S('Mega Alakazam',10039,true)]},
+  {id:'abra', loc:'pallet', stages:[S('Abra',63),S('Kadabra',64),S('Alakazam',65),S('Mega Alakazam',10037,true)]},
   {id:'jigglypuff', loc:'pallet', stages:[S('Jigglypuff',39),S('Wigglytuff',40)]},
   {id:'meowth', loc:'pallet', stages:[S('Meowth',52),S('Persian',53)]},
   {id:'growlithe', loc:'pallet', stages:[S('Growlithe',58),S('Arcanine',59)]},
@@ -250,7 +250,7 @@ const CHAINS=[
   // ── VIRIDIAN FOREST (22) ────────────────────────────────
   {id:'pidgey', loc:'forest', stages:[S('Pidgey',16),S('Pidgeotto',17),S('Pidgeot',18),S('Mega Pidgeot',10073,true)]},
   {id:'ekans', loc:'forest', stages:[S('Ekans',23),S('Arbok',24)]},
-  {id:'weedle', loc:'forest', stages:[S('Weedle',13),S('Kakuna',14),S('Beedrill',15),S('Mega Beedrill',10037,true)]},
+  {id:'weedle', loc:'forest', stages:[S('Weedle',13),S('Kakuna',14),S('Beedrill',15),S('Mega Beedrill',10090,true)]},
   {id:'caterpie', loc:'forest', stages:[S('Caterpie',10),S('Metapod',11),S('Butterfree',12)]},
   {id:'bellsprout', loc:'forest', stages:[S('Bellsprout',69),S('Weepinbell',70),S('Victreebel',71)]},
   {id:'hoothoot', loc:'forest', stages:[S('Hoothoot',163),S('Noctowl',164)]},
@@ -279,20 +279,20 @@ const CHAINS=[
   {id:'illumise', loc:'butterfly', stages:[S('Illumise',314)]},
   {id:'volbeat', loc:'butterfly', stages:[S('Volbeat',313)]},
   {id:'yanma', loc:'butterfly', stages:[S('Yanma',193),S('Yanmega',469)]},
-  {id:'heracross', loc:'butterfly', stages:[S('Heracross',214),S('Mega Heracross',10051,true)]},
+  {id:'heracross', loc:'butterfly', stages:[S('Heracross',214),S('Mega Heracross',10047,true)]},
   {id:'vivillon', loc:'butterfly', stages:[S('Vivillon',666)]},
 
   // ── CAVES (30) ────────────────────────────────────────────
   {id:'geodude', loc:'caves', stages:[S('Geodude',74),S('Graveler',75),S('Golem',76)]},
   {id:'zubat', loc:'caves', stages:[S('Zubat',41),S('Golbat',42),S('Crobat',169)]},
   {id:'diglett', loc:'caves', stages:[S('Diglett',50),S('Dugtrio',51)]},
-  {id:'larvitar', loc:'caves', stages:[S('Larvitar',246),S('Pupitar',247),S('Tyranitar',248),S('Mega Tyranitar',10044,true)]},
+  {id:'larvitar', loc:'caves', stages:[S('Larvitar',246),S('Pupitar',247),S('Tyranitar',248),S('Mega Tyranitar',10049,true)]},
   {id:'onix', loc:'caves', stages:[S('Onix',95),S('Steelix',208),S('Mega Steelix',10072,true)]},
   {id:'gastly', loc:'caves', stages:[S('Gastly',92),S('Haunter',93),S('Gengar',94),S('Mega Gengar',10038,true)]},
   {id:'machop', loc:'caves', stages:[S('Machop',66),S('Machoke',67),S('Machamp',68)]},
   {id:'paras', loc:'caves', stages:[S('Paras',46),S('Parasect',47)]},
-  {id:'sableye', loc:'caves', stages:[S('Sableye',302),S('Mega Sableye',10058,true)]},
-  {id:'aron', loc:'caves', stages:[S('Aron',304),S('Lairon',305),S('Aggron',306),S('Mega Aggron',10060,true)]},
+  {id:'sableye', loc:'caves', stages:[S('Sableye',302),S('Mega Sableye',10066,true)]},
+  {id:'aron', loc:'caves', stages:[S('Aron',304),S('Lairon',305),S('Aggron',306),S('Mega Aggron',10053,true)]},
 
   // ── SHORE (30) ────────────────────────────────────────────
   {id:'magikarp', loc:'shore', stages:[S('Magikarp',129),S('Gyarados',130),S('Mega Gyarados',10041,true)]},
@@ -306,7 +306,7 @@ const CHAINS=[
   {id:'shellder', loc:'shore', stages:[S('Shellder',90),S('Cloyster',91)]},
   {id:'corsola', loc:'shore', stages:[S('Corsola',222)]},
   {id:'wailmer', loc:'shore', stages:[S('Wailmer',320),S('Wailord',321)]},
-  {id:'carvanha', loc:'shore', stages:[S('Carvanha',318),S('Sharpedo',319),S('Mega Sharpedo',10063,true)]},
+  {id:'carvanha', loc:'shore', stages:[S('Carvanha',318),S('Sharpedo',319),S('Mega Sharpedo',10070,true)]},
   {id:'chinchou', loc:'shore', stages:[S('Chinchou',170),S('Lanturn',171)]},
   {id:'remoraid', loc:'shore', stages:[S('Remoraid',223),S('Octillery',224)]},
 ];
@@ -581,8 +581,19 @@ function renderDex(){
 function openDexCard(chainId){
   const d=pd();const chain=CHAINS.find(c=>c.id===chainId);if(!chain)return;
   const idx=d.progress[chainId];if(idx===undefined)return;
-  const stage=chain.stages[idx];
   const loc=LOCS[chain.loc];
+  if(idx===chain.stages.length-1&&chain.stages.length>1){
+    const gallery=chain.stages.map(s=>`<div style="text-align:center">
+        <img src="${img(s.pid)}" style="width:76px;height:76px;object-fit:contain;image-rendering:pixelated" onerror="this.style.display='none'">
+        <div style="font-size:10px;color:#ccc;margin-top:2px;max-width:82px">${s.name}</div>
+      </div>`).join('');
+    mHTML(`<div class="m-title" style="text-align:center">🏆 Завершено!</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:10px 0 14px">${gallery}</div>
+      <div style="font-size:10px;color:#888;text-align:center;margin-bottom:8px">📍 Де ловиться: <b style="color:#aaa">${loc?loc.name:'—'}</b></div>
+      <button class="btn-cancel" style="width:100%;padding:13px;font-size:14px;min-height:44px" onclick="closeModal()">Закрити</button>`);
+    return;
+  }
+  const stage=chain.stages[idx];
   mHTML(`<img class="m-img" src="${img(stage.pid)}" onerror="this.style.display='none'">
     <div class="m-title">${stage.name}</div>
     <div style="text-align:center;font-size:11px;color:#888;margin-bottom:10px">Стадія ${idx+1} / ${chain.stages.length}${stage.mega?' · 🐉 Мега':''}</div>
@@ -789,7 +800,7 @@ function openShop(){
         :`<div style="margin-top:3px;font-size:9px;color:#fbbf24">→ веде до ключа «${keyLoc.name}»</div>`;
     }
     return`<div class="shop-row" ${keyLoc&&r.idx===keyLoc.unlockReq.stageIdx?'style="background:rgba(74,222,128,.06);border-radius:8px;padding:8px 6px;margin:0 -6px"':''}>
-      <img class="sh-emoji" src="${img(r.stage.pid)}" style="width:28px;height:28px;image-rendering:pixelated" onerror="this.style.display='none'">
+      <img class="sh-emoji" src="${img(r.stage.pid)}" style="width:40px;height:40px;image-rendering:pixelated" onerror="this.style.display='none'">
       <div class="sh-info"><div class="sh-name">${r.stage.name}</div><div class="sh-desc">${r.chain.stages.length>1?'Стадія '+(r.idx+1)+'/'+r.chain.stages.length:'Локація: '+(LOCS[r.chain.loc]?.name||'')}</div>${keyNote}</div>
       <div style="text-align:right;flex-shrink:0"><div class="sh-price">🪙${r.price}</div>
       <button class="sh-btn" onclick="buyChainStage('${r.chain.id}',${r.idx})" ${d.coins<r.price?'disabled':''}>Купити</button></div>
@@ -798,7 +809,7 @@ function openShop(){
   mHTML(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
     <div class="m-title" style="margin:0">🛒 Магазин</div>
     <div style="font-size:14px;font-weight:700;color:#fbbf24">🪙${d.coins}</div>
-  </div><div style="max-height:340px;overflow-y:auto">${html||'<div style="font-size:12px;color:#555;text-align:center;padding:1rem">Немає нічого на продаж — спочатку відкрий локації!</div>'}</div>
+  </div><div style="max-height:340px;overflow-y:auto;padding-right:10px;margin-right:-10px">${html||'<div style="font-size:12px;color:#555;text-align:center;padding:1rem">Немає нічого на продаж — спочатку відкрий локації!</div>'}</div>
   <button class="btn-cancel" style="width:100%;margin-top:12px;padding:13px;font-size:14px;min-height:44px" onclick="closeModal()">Закрити</button>`,true);
 }
 
