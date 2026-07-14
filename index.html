@@ -100,7 +100,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .finput{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:9px 12px;color:#fff;font-size:13px;outline:none;margin-bottom:10px;}
 .finput:focus{border-color:#7eceff;}
 .ppill{background:rgba(126,206,255,.15);color:#7eceff;font-size:12px;font-weight:600;padding:8px;border-radius:10px;text-align:center;margin-bottom:10px;}
-.shelf-wrap{width:100%;display:flex;flex-direction:column;gap:0;background:#111009;border-radius:10px;padding:0;}
+.shelf-wrap{width:100%;display:flex;flex-direction:column;gap:16px;background:#111009;border-radius:10px;padding:0;}
 .shelf-row{display:flex;flex-direction:column;}
 .shelf-label{font-size:9px;color:#a08a5c;padding:0 10px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;}
 .shelf-books{display:flex;align-items:flex-end;gap:5px;padding:16px 10px 0;height:192px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent;}
@@ -947,6 +947,14 @@ const _BPALETTE=[
   ['#1f5c3e','#0a3422','#15402a'],['#622030','#381018','#451520'],
   ['#20386b','#0a1e3c','#152848'],['#4a1f5c','#28083a','#331540'],
   ['#1f4a3e','#0a2a22','#15352a'],
+  ['#7a3a12','#42200a','#5c2d0e'],['#7a2f2f','#421818','#5c2323'],
+  ['#175c5c','#0a3232','#124545'],['#1f4d7a','#0d2740','#173a5c'],
+  ['#7a1f5c','#3c0f2e','#5c1846'],['#6b5a1f','#382e0f','#4f4217'],
+  ['#4a2f8a','#241548','#372066'],['#8a2f1f','#48170f','#6b2417'],
+  ['#1f6b5c','#0f3a32','#174f43'],['#4f5c1f','#2a300f','#3d4517'],
+  ['#3a4a5c','#1f2830','#2d3a45'],['#6b3f1f','#3a220f','#4f2f17'],
+  ['#6b1f3a','#380f1f','#4f172d'],['#1f5c6b','#0f323a','#17454f'],
+  ['#8a5c1f','#483010','#6b4717'],
 ];
 function _colorFor(title){let h=0;for(const c of title)h=(h*31+c.charCodeAt(0))%_BPALETTE.length;return _BPALETTE[Math.abs(h)];}
 function _bookH(p){if(p<100)return 178;if(p<250)return 190;if(p<400)return 202;if(p<600)return 214;if(p<800)return 224;if(p<1000)return 234;return 244;}
