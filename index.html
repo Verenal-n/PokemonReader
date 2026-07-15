@@ -161,7 +161,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div id="screen-main" class="screen">
   <div class="hdr">
     <button class="back-btn" onclick="showSelect()">←</button>
-    <div class="hdr-av" id="hdr-av"></div>
+    <div class="hdr-av" id="hdr-av" onclick="openProfileSettings()" style="cursor:pointer"></div>
     <div class="hdr-info">
       <div class="hdr-name" id="hdr-name"></div>
       <div class="hdr-loc" id="hdr-loc"></div>
@@ -209,7 +209,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div id="side-content" style="flex:1"></div>
   <div style="padding-top:1rem;margin-top:1rem;border-top:1px solid rgba(255,255,255,.07)">
-    <button onclick="openProfileSettings()" style="width:100%;padding:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#7eceff;font-size:13px;font-weight:600;cursor:pointer">⚙️ Налаштування</button>
+    <button onclick="closeSidePanel();saveToCloud(cur)" style="width:100%;padding:12px;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.25);border-radius:10px;color:#4ade80;font-size:13px;font-weight:600;cursor:pointer">💾 Зберегти прогрес</button>
   </div>
 </div>
 
@@ -935,9 +935,6 @@ function _buildPagesHTML(){
       <input type="url" id="sp-cover" class="finput" placeholder="https://…" style="font-size:11px">
       <div id="sp-prev" style="display:none;margin-bottom:10px"></div>
       <button class="btn-ok" id="sp-submit" onclick="submitPages()" style="width:100%;padding:14px;font-size:14px;min-height:48px">Зарахувати книгу</button>
-    </div>
-    <div style="padding-top:1rem;border-top:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;gap:6px">
-      <button onclick="closeSidePanel();saveToCloud(cur)" style="width:100%;padding:11px;font-size:12px;font-weight:600;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.25);border-radius:10px;color:#4ade80;cursor:pointer">${SCRIPT_URL?'💾 Зберегти прогрес':'💾 Зберегти (URL не вказано)'}</button>
     </div>`;
 }
 
