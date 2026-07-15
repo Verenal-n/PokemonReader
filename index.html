@@ -1147,9 +1147,20 @@ async function saveToCloud(pid){
   localStorage.setItem('rpg_state_'+pid,stateJson);
   if(!SCRIPT_URL)return;
   showSaveStatus('saving');
-  const url=SCRIPT_URL+'?action=save&playerId='+encodeURIComponent(pid)+'&state='+encodeURIComponent(stateJson);
-  const r=await _jsonp(url);
-  showSaveStatus(r&&r.ok?'saved':'error');
+  // POST (not GET+JSONP) — a big library of books would otherwise blow past the
+  // URL-length limit on a GET request and silently fail to save anything at all.
+  try{
+    const res=await fetch(SCRIPT_URL,{
+      method:'POST',
+      body:JSON.stringify({playerId:pid,state:state.players[pid]}),
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+    });
+    const r=await res.json();
+    showSaveStatus(r&&r.ok?'saved':'error');
+  }catch(e){
+    console.error('[Save] failed:',e);
+    showSaveStatus('error');
+  }
 }
 
 async function loadFromCloud(pid){
