@@ -1018,7 +1018,7 @@ function _buildLibraryHTML(){
   const d=pd();
   const books=d.books||[];
   const totalPages=books.reduce((s,b)=>s+(b.pages||0),0);
-  const header=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:38px">
+  const header=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
     <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#7eceff;font-weight:600">Моя Бібліотека</div>
     <div style="font-size:11px;color:#778">${books.length} книг · ${totalPages} стор.</div></div>`;
   if(!books.length){
