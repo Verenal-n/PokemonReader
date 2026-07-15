@@ -487,7 +487,7 @@ function renderSelGrid(){
       <div class="sel-av" style="background:${avBg};border:2px solid ${clr}">${avContent}</div>
       <div class="sel-name">${d.customName||p.name}</div>
       <div>
-        <span class="spill">🐾${caught}</span>
+        <span class="spill">🐣${caught}</span>
         <span class="spill">📚${d.booksRead||0}</span>
       </div>
     </div>`;
@@ -543,7 +543,7 @@ function renderRes(){
 function renderDex(){
   const d=pd();
   const held=CHAINS.filter(c=>d.progress[c.id]!==undefined);
-  document.getElementById('dex-count').innerHTML=`🐾 ${held.length} &nbsp; 🐉 ${megasCaughtIn(d,ALL_KANTO_LOCS)}`;
+  document.getElementById('dex-count').innerHTML=`🐣 ${held.length} &nbsp; 🐉 ${megasCaughtIn(d,ALL_KANTO_LOCS)}`;
   const grid=document.getElementById('dex-grid');
   const completeEl=document.getElementById('dex-complete');
   if(!held.length){grid.innerHTML='<div class="dex-empty">Ще нікого не спіймано.<br>Прочитай книгу і почни ловити!</div>';completeEl.innerHTML='';return;}
