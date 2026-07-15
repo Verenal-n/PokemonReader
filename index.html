@@ -920,6 +920,11 @@ function _rebuildSideContent(){
 function _buildPagesHTML(){
   return`<div style="margin-bottom:1rem">
       <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#7eceff;margin-bottom:10px;font-weight:600">📘 Прочитав книгу — можеш ловити!</div>
+      <div class="flbl">Посилання на Goodreads <span style="color:#555;font-weight:400">(необов'язково — заповнить поля саме)</span></div>
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <input type="url" id="sp-goodreads" class="finput" placeholder="https://www.goodreads.com/book/show/…" style="font-size:11px;margin-bottom:0;flex:1">
+        <button id="sp-parse-btn" onclick="parseGoodreadsLink()" style="flex-shrink:0;padding:0 14px;font-size:12px;font-weight:600;background:rgba(126,206,255,.15);border:1px solid rgba(126,206,255,.3);border-radius:10px;color:#7eceff;cursor:pointer">Розпізнати</button>
+      </div>
       <div class="flbl">Назва книги</div>
       <input type="text" id="sp-book" class="finput" placeholder="Гаррі Поттер і філософський камінь">
       <div class="flbl">Автор</div>
@@ -1078,6 +1083,23 @@ function confirmDeleteBook(i){
 function closeSidePanel(){
   document.getElementById('side-panel').classList.remove('open');
   document.getElementById('side-ov').classList.remove('open');
+}
+
+async function parseGoodreadsLink(){
+  const url=(document.getElementById('sp-goodreads').value||'').trim();
+  if(!url){showToast('Встав посилання на Goodreads');return;}
+  if(!SCRIPT_URL){showToast('Не налаштовано хмарне збереження — розпізнавання недоступне');return;}
+  const btn=document.getElementById('sp-parse-btn');
+  btn.disabled=true;btn.textContent='Розпізнаю…';
+  const data=await _jsonp(SCRIPT_URL+'?action=parseBook&url='+encodeURIComponent(url));
+  btn.disabled=false;btn.textContent='Розпізнати';
+  if(!data||data.error){showToast('Не вдалося розпізнати сторінку — заповни вручну');return;}
+  if(data.title)document.getElementById('sp-book').value=data.title;
+  if(data.author)document.getElementById('sp-author').value=data.author;
+  if(data.pages)document.getElementById('sp-pages').value=data.pages;
+  if(data.coverUrl)document.getElementById('sp-cover').value=data.coverUrl;
+  updSP();
+  showToast('Розпізнано! Перевір поля і натисни «Зарахувати книгу»');
 }
 
 function updSP(){
