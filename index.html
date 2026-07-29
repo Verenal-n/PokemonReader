@@ -175,7 +175,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
   <div class="main-content">
-    <div class="sec-title"><span>Колекція</span><span id="dex-count" style="font-weight:600;color:#ccc;font-size:15px;text-transform:none;letter-spacing:0"></span></div>
+    <div class="sec-title"><span>Колекція</span><span id="dex-count" title="🐣 Спіймано видів · 🐉 Мега-еволюцій" style="font-weight:600;color:#ccc;font-size:15px;text-transform:none;letter-spacing:0"></span></div>
     <div class="dex-grid" id="dex-grid"></div>
     <div id="dex-complete"></div>
     <div class="map-card"><div id="map-region-tabs"></div><svg id="map-svg" class="map-svg" viewBox="0 0 460 240" xmlns="http://www.w3.org/2000/svg">
@@ -221,6 +221,7 @@ const PLAYERS=[
   {id:'lionhard',  name:'Lionhard',  emoji:'🦁', color:'#f97316', border:'#f97316'},
   {id:'esperanza', name:'Esperanza', emoji:'🌸', color:'#f43f5e', border:'#f43f5e'},
   {id:'demetrius', name:'Demetrius', emoji:'⚡', color:'#3b82f6', border:'#3b82f6'},
+  {id:'test',      name:'Test',      emoji:'🧪', color:'#9ca3af', border:'#9ca3af'},
 ];
 
 // ═══════════ EVOLUTION CHAINS ═══════════
@@ -345,12 +346,11 @@ function megasCaughtIn(d,locIds){
   locIds.forEach(l=>chainsForLoc(l).forEach(c=>{const idx=d.progress[c.id];if(idx!==undefined&&c.stages[idx].mega)n++;}));
   return n;
 }
-function markCompletion(d,chain,idx){
-  if(idx!==chain.stages.length-1)return;
-  if(!d.completedOrder)d.completedOrder=[];
-  const i=d.completedOrder.indexOf(chain.id);
-  if(i>=0)d.completedOrder.splice(i,1);
-  d.completedOrder.push(chain.id);
+function touchProgressOrder(d,chainId){
+  if(!d.progressOrder)d.progressOrder=[];
+  const i=d.progressOrder.indexOf(chainId);
+  if(i>=0)d.progressOrder.splice(i,1);
+  d.progressOrder.push(chainId);
 }
 function isLocComplete(locId){
   const d=pd();const chains=chainsForLoc(locId);
@@ -443,7 +443,7 @@ function initState(){
     if(!state.players[p.id]) state.players[p.id]={
       coins:0, bookPoints:0, booksRead:0,
       location:'oak', region:'kanto', unlockedLocs:['oak'],
-      progress:{}, completedOrder:[], books:[],
+      progress:{}, progressOrder:[], books:[],
     };
   });
 }
@@ -549,14 +549,16 @@ function renderDex(){
   if(!held.length){grid.innerHTML='<div class="dex-empty">Ще нікого не спіймано.<br>Прочитай книгу і почни ловити!</div>';completeEl.innerHTML='';return;}
   const inProgress=held.filter(c=>d.progress[c.id]<c.stages.length-1);
   const done=held.filter(c=>d.progress[c.id]===c.stages.length-1);
-  const order=d.completedOrder||[];
-  done.sort((a,b)=>{
+  const order=d.progressOrder||[];
+  const byRecency=(a,b)=>{
     const ai=order.indexOf(a.id),bi=order.indexOf(b.id);
     if(ai===-1&&bi===-1)return 0;
     if(ai===-1)return 1;
     if(bi===-1)return -1;
     return bi-ai;
-  });
+  };
+  inProgress.sort(byRecency);
+  done.sort(byRecency);
   grid.innerHTML=inProgress.map(chain=>{
     const idx=d.progress[chain.id];const stage=chain.stages[idx];
     const dots=chain.stages.length>1?`<div class="evo-dots">${chain.stages.map((s,i)=>`<div class="evo-dot ${i<=idx?'filled':''}"></div>`).join('')}</div>`:'';
@@ -760,7 +762,7 @@ function doCatch(){
   d.bookPoints--;
   const pick=pool[ri(0,pool.length-1)];
   d.progress[pick.chain.id]=pick.idx;
-  markCompletion(d,pick.chain,pick.idx);
+  touchProgressOrder(d,pick.chain.id);
   const stage=pick.chain.stages[pick.idx];
   renderRes();renderDex();renderActions();renderMap();
   const opened=checkUnlocks();
@@ -818,7 +820,7 @@ function buyChainStage(chainId,idx){
   const price=stagePrice(chain,idx);
   if(d.coins<price)return;
   d.coins-=price;d.progress[chainId]=idx;
-  markCompletion(d,chain,idx);
+  touchProgressOrder(d,chainId);
   closeModal();renderRes();renderDex();renderActions();renderMap();
   const opened=checkUnlocks();
   if(opened.length)renderMap();
@@ -1072,8 +1074,19 @@ function saveBookCover(i){
 
 function confirmDeleteBook(i){
   const d=pd();const book=(d.books||[])[i];if(!book)return;
-  qM(()=>mEmoji('🗑️','Видалити книжку?',`"${book.title}"`,
-    [{l:'Видалити',cb:()=>{closeModal();d.books.splice(i,1);saveToCloud(cur);setSideTab('library');}},
+  closeModal(); // openBookDetail's modal is shown via mHTML (outside the qM queue) —
+                // must tear it down before queuing this one, or its leftover #mOv
+                // stays clickable underneath and a second tap double-fires the delete.
+  qM(()=>mEmoji('🗑️','Видалити книжку?',`"${book.title}"\n\nЗабере назад 1📘 і ${book.coinsEarned??coinsForPages(book.pages)}🪙, які вона дала (може піти в мінус, якщо вже витрачено).`,
+    [{l:'Видалити',cb:()=>{
+      closeModal();
+      const coinsToRemove=book.coinsEarned??coinsForPages(book.pages);
+      d.bookPoints=(d.bookPoints||0)-1;
+      d.coins=(d.coins||0)-coinsToRemove;
+      d.booksRead=(d.booksRead||0)-1;
+      d.books.splice(i,1);
+      renderRes();saveToCloud(cur);setSideTab('library');
+    }},
      {l:'Скасувати',ok:true,cb:closeModal}]));
 }
 
@@ -1123,7 +1136,7 @@ function submitPages(){
   d.booksRead=(d.booksRead||0)+1;
   d.coins=(d.coins||0)+coins;
   if(!d.books)d.books=[];
-  const book={title,author,pages,date:new Date().toLocaleDateString('uk-UA'),coverUrl:coverUrl||null};
+  const book={title,author,pages,date:new Date().toLocaleDateString('uk-UA'),coverUrl:coverUrl||null,coinsEarned:coins};
   d.books.push(book);
   renderRes();renderActions();closeSidePanel();saveToCloud(cur);
   const preview=_renderBookPreviewHTML(book);
