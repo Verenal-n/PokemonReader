@@ -180,6 +180,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .finput:focus{border-color:#7eceff;}
 select option{background:#1e2d4a;color:#fff;}
 .ppill{background:rgba(126,206,255,.15);color:#7eceff;font-size:12px;font-weight:600;padding:8px;border-radius:10px;text-align:center;margin-bottom:10px;}
+.sp-error{background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.35);color:#f87171;font-size:12px;font-weight:600;padding:9px 12px;border-radius:10px;text-align:center;margin-bottom:10px;}
 .shelf-wrap{width:100%;display:flex;flex-direction:column;gap:16px;background:#111009;border-radius:10px;padding:14px 0;}
 .shelf-row{display:flex;flex-direction:column;}
 .shelf-label{font-size:9px;color:#a08a5c;padding:0 10px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;}
@@ -820,7 +821,8 @@ function renderLangDonutHTML(books){
     <div class="stats-chart-title">Топ за мовами</div>
     <div class="lang-donut-row">
       <svg viewBox="0 0 120 120" class="lang-donut-svg">${arcs}
-        <text x="60" y="60" text-anchor="middle" dominant-baseline="central" font-size="26" font-weight="800" fill="#fff">${total}</text>
+        <text x="60" y="54" text-anchor="middle" dominant-baseline="central" font-size="24" font-weight="800" fill="#fff">${total}</text>
+        <text x="60" y="71" text-anchor="middle" font-size="9" font-weight="600" fill="#888">${bookWord(total)}</text>
       </svg>
       <div class="lang-legend">${legend}</div>
     </div>
@@ -858,7 +860,8 @@ function renderGenreDonutHTML(books){
     <div class="stats-chart-title">Топ за жанрами</div>
     <div class="lang-donut-row">
       <svg viewBox="0 0 120 120" class="lang-donut-svg">${arcs}
-        <text x="60" y="60" text-anchor="middle" dominant-baseline="central" font-size="26" font-weight="800" fill="#fff">${total}</text>
+        <text x="60" y="54" text-anchor="middle" dominant-baseline="central" font-size="24" font-weight="800" fill="#fff">${total}</text>
+        <text x="60" y="71" text-anchor="middle" font-size="9" font-weight="600" fill="#888">з жанром</text>
       </svg>
       <div class="lang-legend">${legend}</div>
     </div>
@@ -1472,8 +1475,7 @@ function renderActions(){
 function doCatch(){
   const d=pd();
   if(d.bookPoints<1){
-    qM(()=>mEmoji('📙','Мало книжкових балів','Прочитай книгу, щоб отримати 📙 і зловити покемона!',
-      [{l:'Додати книгу',ok:true,cb:()=>{closeModal();openSidePanel();}},{l:'Ок',cb:closeModal}]));
+    qM(()=>mHTML(`${M_CLOSE_BTN}<div class="m-emoji">📙</div><div class="m-title">Мало книжкових балів</div><div class="m-desc">Прочитай книгу, щоб отримати 📙 і зловити покемона!</div><div style="display:flex;justify-content:center;margin-top:4px"><button class="btn-ok" style="flex:none;padding:10px 24px" onclick="closeModal();openSidePanel()">Додати книгу</button></div>`));
     return;
   }
   const pool=catchableStages(d.location);
@@ -1668,7 +1670,7 @@ function onAddStarClick(event,i){
 
 function _buildPagesHTML(){
   return`<div style="margin-bottom:1rem">
-      <div class="flbl">Посилання на Goodreads <span style="color:#9cc9f0;font-weight:400;text-transform:none;letter-spacing:normal">(необов'язково — автоматично заповнить поля нижче)</span></div>
+      <div class="flbl">Посилання на Goodreads <span style="color:#9cc9f0;font-weight:400;text-transform:none;letter-spacing:normal">(це автоматично заповнить поля нижче)</span></div>
       <div style="display:flex;gap:6px;margin-bottom:10px">
         <input type="url" id="sp-goodreads" class="finput" placeholder="https://www.goodreads.com/book/show/…" style="font-size:11px;margin-bottom:0;flex:1">
         <button id="sp-parse-btn" onclick="parseGoodreadsLink()" style="flex-shrink:0;padding:0 14px;font-size:12px;font-weight:600;background:rgba(126,206,255,.15);border:1px solid rgba(126,206,255,.3);border-radius:10px;color:#7eceff;cursor:pointer">Розпізнати</button>
@@ -1689,6 +1691,7 @@ function _buildPagesHTML(){
       <div id="sp-prev" style="display:none;margin-bottom:10px"></div>
       <div class="flbl">Оцінка</div>
       <div id="add-book-stars" style="margin-bottom:14px">${starRatingHTML(_addBookRating,true,'onAddStarClick')}</div>
+      <div id="sp-error" class="sp-error" style="display:none"></div>
       <button class="btn-ok" id="sp-submit" onclick="submitPages()" style="width:100%;padding:14px;font-size:14px;min-height:48px">Зарахувати книгу</button>
     </div>`;
 }
@@ -1897,9 +1900,9 @@ function submitPages(){
   const author=(document.getElementById('sp-author').value||'').trim();
   const coverUrl=(document.getElementById('sp-cover').value||'').trim();
   const genre=document.getElementById('sp-genre').value||'';
-  if(!title){showToast('Введи назву книги');return;}
-  if(!author){showToast('Введи автора');return;}
-  if(!pages||pages<1){showToast('Введи кількість сторінок');return;}
+  if(!title){showFormError('Введи назву книги');return;}
+  if(!author){showFormError('Введи автора');return;}
+  if(!pages||pages<1){showFormError('Введи кількість сторінок');return;}
   const d=pd();
   const coins=coinsForPages(pages);
   d.bookPoints=(d.bookPoints||0)+1;
@@ -1919,6 +1922,12 @@ function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2200);
+}
+function showFormError(msg){
+  const el=document.getElementById('sp-error');if(!el)return;
+  el.textContent=msg;el.style.display='block';
+  clearTimeout(el._hideTimer);
+  el._hideTimer=setTimeout(()=>{el.style.display='none';},3000);
 }
 function showLocToast(name,desc){
   const t=document.getElementById('loc-toast');
