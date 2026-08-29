@@ -9,7 +9,7 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1a1a2e;color:#eee;min-height:100vh;}
 .app{max-width:480px;margin:0 auto;min-height:100vh;background:#16213e;position:relative;}
-.screen{display:none;min-height:100vh;flex-direction:column;}.screen.active{display:flex;}
+.screen{display:none;min-height:100vh;flex-direction:column;}.screen.active{display:flex;height:100vh;height:100dvh;}
 
 /* SELECT */
 .sel-bg{background:url('start.png') center top/cover no-repeat;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 1rem calc(6rem + env(safe-area-inset-bottom, 0px));overflow-y:auto;}
@@ -30,11 +30,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .hdr-loc{font-size:10px;color:#7eceff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .hdr-res{display:flex;gap:4px;flex-shrink:0;flex-wrap:nowrap;justify-content:flex-end;margin-left:auto;}
 .rpill{background:rgba(255,255,255,.1);border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600;color:#fff;white-space:nowrap;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-align:center;}
-.rpill-menu{padding:7px 13px;font-size:16px;line-height:1;}
+.rpill-menu{padding:7px 13px;font-size:16px;line-height:1;background:rgba(45,212,191,.22);border:1px solid rgba(45,212,191,.45);}
 .rpill:hover{background:rgba(255,255,255,.2);}
 
 /* MAIN CONTENT */
-.main-content{flex:1;overflow-y:auto;padding:10px;}
+.main-content{flex:1;overflow-y:auto;padding:10px;min-height:0;}
+.tab-page{height:100%;}
+
+/* BOTTOM TABS */
+.bottom-tabs{display:flex;flex-shrink:0;background:rgba(0,0,0,.5);border-top:1px solid rgba(255,255,255,.08);}
+.bottom-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 calc(6px + env(safe-area-inset-bottom,0px));background:none;border:none;color:#777;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;}
+.bottom-tab .bt-icon{font-size:19px;line-height:1;}
+.bottom-tab.act{color:#7eceff;}
 
 /* DEX */
 .sec-title{font-size:10px;font-weight:600;color:#7eceff;letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
@@ -45,7 +52,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .dex-img{width:calc(100% + 6px);height:68px;object-fit:contain;object-position:bottom center;image-rendering:pixelated;margin:0 -3px;display:block;}
 .dex-name{font-size:8px;color:#ccc;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2;}
 .dex-sub{font-size:8px;color:#7eceff;line-height:1.2;}
-.dex-empty{flex:1;text-align:center;padding:1.5rem;color:rgba(255,255,255,.25);font-size:12px;}
+.dex-empty{flex:1;text-align:center;padding:.6rem;color:rgba(255,255,255,.25);font-size:12px;}
 .chain-row{display:flex;flex-direction:row;overflow-x:auto;gap:6px;margin-bottom:10px;padding-bottom:4px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;}
 .chain-row::-webkit-scrollbar{height:3px;}.chain-row::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px;}
 .chain-block{background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.35);border-radius:10px;padding:5px 8px 5px 6px;display:flex;align-items:center;gap:2px;position:relative;flex-shrink:0;overflow:hidden;}
@@ -61,12 +68,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* ACTIONS */
 .act-card{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden;margin-bottom:8px;}
-.act-hdr{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;padding:10px 12px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05);}
-.act-hdr-emoji{font-size:26px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}.act-hdr-emoji img{width:48px;height:48px;border-radius:50%;object-fit:cover;}
-.act-hdr-info{flex:1;}
-.act-hdr-name{font-size:13px;font-weight:600;color:#fff;}
-.act-hdr-desc{font-size:10px;color:#7eceff;margin-top:1px;}
-.act-hdr-badge{font-size:9px;font-weight:600;padding:2px 8px;border-radius:20px;margin-top:2px;}
+.act-hdr{display:flex;flex-direction:row;align-items:center;text-align:left;gap:10px;padding:8px 12px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05);}
+.act-hdr-emoji{font-size:18px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}.act-hdr-emoji img{width:38px;height:38px;border-radius:50%;object-fit:cover;}
+.act-hdr-info{flex:1;min-width:0;}
+.act-hdr-name{font-size:13px;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.act-hdr-desc{font-size:10px;color:#7eceff;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.act-hdr-badge{font-size:9px;font-weight:600;padding:3px 9px;border-radius:20px;flex-shrink:0;white-space:nowrap;}
 .act-list{padding:10px;}
 .act-row{display:flex;align-items:center;gap:8px;padding:9px 10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);border-radius:10px;cursor:pointer;transition:all .15s;}
 .act-row:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.12);}
@@ -83,9 +90,75 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .catch-btn.done:hover{filter:none;}
 .catch-cost{font-size:12px;opacity:.9;background:rgba(255,255,255,.18);padding:2px 8px;border-radius:10px;}
 
+/* GOAL WIDGET */
+.goal-widget-inner{padding:10px 12px 12px;text-align:center;}
+.goal-tabs{display:flex;gap:6px;margin-bottom:8px;background:rgba(0,0,0,.25);border-radius:20px;padding:3px;}
+.goal-tab{flex:1;padding:5px 0;font-size:11px;font-weight:600;border-radius:16px;border:none;background:transparent;color:#888;cursor:pointer;font-family:inherit;}
+.goal-tab.act{background:#2a3550;color:#fff;}
+.goal-gauge-wrap{position:relative;width:100%;max-width:190px;margin:0 auto;}
+.goal-gauge-svg{display:block;width:100%;}
+.goal-gauge-center{position:absolute;left:0;right:0;top:38%;text-align:center;}
+.goal-gauge-label{font-size:9px;font-weight:700;letter-spacing:.06em;color:#999;}
+.goal-gauge-value{font-size:22px;font-weight:800;color:#fff;line-height:1.1;}
+.goal-action-btn{margin-top:4px;padding:8px 20px;font-size:12px;font-weight:600;background:rgba(251,191,36,.14);border:1px solid rgba(251,191,36,.35);border-radius:20px;color:#fbbf24;cursor:pointer;font-family:inherit;}
+
+/* STATS TAB */
+.stats-sub-hdr{font-size:15px;font-weight:700;color:#fff;margin-bottom:8px;}
+.stats-divider{height:1px;background:rgba(255,255,255,.08);margin:16px 0;}
+.stat-tiles{display:flex;gap:8px;margin:10px 0;}
+.stat-tile{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px 6px;text-align:center;}
+.stat-tile-val{font-size:20px;font-weight:800;color:#fff;line-height:1.1;}
+.stat-tile-lbl{font-size:10px;color:#888;margin-top:2px;}
+.stats-chart-card{position:relative;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:10px;margin-top:4px;}
+.stats-chart-tooltip{position:absolute;transform:translate(-50%,calc(-100% - 8px));background:#fff;color:#1e2d4a;font-size:12px;font-weight:800;padding:3px 9px;border-radius:7px;pointer-events:none;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.35);z-index:5;}
+.stats-chart-tooltip::after{content:'';position:absolute;left:50%;top:100%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#fff;}
+.stats-chart-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;}
+.stats-year-sel{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;font-size:12px;padding:4px 8px;font-family:inherit;}
+.stats-metric-tabs{display:flex;gap:4px;background:rgba(0,0,0,.25);border-radius:14px;padding:3px;}
+.stats-metric-tab{padding:4px 7px;font-size:10px;font-weight:600;border-radius:10px;border:none;background:transparent;color:#888;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.stats-metric-tab.act{background:#2a3550;color:#fff;}
+.stats-chart-svg{display:block;width:100%;height:110px;}
+.stats-chart-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:10px;}
+.lang-donut-row{display:flex;align-items:center;gap:14px;}
+.lang-donut-svg{width:110px;height:110px;flex-shrink:0;}
+.lang-legend{flex:1;display:flex;flex-direction:column;gap:7px;min-width:0;}
+.lang-legend-row{display:flex;align-items:center;gap:6px;font-size:11px;}
+.lang-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.lang-legend-lbl{color:#ccc;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lang-legend-val{color:#fff;font-weight:700;flex-shrink:0;margin-left:2px;}
+.star-rating{display:flex;gap:2px;justify-content:center;}
+.star-slot{position:relative;font-size:24px;line-height:1;color:rgba(255,255,255,.15);}
+.star-rating.editable .star-slot{cursor:pointer;}
+.star-fg{position:absolute;left:0;top:0;overflow:hidden;white-space:nowrap;color:#fbbf24;}
+.ach-card{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px;cursor:pointer;transition:background .15s;}
+.ach-card:hover{background:rgba(255,255,255,.09);}
+.ach-info{flex:1;min-width:0;}
+.ach-title{font-size:12px;font-weight:600;color:#fff;}
+.ach-count{font-size:10px;color:#888;margin-top:1px;margin-bottom:6px;}
+.ach-bar-wrap{height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;}
+.ach-bar-fill{height:100%;background:linear-gradient(90deg,#facc15,#22c55e);border-radius:4px;}
+.ach-arrow{font-size:20px;color:#7eceff;flex-shrink:0;}
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:10px 4px;}
+.ach-badge{display:flex;flex-direction:column;align-items:center;cursor:pointer;text-align:center;padding:4px 2px;border-radius:10px;transition:background .15s;}
+.ach-badge:hover{background:rgba(255,255,255,.06);}
+.ach-badge-lbl{font-size:9px;font-weight:600;color:#ccc;margin-top:4px;max-width:70px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.25;}
+.ach-badge-tier{font-size:8px;color:#666;margin-top:1px;}
+.tier-caption{text-align:center;font-size:11px;color:#7eceff;font-weight:600;margin-bottom:8px;}
+.tier-bar{display:flex;gap:3px;margin-bottom:6px;}
+.tier-seg{flex:1;height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;}
+.tier-seg-fill{height:100%;background:#22c55e;border-radius:4px;}
+.tier-marks{display:flex;gap:3px;}
+.tier-mark{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.tier-mark-icon{font-size:11px;}
+.tier-mark-val{font-size:10px;color:#888;font-weight:600;}
+.tier-mark.reached .tier-mark-val{color:#fff;}
+.ach-back-btn{background:rgba(126,206,255,.1);border:1px solid rgba(126,206,255,.25);border-radius:20px;color:#7eceff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;padding:7px 14px;margin-bottom:8px;}
+
 /* MODAL */
 .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;z-index:500;padding:1rem;}
-.modal-box{background:#1e2d4a;border:1px solid rgba(126,206,255,.18);border-radius:20px;padding:1.5rem;max-width:340px;width:100%;max-height:88vh;overflow-y:auto;}
+.modal-box{position:relative;background:#1e2d4a;border:1px solid rgba(126,206,255,.18);border-radius:20px;padding:1.5rem;max-width:340px;width:100%;max-height:88vh;overflow-y:auto;}
+.goal-num-input::-webkit-inner-spin-button,.goal-num-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
+.goal-num-input{-moz-appearance:textfield;}
 .modal-box.wide{max-width:400px;}
 .m-img{width:130px;height:130px;image-rendering:pixelated;display:block;margin:0 auto 10px;}
 .m-emoji{font-size:46px;text-align:center;margin-bottom:10px;}
@@ -168,35 +241,54 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="hdr-res">
       <span id="save-status" style="font-size:11px;font-weight:700;visibility:hidden;display:inline-block;width:14px;text-align:center;flex-shrink:0"></span>
-      <div class="rpill" id="hdr-bookpoints" onclick="openSidePanel()" title="Книжкові бали — трать на лов">📘0</div>
       <div class="rpill" id="hdr-coins" title="Монети — трать у Магазині">🪙0</div>
-      <div class="rpill" id="hdr-books" title="Прочитано книг за весь час">📚0</div>
-      <div class="rpill rpill-menu" onclick="openSidePanel()">☰</div>
+      <div class="rpill rpill-menu" onclick="openSidePanel()" title="Книжкові бали — трать на лов. Тапни, щоб додати книгу">➕📙<span id="hdr-bookpoints">0</span></div>
     </div>
   </div>
   <div class="main-content">
-    <div class="sec-title"><span>Колекція</span><span id="dex-count" title="🐣 Спіймано видів · 🐉 Мега-еволюцій" style="font-weight:600;color:#ccc;font-size:15px;text-transform:none;letter-spacing:0"></span></div>
-    <div class="dex-grid" id="dex-grid"></div>
-    <div id="dex-complete"></div>
-    <div class="map-card"><div id="map-region-tabs"></div><svg id="map-svg" class="map-svg" viewBox="0 0 460 240" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="mapBg" cx="50%" cy="50%" r="70%">
-          <stop offset="0%" stop-color="#162032"/>
-          <stop offset="100%" stop-color="#070e1a"/>
-        </radialGradient>
-      </defs>
-      <rect id="map-bg" width="460" height="240" fill="url(#mapBg)" style="display:none"/>
-      <image id="map-png" href="map1.png" x="0" y="0" width="460" height="240" preserveAspectRatio="xMidYMid slice"/>
-      <g id="map-edges"></g><g id="map-nodes"></g><g id="map-markers"></g>
-    </svg></div>
-    <div class="act-card">
-      <div class="act-hdr">
-        <div class="act-hdr-emoji" id="act-emoji"></div>
-        <div class="act-hdr-info"><div class="act-hdr-name" id="act-name"></div><div class="act-hdr-desc" id="act-desc"></div></div>
-        <div class="act-hdr-badge" id="act-badge"></div>
+    <div class="tab-page" id="tab-map">
+      <div class="sec-title"><span>Колекція</span><span id="dex-count" title="🐣 Спіймано видів · 🐉 Мега-еволюцій" style="font-weight:600;color:#ccc;font-size:15px;text-transform:none;letter-spacing:0"></span></div>
+      <div class="dex-grid" id="dex-grid"></div>
+      <div id="dex-complete"></div>
+      <div class="map-card"><div id="map-region-tabs"></div><svg id="map-svg" class="map-svg" viewBox="0 0 460 240" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="mapBg" cx="50%" cy="50%" r="70%">
+            <stop offset="0%" stop-color="#162032"/>
+            <stop offset="100%" stop-color="#070e1a"/>
+          </radialGradient>
+        </defs>
+        <rect id="map-bg" width="460" height="240" fill="url(#mapBg)" style="display:none"/>
+        <image id="map-png" href="map1.png" x="0" y="0" width="460" height="240" preserveAspectRatio="xMidYMid slice"/>
+        <g id="map-edges"></g><g id="map-nodes"></g><g id="map-markers"></g>
+      </svg></div>
+      <div class="act-card">
+        <div class="act-hdr">
+          <div class="act-hdr-emoji" id="act-emoji"></div>
+          <div class="act-hdr-info"><div class="act-hdr-name" id="act-name"></div><div class="act-hdr-desc" id="act-desc"></div></div>
+          <div class="act-hdr-badge" id="act-badge"></div>
+        </div>
+        <div class="act-list" id="act-list"></div>
       </div>
-      <div class="act-list" id="act-list"></div>
     </div>
+    <div class="tab-page" id="tab-library" style="display:none">
+      <div id="library-fullscreen"></div>
+    </div>
+    <div class="tab-page" id="tab-stats" style="display:none">
+      <div class="sec-title"><span>Статистика</span></div>
+      <div class="stats-sub-hdr">Мета</div>
+      <div id="goal-widget"></div>
+      <div class="stats-divider"></div>
+      <div class="stats-sub-hdr">Загальна статистика</div>
+      <div id="general-stats-widget"></div>
+      <div class="stats-divider"></div>
+      <div class="stats-sub-hdr">Досягнення</div>
+      <div id="achievements-widget"></div>
+    </div>
+  </div>
+  <div class="bottom-tabs">
+    <button class="bottom-tab act" id="bt-map" onclick="setMainTab('map')"><span class="bt-icon">🗺️</span>Мапа</button>
+    <button class="bottom-tab" id="bt-library" onclick="setMainTab('library')"><span class="bt-icon">📚</span>Бібліотека</button>
+    <button class="bottom-tab" id="bt-stats" onclick="setMainTab('stats')"><span class="bt-icon">📊</span>Статистика</button>
   </div>
 </div>
 </div>
@@ -204,7 +296,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div id="side-ov" onclick="closeSidePanel()"></div>
 <div id="side-panel">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
-    <span style="font-size:14px;font-weight:700;color:#fff">Меню гравця</span>
+    <span style="font-size:14px;font-weight:700;color:#fff">Додати книгу</span>
     <button onclick="closeSidePanel()" style="background:none;border:none;cursor:pointer;font-size:18px;color:#7eceff">✕</button>
   </div>
   <div id="side-content" style="flex:1"></div>
@@ -221,6 +313,7 @@ const PLAYERS=[
   {id:'lionhard',  name:'Lionhard',  emoji:'🦁', color:'#f97316', border:'#f97316'},
   {id:'esperanza', name:'Esperanza', emoji:'🌸', color:'#f43f5e', border:'#f43f5e'},
   {id:'demetrius', name:'Demetrius', emoji:'⚡', color:'#3b82f6', border:'#3b82f6'},
+  {id:'test',      name:'Test',      emoji:'🧪', color:'#9ca3af', border:'#9ca3af'},
 ];
 
 // ═══════════ EVOLUTION CHAINS ═══════════
@@ -443,6 +536,8 @@ function initState(){
       coins:0, bookPoints:0, booksRead:0,
       location:'oak', region:'kanto', unlockedLocs:['oak'],
       progress:{}, progressOrder:[], books:[],
+      monthlyGoal:null, yearlyGoal:null,
+      totalBought:0, totalCoinsSpent:0,
     };
   });
 }
@@ -454,6 +549,548 @@ function _anyLoc(id){return LOCS[id]||LOCS_JOHTO[id];}
 function img(pid){return`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pid}.png`;}
 function ri(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
 function coinsForPages(p){return Math.floor(p/100)+1;}
+
+// ═══════════ READING GOALS ═══════════
+let _goalTab='month';
+function curMonthKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+function curYearKey(){return String(new Date().getFullYear());}
+function pluralUA(n,one,few,many){
+  const n10=n%10,n100=n%100;
+  if(n100>=11&&n100<=14)return many;
+  if(n10===1)return one;
+  if(n10>=2&&n10<=4)return few;
+  return many;
+}
+function bookWord(n){return pluralUA(n,'книга','книги','книг');}
+function bookPeriodKeys(book){
+  let dt;
+  if(book.ts){dt=new Date(book.ts);}
+  else{
+    const m=(book.date||'').match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+    if(!m)return{month:null,year:null};
+    dt=new Date(+m[3],+m[2]-1,+m[1]);
+  }
+  return{month:dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0'),year:String(dt.getFullYear())};
+}
+function booksInMonth(d,monthKey){return(d.books||[]).filter(b=>bookPeriodKeys(b).month===monthKey).length;}
+function booksInYear(d,yearKey){return(d.books||[]).filter(b=>bookPeriodKeys(b).year===yearKey).length;}
+function booksForPeriod(d,period){
+  const books=d.books||[];
+  if(period==='all')return books;
+  const key=period==='month'?curMonthKey():curYearKey();
+  return books.filter(b=>bookPeriodKeys(b)[period]===key);
+}
+function statsForPeriod(d,period){
+  const filtered=booksForPeriod(d,period);
+  return{books:filtered.length,pages:filtered.reduce((s,b)=>s+(b.pages||0),0)};
+}
+// Best-effort language guess from the book TITLE only (no full text available):
+// Cyrillic titles are split into Ukrainian/Russian via letters unique to each
+// alphabet (і/ї/є/ґ vs ы/э/ъ); Latin titles are matched against a few common
+// diacritic sets, defaulting to English when nothing distinctive is found.
+const LANG_META={
+  uk:{label:'Українська',color:'#60a5fa'},
+  ru:{label:'Оркська',color:'#4d7c3a'},
+  en:{label:'English',color:'#f87171'},
+  ro:{label:'Румунська',color:'#c084fc'},
+  pl:{label:'Польська',color:'#fb923c'},
+  de:{label:'Німецька',color:'#facc15'},
+  fr:{label:'Французька',color:'#22d3ee'},
+  es:{label:'Іспанська',color:'#a3e635'},
+};
+function detectBookLanguage(title){
+  title=title||'';
+  if(/[Ѐ-ӿ]/.test(title)){
+    if(/[іїєґІЇЄҐ]/.test(title))return'uk';
+    if(/[ыэъЫЭЪ]/.test(title))return'ru';
+    if(/(^|\s)[иИ](\s|$)/.test(title))return'ru'; // standalone "и" = Russian "and"
+    if(/(^|\s)[йЙ](\s|$)/.test(title))return'uk'; // standalone "й" = Ukrainian "and"
+    return'uk';
+  }
+  if(/[ăâîșțşţĂÂÎȘȚŞŢ]/.test(title))return'ro';
+  if(/[ąćęłńśżźĄĆĘŁŃŚŻŹ]/.test(title))return'pl';
+  if(/[äöüßÄÖÜ]/.test(title))return'de';
+  if(/[àâçéèêëîïôùûÿœÀÂÇÉÈÊË]/.test(title))return'fr';
+  if(/[áíñóúü¿¡ÁÍÑÓÚÜ]/.test(title))return'es';
+  return'en';
+}
+function langBreakdown(books){
+  const counts={};
+  books.forEach(b=>{const l=detectBookLanguage(b.title);counts[l]=(counts[l]||0)+1;});
+  return Object.entries(counts).filter(([,n])=>n>0).sort((a,b)=>b[1]-a[1])
+    .map(([lang,count])=>({lang,count,...LANG_META[lang]}));
+}
+function monthlyBreakdown(d,yearKey){
+  const arr=Array.from({length:12},()=>({books:0,pages:0,ratingSum:0,ratingCount:0}));
+  (d.books||[]).forEach(b=>{
+    const pk=bookPeriodKeys(b);
+    if(pk.year!==yearKey||!pk.month)return;
+    const idx=parseInt(pk.month.split('-')[1],10)-1;
+    arr[idx].books++;arr[idx].pages+=b.pages||0;
+    if(b.rating){arr[idx].ratingSum+=b.rating;arr[idx].ratingCount++;}
+  });
+  return arr.map(m=>({...m,rating:m.ratingCount?Math.round((m.ratingSum/m.ratingCount)*10)/10:0}));
+}
+function availableStatsYears(d){
+  const set=new Set((d.books||[]).map(b=>bookPeriodKeys(b).year).filter(Boolean));
+  set.add(curYearKey());
+  return Array.from(set).sort((a,b)=>b-a);
+}
+function monthlyGoalReward(target,achieved){return achieved>=target?target:0;}
+function yearlyGoalReward(target,achieved){
+  const pct=achieved/target;
+  if(pct>=1)return target;
+  if(pct>=0.75)return Math.floor(target*0.70);
+  if(pct>=0.50)return Math.floor(target*0.40);
+  return 0;
+}
+
+// Evaluates any past-due goal (month/year rolled over since it was set) and queues the
+// result popup + reward, then queues a "set a new goal" prompt if none is active yet
+// for the current period and the player hasn't dismissed it already this period.
+function checkGoalEvents(){
+  const d=pd();
+  const mKey=curMonthKey(),yKey=curYearKey();
+
+  if(d.monthlyGoal&&!d.monthlyGoal.resolved&&d.monthlyGoal.periodKey!==mKey){
+    const g=d.monthlyGoal;
+    const achieved=booksInMonth(d,g.periodKey);
+    const reward=monthlyGoalReward(g.target,achieved);
+    d.coins=(d.coins||0)+reward;
+    g.resolved=true;
+    d.currentGoalStreak=achieved>=g.target?(d.currentGoalStreak||0)+1:0;
+    d.bestGoalStreak=Math.max(d.bestGoalStreak||0,d.currentGoalStreak);
+    if(reward>0){
+      qM(()=>mHTML(`<div class="m-emoji">🎉</div><div class="m-title">Ціль на місяць виконано!</div><div class="m-desc">Ти поставив ціль <b>${g.target}</b> ${bookWord(g.target)} і прочитав <b>${achieved}</b> — отримуєш <b>+${reward}🪙</b>!</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Ура!</button></div>`));
+    } else {
+      qM(()=>mEmoji('📖','Ціль на місяць не досягнута',`Прогрес: ${achieved}/${g.target} ${bookWord(g.target)}.\nСпробуй ще наступного разу!`,[{l:'Ок',ok:true,cb:closeModal}]));
+    }
+    renderRes();saveToCloud(cur);
+  }
+
+  if(d.yearlyGoal&&!d.yearlyGoal.resolved&&d.yearlyGoal.periodKey!==yKey){
+    const g=d.yearlyGoal;
+    const achieved=booksInYear(d,g.periodKey);
+    const reward=yearlyGoalReward(g.target,achieved);
+    d.coins=(d.coins||0)+reward;
+    g.resolved=true;
+    if(achieved>=g.target){
+      qM(()=>mHTML(`<div class="m-emoji">🏆</div><div class="m-title">Річну ціль виконано!</div><div class="m-desc">Ти поставив ціль <b>${g.target}</b> ${bookWord(g.target)} на рік і прочитав <b>${achieved}</b> — отримуєш <b>+${reward}🪙</b>!</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Ура!</button></div>`));
+    } else if(reward>0){
+      qM(()=>mHTML(`<div class="m-emoji">🥈</div><div class="m-title">Майже вийшло!</div><div class="m-desc">Ціль була <b>${g.target}</b> ${bookWord(g.target)} на рік, прочитано <b>${achieved}</b>. За результат — <b>+${reward}🪙</b>!</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Дякую!</button></div>`));
+    } else {
+      qM(()=>mEmoji('📖','Річну ціль не досягнуто',`Прогрес: ${achieved}/${g.target} ${bookWord(g.target)}.\nСпробуй ще наступного разу!`,[{l:'Ок',ok:true,cb:closeModal}]));
+    }
+    renderRes();saveToCloud(cur);
+  }
+
+  // Only the monthly goal gets an auto-popup, and only up through the 20th —
+  // setting a target for the last ~10 days of the month is pointless. The yearly
+  // goal is never auto-prompted; it's set manually via the "Задати ціль" button
+  // in the stats widget instead.
+  if((!d.monthlyGoal||d.monthlyGoal.periodKey!==mKey)&&d.monthlyGoalDismissedFor!==mKey&&new Date().getDate()<=20){
+    qM(()=>showSetGoalModal('month'));
+  }
+}
+
+function showSetGoalModal(period){
+  const isMonth=period==='month';
+  const label=isMonth?'місяць':'рік';
+  mHTML(`<button onclick="dismissGoalPrompt('${period}')" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;font-size:18px;color:#7eceff;line-height:1;padding:4px">✕</button>
+    <div class="m-emoji">🎯</div>
+    <div class="m-title">Постав ціль на ${label}</div>
+    <div class="m-desc">Скільки книг плануєш прочитати? Виконаєш — отримаєш відповідну нагороду.</div>
+    <input type="number" id="goal-input" class="finput goal-num-input" min="1">
+    <button class="btn-ok" style="width:100%;padding:13px;font-size:14px;min-height:44px" onclick="setGoal('${period}')">Встановити</button>`);
+}
+function dismissGoalPrompt(period){
+  const d=pd();
+  if(period==='month')d.monthlyGoalDismissedFor=curMonthKey();
+  else d.yearlyGoalDismissedFor=curYearKey();
+  closeModal();saveToCloud(cur);
+}
+function setGoal(period){
+  const val=parseInt(document.getElementById('goal-input').value);
+  if(!val||val<1){showToast('Введи число більше 0');return;}
+  const d=pd();
+  if(period==='month'){d.monthlyGoal={target:val,periodKey:curMonthKey(),resolved:false};delete d.monthlyGoalDismissedFor;}
+  else{d.yearlyGoal={target:val,periodKey:curYearKey(),resolved:false};delete d.yearlyGoalDismissedFor;}
+  closeModal();renderActions();saveToCloud(cur);
+  showToast('Ціль встановлено!');
+}
+function setGoalTab(tab){_goalTab=tab;renderGoalWidget();}
+function openGoalHistory(){setMainTab('library');}
+
+// ═══════════ BOTTOM TABS (Мапа / Бібліотека / Статистика) ═══════════
+let _mainTab='map';
+function setMainTab(tab){
+  _mainTab=tab;
+  ['map','library','stats'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display=t===tab?'':'none';
+    document.getElementById('bt-'+t).classList.toggle('act',t===tab);
+  });
+  if(tab==='library')renderLibraryTab();
+  else if(tab==='stats'){renderGoalWidget();renderGeneralStatsWidget();renderAchievementsWidget();}
+}
+function renderLibraryTab(){
+  const el=document.getElementById('library-fullscreen');if(!el)return;
+  el.innerHTML=_buildLibraryHTML();
+}
+function renderGoalWidget(){
+  const el=document.getElementById('goal-widget');if(!el)return;
+  const d=pd();
+  const isMonth=_goalTab==='month';
+  const key=isMonth?curMonthKey():curYearKey();
+  const goal=isMonth?d.monthlyGoal:d.yearlyGoal;
+  const active=!!(goal&&goal.periodKey===key);
+  const target=active?goal.target:0;
+  const achieved=active?(isMonth?booksInMonth(d,key):booksInYear(d,key)):0;
+  const pct=active?Math.min(100,Math.round((achieved/target)*100)):0;
+  const centerLabel=active?`${achieved}/${target}`:'0';
+  const btnLabel=active?'Переглянути всі':'Задати ціль';
+  const btnOnclick=active?'openGoalHistory()':`showSetGoalModal('${isMonth?'month':'year'}')`;
+
+  const r=68,cx=100,cy=76,sw=13;
+  const arcLen=Math.PI*r;
+  const dashOffset=arcLen*(1-pct/100);
+  const arcD=`M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}`;
+
+  const tabs=`<div class="goal-tabs">
+    <button class="goal-tab ${isMonth?'act':''}" onclick="setGoalTab('month')">На місяць</button>
+    <button class="goal-tab ${!isMonth?'act':''}" onclick="setGoalTab('year')">На рік</button>
+  </div>`;
+
+  const gauge=`<div class="goal-gauge-wrap">
+    <svg viewBox="0 0 200 96" class="goal-gauge-svg">
+      <defs><linearGradient id="goalGaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#facc15"/><stop offset="100%" stop-color="#22c55e"/>
+      </linearGradient></defs>
+      <path d="${arcD}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="${sw}" stroke-linecap="round"/>
+      <path d="${arcD}" fill="none" stroke="url(#goalGaugeGrad)" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${arcLen}" stroke-dashoffset="${dashOffset}"/>
+    </svg>
+    <div class="goal-gauge-center">
+      <div class="goal-gauge-label">КНИГИ</div>
+      <div class="goal-gauge-value">${centerLabel}</div>
+    </div>
+  </div>
+  <button class="goal-action-btn" onclick="${btnOnclick}">${btnLabel}</button>`;
+
+  el.innerHTML=`<div class="goal-widget-inner">${tabs}${gauge}</div>`;
+}
+
+// ═══════════ GENERAL STATS WIDGET ═══════════
+let _statsPeriod='month',_chartYear=null,_chartMetric='books';
+function setStatsPeriod(p){_statsPeriod=p;renderGeneralStatsWidget();}
+function setChartYear(y){_chartYear=y;renderGeneralStatsWidget();}
+function setChartMetric(m){_chartMetric=m;renderGeneralStatsWidget();}
+function renderLangDonutHTML(books){
+  const breakdown=langBreakdown(books);
+  const total=books.length;
+  if(!total){
+    return`<div class="stats-chart-card">
+      <div class="stats-chart-title">Топ за мовами</div>
+      <div style="text-align:center;color:#666;font-size:12px;padding:20px 0">Немає книг за цей період</div>
+    </div>`;
+  }
+  const r=45,cx=60,cy=60,sw=22,circ=2*Math.PI*r,gapLen=breakdown.length>1?4:0;
+  let acc=0;
+  const arcs=breakdown.map(({count,color})=>{
+    const len=circ*(count/total);
+    const visLen=Math.max(0,len-gapLen);
+    const offset=-acc;
+    acc+=len;
+    return`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="${sw}"
+      stroke-dasharray="${visLen} ${circ-visLen}" stroke-dashoffset="${offset}" transform="rotate(-90 ${cx} ${cy})"/>`;
+  }).join('');
+  const legend=breakdown.map(({label,color,count})=>
+    `<div class="lang-legend-row"><span class="lang-dot" style="background:${color}"></span><span class="lang-legend-lbl">${label}</span><span class="lang-legend-val">${count}</span></div>`
+  ).join('');
+  return`<div class="stats-chart-card">
+    <div class="stats-chart-title">Топ за мовами</div>
+    <div class="lang-donut-row">
+      <svg viewBox="0 0 120 120" class="lang-donut-svg">${arcs}
+        <text x="60" y="60" text-anchor="middle" dominant-baseline="central" font-size="26" font-weight="800" fill="#fff">${total}</text>
+      </svg>
+      <div class="lang-legend">${legend}</div>
+    </div>
+  </div>`;
+}
+const LOC_COLORS={oak:'#4ade80',pallet:'#38bdf8',forest:'#facc15',glade:'#a78bfa',butterfly:'#f472b6',caves:'#94a3b8',shore:'#fb923c'};
+function renderLocationProgressHTML(d){
+  const locs=ALL_KANTO_LOCS.filter(locId=>chainsForLoc(locId).length>0);
+  const r=45,cx=60,cy=60,sw=22,circ=2*Math.PI*r;
+  const segLen=circ/locs.length,gapLen=4;
+  let caughtAll=0,totalAll=0;
+  const arcs=locs.map((locId,i)=>{
+    const total=chainsForLoc(locId).length;
+    const unlocked=(d.unlockedLocs||[]).includes(locId);
+    const caught=unlocked?caughtCountIn(d,[locId]):0;
+    totalAll+=total;caughtAll+=caught;
+    const frac=unlocked&&total?caught/total:0;
+    const fillLen=Math.max(0,segLen*frac-gapLen);
+    const offset=-(i*segLen);
+    return`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${LOC_COLORS[locId]}" stroke-width="${sw}"
+      stroke-dasharray="${fillLen} ${circ-fillLen}" stroke-dashoffset="${offset}" transform="rotate(-90 ${cx} ${cy})"/>`;
+  }).join('');
+  const legend=locs.map(locId=>{
+    const loc=LOCS[locId];
+    const total=chainsForLoc(locId).length;
+    const unlocked=(d.unlockedLocs||[]).includes(locId);
+    const caught=unlocked?caughtCountIn(d,[locId]):0;
+    return`<div class="lang-legend-row">
+      <span class="lang-dot" style="background:${unlocked?LOC_COLORS[locId]:'#444'}"></span>
+      <span class="lang-legend-lbl">${loc.name}${unlocked?'':' 🔒'}</span>
+      <span class="lang-legend-val">${unlocked?caught+'/'+total:'—'}</span>
+    </div>`;
+  }).join('');
+  return`<div class="stats-chart-card">
+    <div class="stats-chart-title">Прогрес по локаціях</div>
+    <div class="lang-donut-row">
+      <svg viewBox="0 0 120 120" class="lang-donut-svg">
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="${sw}"/>
+        ${arcs}
+        <text x="60" y="60" text-anchor="middle" dominant-baseline="central" font-size="20" font-weight="800" fill="#fff">${caughtAll}/${totalAll}</text>
+      </svg>
+      <div class="lang-legend">${legend}</div>
+    </div>
+  </div>`;
+}
+function renderGeneralStatsWidget(){
+  const el=document.getElementById('general-stats-widget');if(!el)return;
+  const d=pd();
+  if(!_chartYear)_chartYear=curYearKey();
+  const periodLabels={month:'Місяць',year:'Рік',all:'Весь час'};
+  const stat=statsForPeriod(d,_statsPeriod);
+  const periodTabs=`<div class="goal-tabs">${['month','year','all'].map(p=>
+    `<button class="goal-tab ${p===_statsPeriod?'act':''}" onclick="setStatsPeriod('${p}')">${periodLabels[p]}</button>`).join('')}</div>`;
+  const tiles=`<div class="stat-tiles">
+    <div class="stat-tile"><div class="stat-tile-val">${stat.books}</div><div class="stat-tile-lbl">${bookWord(stat.books)}</div></div>
+    <div class="stat-tile"><div class="stat-tile-val">${stat.pages}</div><div class="stat-tile-lbl">сторінок</div></div>
+  </div>`;
+
+  const years=availableStatsYears(d);
+  const breakdown=monthlyBreakdown(d,_chartYear);
+  const maxVal=_chartMetric==='rating'?5:Math.max(1,...breakdown.map(m=>m[_chartMetric]));
+  const monthLbls=['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'];
+  const barW=18,gap=6,chartH=80;
+  const bars=breakdown.map((m,i)=>{
+    const v=m[_chartMetric];
+    const h=v>0?Math.max(3,Math.round((v/maxVal)*chartH)):0;
+    const x=i*(barW+gap);
+    return`<g style="cursor:pointer" onclick="showChartTip(event,${v})">
+      <rect x="${x}" y="0" width="${barW}" height="${chartH}" fill="transparent"/>
+      <rect class="bar-fill" x="${x}" y="${chartH-h}" width="${barW}" height="${h}" rx="4" fill="url(#statBarGrad)"/>
+      <text x="${x+barW/2}" y="${chartH+11}" font-size="7" fill="#888" text-anchor="middle">${monthLbls[i]}</text>
+    </g>`;
+  }).join('');
+  const chartWidth=12*(barW+gap)-gap;
+
+  const chart=`<div class="stats-chart-card">
+    <div class="stats-chart-hdr">
+      <select class="stats-year-sel" onchange="setChartYear(this.value)">
+        ${years.map(y=>`<option value="${y}" ${y===_chartYear?'selected':''}>${y}</option>`).join('')}
+      </select>
+      <div class="stats-metric-tabs">
+        <button class="stats-metric-tab ${_chartMetric==='books'?'act':''}" onclick="setChartMetric('books')">Книги</button>
+        <button class="stats-metric-tab ${_chartMetric==='pages'?'act':''}" onclick="setChartMetric('pages')">Сторінок</button>
+        <button class="stats-metric-tab ${_chartMetric==='rating'?'act':''}" onclick="setChartMetric('rating')">Рейтинг</button>
+      </div>
+    </div>
+    <div class="stats-chart-tooltip" style="display:none"></div>
+    <svg viewBox="0 0 ${chartWidth} ${chartH+18}" class="stats-chart-svg">
+      <defs><linearGradient id="statBarGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#7eceff"/><stop offset="100%" stop-color="#3d7ab8"/>
+      </linearGradient></defs>
+      ${bars}
+    </svg>
+  </div>`;
+
+  const langDonut=renderLangDonutHTML(booksForPeriod(d,_statsPeriod));
+  const locProgress=renderLocationProgressHTML(d);
+
+  el.innerHTML=`${periodTabs}${tiles}${chart}${langDonut}${locProgress}`;
+}
+function showChartTip(evt,value){
+  const g=evt.currentTarget;
+  const fill=g.querySelector('.bar-fill');
+  const card=g.closest('.stats-chart-card');
+  const tip=card.querySelector('.stats-chart-tooltip');
+  const fr=fill.getBoundingClientRect(),cr=card.getBoundingClientRect();
+  tip.textContent=value;
+  tip.style.left=(fr.left+fr.width/2-cr.left)+'px';
+  tip.style.top=(fr.top-cr.top)+'px';
+  tip.style.display='block';
+  clearTimeout(window._chartTipTimer);
+  window._chartTipTimer=setTimeout(()=>{tip.style.display='none';},1500);
+}
+
+// ═══════════ ACHIEVEMENTS ═══════════
+function timesWord(n){return pluralUA(n,'раз','рази','разів');}
+function purchaseWord(n){return pluralUA(n,'покупка','покупки','покупок');}
+function pokeWord(n){return pluralUA(n,'покемона','покемони','покемонів');}
+function locWord(n){return pluralUA(n,'локація','локації','локацій');}
+function maxByAuthor(d){
+  const counts={};
+  (d.books||[]).forEach(b=>{
+    const a=(b.author||'').trim().toLowerCase();
+    if(!a)return;
+    counts[a]=(counts[a]||0)+1;
+  });
+  const vals=Object.values(counts);
+  return vals.length?Math.max(...vals):0;
+}
+function lastCaughtSprite(d,filterFn){
+  const order=[...(d.progressOrder||[])].reverse();
+  for(const id of order){
+    const ch=CHAINS.find(c=>c.id===id);const idx=d.progress[id];
+    if(!ch||idx===undefined)continue;
+    if(!filterFn||filterFn(ch,idx))return img(ch.stages[idx].pid);
+  }
+  return null;
+}
+const ACHIEVEMENTS=[
+  {key:'books',title:'Книгоман',emoji:'📚',unit:'книг',tiers:[10,50,100,200,300,500],
+    valueFn:d=>(d.books||[]).length,
+    desc:t=>`Прочитати ${t} ${bookWord(t)}`},
+  {key:'pages',title:'Сторінкоїд',emoji:'📖',unit:'сторінок',tiers:[500,5000,10000,50000,100000,150000],
+    valueFn:d=>(d.books||[]).reduce((s,b)=>s+(b.pages||0),0),
+    desc:t=>`Прочитати ${t} сторінок`},
+  {key:'monthBooks',title:'Місячний ривок',emoji:'🗓️',unit:'книг цього місяця',resets:true,tiers:[3,5,10],
+    valueFn:d=>booksInMonth(d,curMonthKey()),
+    desc:t=>`Прочитати ${t} ${bookWord(t)} за один місяць`},
+  {key:'longestBook',title:'Товстенна книга',emoji:'📔',unit:'стор. в 1 книзі',tiers:[500,900,1200],
+    valueFn:d=>(d.books||[]).reduce((m,b)=>Math.max(m,b.pages||0),0),
+    desc:t=>`Прочитати книгу на ${t}+ сторінок`},
+  {key:'author',title:'Фанат автора',emoji:'✍️',unit:'книг одного автора',tiers:[3,5,10,20],
+    valueFn:maxByAuthor,
+    desc:t=>`Прочитати ${t} ${bookWord(t)} одного автора`},
+  {key:'species',title:'Колекціонер видів',emoji:'🐣',unit:'видів',tiers:[10,25,50,100],
+    valueFn:d=>Object.keys(d.progress||{}).length,
+    iconFn:d=>lastCaughtSprite(d),
+    desc:t=>`Спіймати ${t} різних видів покемонів`},
+  {key:'bought',title:'Покупець',emoji:'🛒',unit:'покупок',tiers:[3,10,25,50],
+    valueFn:d=>d.totalBought||0,
+    desc:t=>`Зробити ${t} ${purchaseWord(t)} у магазині`},
+  {key:'mega',title:'Мега-майстер',emoji:'🐉',unit:'мег',tiers:[1,5,10,15],
+    valueFn:d=>megasCaughtIn(d,ALL_KANTO_LOCS),
+    iconFn:d=>lastCaughtSprite(d,(ch,idx)=>ch.stages[idx].mega),
+    desc:t=>`Виростити ${t} ${pokeWord(t)} до Мега-еволюції`},
+  {key:'coinsSpent',title:'Транжира',emoji:'🪙',unit:'монет витрачено',tiers:[25,75,150,300,600,1000],
+    valueFn:d=>d.totalCoinsSpent||0,
+    desc:t=>`Витратити ${t} монет у магазині`},
+  {key:'locations',title:'Дослідник',emoji:'🗺️',unit:'локацій',tiers:[3,5,7],
+    valueFn:d=>(d.unlockedLocs||[]).length,
+    desc:t=>`Відкрити ${t} ${locWord(t)}`},
+  {key:'polyglot',title:'Поліглот',emoji:'🌐',unit:'мов серед прочитаного',tiers:[2,3],
+    valueFn:d=>langBreakdown(d.books||[]).length,
+    desc:t=>`Прочитати книги ${t} різними мовами`},
+  {key:'fiveStars',title:'Найвища оцінка',emoji:'⭐',unit:'книг з оцінкою 5',tiers:[5,10,20],
+    valueFn:d=>(d.books||[]).filter(b=>b.rating===5).length,
+    desc:t=>`Оцінити ${t} ${bookWord(t)} на 5 зірок`},
+  {key:'streak',title:'Серія без пропусків',emoji:'🔥',unit:'місяців поспіль',tiers:[2,3,6,12],
+    valueFn:d=>d.bestGoalStreak||0,
+    desc:t=>`Виконати місячну ціль ${t} ${pluralUA(t,'місяць','місяці','місяців')} поспіль`},
+];
+function achievementTierInfo(a,d){
+  const val=a.valueFn(d);
+  let unlockedCount=0;
+  for(const t of a.tiers){if(val>=t)unlockedCount++;else break;}
+  const nextTier=a.tiers[unlockedCount];
+  const pct=nextTier?Math.min(100,Math.round((val/nextTier)*100)):100;
+  return{val,unlockedCount,totalTiers:a.tiers.length,nextTier,pct};
+}
+function achievementsTotals(d){
+  let unlocked=0,total=0;
+  ACHIEVEMENTS.forEach(a=>{const info=achievementTierInfo(a,d);unlocked+=info.unlockedCount;total+=info.totalTiers;});
+  return{unlocked,total};
+}
+function renderAchievementsWidget(){
+  const el=document.getElementById('achievements-widget');if(!el)return;
+  const d=pd();
+  const{unlocked,total}=achievementsTotals(d);
+  const pct=total?Math.round((unlocked/total)*100):0;
+  el.innerHTML=`<div class="ach-card" onclick="openAchievementsModal()">
+    <div class="ach-info">
+      <div class="ach-title">Твої нагороди</div>
+      <div class="ach-count">${unlocked} з ${total} нагород відкрито</div>
+      <div class="ach-bar-wrap"><div class="ach-bar-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="ach-arrow">›</div>
+  </div>`;
+}
+function _lerpColor(hex1,hex2,t){
+  const c1=parseInt(hex1.slice(1),16),c2=parseInt(hex2.slice(1),16);
+  const r1=(c1>>16)&255,g1=(c1>>8)&255,b1=c1&255;
+  const r2=(c2>>16)&255,g2=(c2>>8)&255,b2=c2&255;
+  const r=Math.round(r1+(r2-r1)*t),g=Math.round(g1+(g2-g1)*t),b=Math.round(b1+(b2-b1)*t);
+  return`#${((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1)}`;
+}
+function achBadgeHTML(a,d){
+  const info=achievementTierInfo(a,d);
+  const maxed=info.unlockedCount>=info.totalTiers;
+  const locked=info.unlockedCount===0;
+  const pct=maxed?100:info.pct;
+  const r=27,circ=2*Math.PI*r;
+  const dash=circ*(pct/100);
+  const stroke=maxed?'#22c55e':_lerpColor('#facc15','#22c55e',pct/100);
+  const sprite=!locked&&a.iconFn?a.iconFn(d):null;
+  const iconSvg=sprite
+    ?`<image href="${sprite}" x="12" y="12" width="46" height="46" style="image-rendering:pixelated"/>`
+    :`<text x="35" y="36" font-size="24" text-anchor="middle" dominant-baseline="central">${locked?'🔒':a.emoji}</text>`;
+  return`<div class="ach-badge" onclick="openAchievementDetail('${a.key}')">
+    <svg viewBox="0 0 70 70" width="64" height="64">
+      <circle cx="35" cy="35" r="${r}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="6"/>
+      <circle cx="35" cy="35" r="${r}" fill="none" stroke="${stroke}" stroke-width="6" stroke-linecap="round"
+        stroke-dasharray="${circ}" stroke-dashoffset="${circ-dash}" transform="rotate(-90 35 35)"/>
+      ${iconSvg}
+    </svg>
+    <div class="ach-badge-lbl">${a.title}</div>
+    <div class="ach-badge-tier">${info.unlockedCount}/${info.totalTiers}</div>
+  </div>`;
+}
+function renderAchievementsGridHTML(d){
+  const{unlocked,total}=achievementsTotals(d);
+  const badges=ACHIEVEMENTS.map(a=>achBadgeHTML(a,d)).join('');
+  return`<button onclick="closeModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;font-size:18px;color:#7eceff;line-height:1;padding:4px">✕</button>
+    <div class="m-title" style="margin-bottom:2px">🏆 Досягнення</div>
+    <div style="font-size:12px;color:#888;margin-bottom:14px">${unlocked} з ${total} нагород відкрито</div>
+    <div class="ach-grid">${badges}</div>`;
+}
+function achievementDetailHTML(a,d){
+  const info=achievementTierInfo(a,d);
+  const locked=info.unlockedCount===0;
+  const sprite=!locked&&a.iconFn?a.iconFn(d):null;
+  const iconHtml=sprite
+    ?`<img src="${sprite}" style="width:64px;height:64px;image-rendering:pixelated;display:block;margin:8px auto" onerror="this.style.display='none'">`
+    :`<div class="m-emoji" style="margin-top:8px">${locked?'🔒':a.emoji}</div>`;
+  const segs=a.tiers.map((t,i)=>{
+    const prev=i===0?0:a.tiers[i-1];
+    const range=t-prev;
+    const segPct=range>0?Math.max(0,Math.min(100,((info.val-prev)/range)*100)):100;
+    return{target:t,pct:segPct,reached:info.val>=t};
+  });
+  const barHtml=segs.map(s=>`<div class="tier-seg"><div class="tier-seg-fill" style="width:${s.pct}%"></div></div>`).join('');
+  const marksHtml=segs.map(s=>`<div class="tier-mark ${s.reached?'reached':''}"><span class="tier-mark-icon">${s.reached?'✅':'🔒'}</span><span class="tier-mark-val">${s.target}</span></div>`).join('');
+  const captionText=info.nextTier?`${Math.min(info.val,info.nextTier)}/${info.nextTier} до наступного рівня`:'Усі рівні відкрито!';
+  return`<button onclick="openAchievementsModal()" class="ach-back-btn">← Усі нагороди</button>
+    ${iconHtml}
+    <div class="m-title">${a.title}</div>
+    <div class="m-desc" style="margin-bottom:4px">${a.resets?'Скидається щомісяця. ':''}Поточний показник: <b>${info.val}</b> ${a.unit}</div>
+    <div class="tier-caption">${captionText}</div>
+    <div class="tier-bar">${barHtml}</div>
+    <div class="tier-marks">${marksHtml}</div>`;
+}
+function openAchievementsModal(){
+  const d=pd();
+  const box=document.querySelector('#mOv .modal-box');
+  if(box){box.innerHTML=renderAchievementsGridHTML(d);return;}
+  mHTML(renderAchievementsGridHTML(d),true);
+}
+function openAchievementDetail(key){
+  const d=pd();const a=ACHIEVEMENTS.find(x=>x.key===key);if(!a)return;
+  const box=document.querySelector('#mOv .modal-box');
+  if(box)box.innerHTML=achievementDetailHTML(a,d);
+}
 
 // ═══════════ MODAL QUEUE ═══════════
 function qM(fn){mQueue.push(fn);if(!mOpen)nextM();}
@@ -516,6 +1153,8 @@ async function showSelect(){
 function openPlayer(id){
   initState();
   cur=id;checkUnlocks();renderMain();show('screen-main');
+  setMainTab('map');
+  checkGoalEvents();
 }
 
 // ═══════════ MAIN ═══════════
@@ -533,9 +1172,8 @@ function renderMain(){
 
 function renderRes(){
   const d=pd();
-  document.getElementById('hdr-bookpoints').textContent='📘'+d.bookPoints;
+  document.getElementById('hdr-bookpoints').textContent=' '+d.bookPoints;
   document.getElementById('hdr-coins').textContent='🪙'+d.coins;
-  document.getElementById('hdr-books').textContent='📚'+(d.booksRead||0);
 }
 
 // ═══════════ DEX (COLLECTION) ═══════════
@@ -645,7 +1283,7 @@ function renderMap(){
     let mh='';
     Object.entries(byLoc).forEach(([lid,list])=>{
       const loc=LOCS_JOHTO[lid];if(!loc)return;
-      const nr=22;const offs=list.length===1?[0]:list.length===2?[-8,8]:[-10,0,10];
+      const nr=22;const offs=list.map((_,i)=>(i-(list.length-1)/2)*16);
       list.forEach((p,i)=>{mh+=`<circle cx="${loc.cx+offs[i]}" cy="${loc.cy-nr-9}" r="5" fill="${pClr(p,state.players[p.id])}" stroke="#fff" stroke-width="1.5"/>`;});
     });
     document.getElementById('map-markers').innerHTML=mh;
@@ -687,7 +1325,7 @@ function renderMap(){
   let mh='';
   Object.entries(byLoc).forEach(([lid,list])=>{
     const loc=LOCS[lid];if(!loc)return;
-    const offs=list.length===1?[0]:list.length===2?[-8,8]:[-10,0,10];
+    const offs=list.map((_,i)=>(i-(list.length-1)/2)*16);
     list.forEach((p,i)=>{mh+=`<circle cx="${loc.cx+offs[i]}" cy="${loc.cy-r-7}" r="6" fill="${pClr(p,state.players[p.id])}" stroke="#fff" stroke-width="2"/>`;});
   });
   document.getElementById('map-markers').innerHTML=mh;
@@ -743,16 +1381,17 @@ function renderActions(){
     if(!pool.length){
       html=`<button class="catch-btn done">✓ Усі покемони тут спіймані!</button>`;
     } else {
-      html=`<button class="catch-btn" onclick="doCatch()">Ловити покемона <span class="catch-cost">1📘</span></button>`;
+      html=`<button class="catch-btn" onclick="doCatch()">Ловити покемона <span class="catch-cost">1📙</span></button>`;
     }
   }
   document.getElementById('act-list').innerHTML=html;
+  renderGoalWidget();
 }
 
 function doCatch(){
   const d=pd();
   if(d.bookPoints<1){
-    qM(()=>mEmoji('📘','Мало книжкових балів','Прочитай книгу, щоб отримати 📘 і зловити покемона!',
+    qM(()=>mEmoji('📙','Мало книжкових балів','Прочитай книгу, щоб отримати 📙 і зловити покемона!',
       [{l:'Додати книгу',ok:true,cb:()=>{closeModal();openSidePanel();}},{l:'Ок',cb:closeModal}]));
     return;
   }
@@ -777,7 +1416,7 @@ function chainKeyLoc(chainId){
   return Object.values(LOCS).find(loc=>!d.unlockedLocs.includes(loc.id)&&loc.unlockReq&&loc.unlockReq.type==='keyChain'&&loc.unlockReq.chainId===chainId);
 }
 
-function openShop(){
+function _buildShopHTML(){
   const d=pd();
   const rows=[];
   d.unlockedLocs.forEach(locId=>{
@@ -807,25 +1446,52 @@ function openShop(){
       <button class="sh-btn" onclick="buyChainStage('${r.chain.id}',${r.idx})" ${d.coins<r.price?'disabled':''}>Купити</button></div>
     </div>`;
   }).join('');
-  mHTML(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+  return`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
     <div class="m-title" style="margin:0">🛒 Магазин</div>
     <div style="font-size:14px;font-weight:700;color:#fbbf24">🪙${d.coins}</div>
   </div><div style="max-height:340px;overflow-y:auto;padding-right:10px;margin-right:-10px">${html||'<div style="font-size:12px;color:#555;text-align:center;padding:1rem">Немає нічого на продаж — спочатку відкрий локації!</div>'}</div>
-  <button class="btn-cancel" style="width:100%;margin-top:12px;padding:13px;font-size:14px;min-height:44px" onclick="closeModal()">Закрити</button>`,true);
+  <button class="btn-cancel" style="width:100%;margin-top:12px;padding:13px;font-size:14px;min-height:44px" onclick="closeModal()">Закрити</button>`;
+}
+function openShop(){
+  const box=document.querySelector('#mOv .modal-box');
+  if(box){box.innerHTML=_buildShopHTML();return;}
+  mHTML(_buildShopHTML(),true);
 }
 
+let _shopFlowQueue=[];
 function buyChainStage(chainId,idx){
   const d=pd();const chain=CHAINS.find(c=>c.id===chainId);if(!chain)return;
   const price=stagePrice(chain,idx);
   if(d.coins<price)return;
   d.coins-=price;d.progress[chainId]=idx;
+  d.totalBought=(d.totalBought||0)+1;
+  d.totalCoinsSpent=(d.totalCoinsSpent||0)+price;
   touchProgressOrder(d,chainId);
-  closeModal();renderRes();renderDex();renderActions();renderMap();
+  renderRes();renderDex();renderActions();renderMap();
   const opened=checkUnlocks();
   if(opened.length)renderMap();
   saveToCloud(cur);
-  qM(()=>mImg(img(chain.stages[idx].pid),'Куплено!',chain.stages[idx].name+' тепер у твоїй колекції.',[{l:'Чудово!',ok:true,cb:closeModal}]));
-  opened.forEach(u=>qM(()=>mEmoji('🎉','Відкрито!',`${u.emoji} ${u.name} тепер доступна!`,[{l:'Чудово!',ok:true,cb:closeModal}])));
+  // Stay inside the same modal box throughout — swap content in place (bought ->
+  // any unlock notices -> back to the shop) instead of closing it, so the player
+  // lands back in the shop afterward rather than getting bounced out entirely.
+  _shopFlowQueue=[
+    {type:'bought',pid:chain.stages[idx].pid,name:chain.stages[idx].name},
+    ...opened.map(u=>({type:'unlocked',emoji:u.emoji,name:u.name})),
+  ];
+  _shopFlowNext();
+}
+function _shopFlowNext(){
+  const box=document.querySelector('#mOv .modal-box');if(!box)return;
+  if(_shopFlowQueue.length){
+    const item=_shopFlowQueue.shift();
+    if(item.type==='bought'){
+      box.innerHTML=`<img class="m-img" src="${img(item.pid)}" onerror="this.style.display='none'"><div class="m-title">Куплено!</div><div class="m-desc" style="text-align:center">${item.name} тепер у твоїй колекції.</div><div class="m-btns"><button class="btn-ok" onclick="_shopFlowNext()">Чудово!</button></div>`;
+    } else {
+      box.innerHTML=`<div class="m-emoji">🎉</div><div class="m-title">Відкрито!</div><div class="m-desc" style="text-align:center">${item.emoji} ${item.name} тепер доступна!</div><div class="m-btns"><button class="btn-ok" onclick="_shopFlowNext()">Чудово!</button></div>`;
+    }
+  } else {
+    openShop();
+  }
 }
 
 function enterJohto(){
@@ -893,35 +1559,39 @@ function saveProfileSettings(){
   showToast('Профіль оновлено!');
 }
 
+// ═══════════ STAR RATING (shared, supports half-stars) ═══════════
+function starRatingHTML(rating,editable,onClickFnName){
+  rating=rating||0;
+  let stars='';
+  for(let i=1;i<=5;i++){
+    const fillPct=Math.max(0,Math.min(100,(rating-(i-1))*100));
+    stars+=`<span class="star-slot" ${editable?`onclick="${onClickFnName}(event,${i})"`:''}>
+      <span class="star-bg">★</span><span class="star-fg" style="width:${fillPct}%">★</span>
+    </span>`;
+  }
+  return`<div class="star-rating ${editable?'editable':''}">${stars}</div>`;
+}
+function _starClickIsHalf(event){
+  const rect=event.currentTarget.getBoundingClientRect();
+  return(event.clientX-rect.left)<rect.width/2;
+}
+
 // ═══════════ SIDE PANEL ═══════════
-let _sideTab='pages';
+let _addBookRating=0;
 function openSidePanel(){
-  _sideTab='pages';
-  _rebuildSideContent();
+  _addBookRating=0;
+  document.getElementById('side-content').innerHTML=_buildPagesHTML();
   document.getElementById('side-panel').classList.add('open');
   document.getElementById('side-ov').classList.add('open');
 }
-
-function setSideTab(tab){
-  _sideTab=tab;
-  _rebuildSideContent();
-}
-
-function _rebuildSideContent(){
-  const d=pd();
-  const bc=d.books?d.books.length:0;
-  document.getElementById('side-content').innerHTML=`
-    <div style="display:flex;margin-bottom:16px;border-bottom:1px solid rgba(255,255,255,.1)">
-      <button onclick="setSideTab('pages')" style="flex:1;padding:10px 0;font-size:12px;font-weight:700;cursor:pointer;background:none;border:none;border-bottom:2px solid ${_sideTab==='pages'?'#7eceff':'transparent'};color:${_sideTab==='pages'?'#7eceff':'#555'}">📘 Читання</button>
-      <button onclick="setSideTab('library')" style="flex:1;padding:10px 0;font-size:12px;font-weight:700;cursor:pointer;background:none;border:none;border-bottom:2px solid ${_sideTab==='library'?'#7eceff':'transparent'};color:${_sideTab==='library'?'#7eceff':'#555'}">📚 Бібліотека${bc?' ('+bc+')':''}</button>
-    </div>
-    <div id="side-tab-content">${_sideTab==='pages'?_buildPagesHTML():_buildLibraryHTML()}</div>`;
+function onAddStarClick(event,i){
+  _addBookRating=i-(_starClickIsHalf(event)?0.5:0);
+  document.getElementById('add-book-stars').innerHTML=starRatingHTML(_addBookRating,true,'onAddStarClick');
 }
 
 function _buildPagesHTML(){
   return`<div style="margin-bottom:1rem">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#7eceff;margin-bottom:10px;font-weight:600">📘 Прочитав книгу — можеш ловити!</div>
-      <div class="flbl">Посилання на Goodreads <span style="color:#555;font-weight:400">(необов'язково — автоматично заповнить поля нижче)</span></div>
+      <div class="flbl">Посилання на Goodreads <span style="color:#9cc9f0;font-weight:400;text-transform:none;letter-spacing:normal">(необов'язково — автоматично заповнить поля нижче)</span></div>
       <div style="display:flex;gap:6px;margin-bottom:10px">
         <input type="url" id="sp-goodreads" class="finput" placeholder="https://www.goodreads.com/book/show/…" style="font-size:11px;margin-bottom:0;flex:1">
         <button id="sp-parse-btn" onclick="parseGoodreadsLink()" style="flex-shrink:0;padding:0 14px;font-size:12px;font-weight:600;background:rgba(126,206,255,.15);border:1px solid rgba(126,206,255,.3);border-radius:10px;color:#7eceff;cursor:pointer">Розпізнати</button>
@@ -931,10 +1601,12 @@ function _buildPagesHTML(){
       <div class="flbl">Автор</div>
       <input type="text" id="sp-author" class="finput" placeholder="Дж. К. Роулінґ">
       <div class="flbl">Кількість сторінок</div>
-      <input type="number" id="sp-pages" class="finput" placeholder="напр. 300" min="1" oninput="updSP()">
-      <div class="flbl" style="opacity:.6">Посилання на обкладинку <span style="color:#555;font-weight:400">(необов'язково)</span></div>
+      <input type="number" id="sp-pages" class="finput" min="1" oninput="updSP()">
+      <div class="flbl" style="opacity:.6">Посилання на обкладинку</div>
       <input type="url" id="sp-cover" class="finput" placeholder="https://…" style="font-size:11px">
       <div id="sp-prev" style="display:none;margin-bottom:10px"></div>
+      <div class="flbl">Оцінка</div>
+      <div id="add-book-stars" style="margin-bottom:14px">${starRatingHTML(_addBookRating,true,'onAddStarClick')}</div>
       <button class="btn-ok" id="sp-submit" onclick="submitPages()" style="width:100%;padding:14px;font-size:14px;min-height:48px">Зарахувати книгу</button>
     </div>`;
 }
@@ -1047,28 +1719,37 @@ function _buildLibraryHTML(){
   return header+`<div class="shelf-wrap">${shelves}</div>`;
 }
 
+let _bdRating=0;
 function openBookDetail(i){
   const d=pd();const book=(d.books||[])[i];if(!book)return;
+  _bdRating=book.rating||0;
   const [top,bot]=_colorFor(book.title);
   const cw=_coverW(book.pages||1),h=_bookH(book.pages||1);
   const coverHtml=book.coverUrl
     ?`<img src="${book.coverUrl}" style="width:${cw}px;height:${h}px;object-fit:cover;border-radius:4px;display:block;margin:0 auto 10px" onerror="this.style.display='none'">`
     :`<div style="width:${cw}px;height:${h}px;background:linear-gradient(150deg,${top} 0%,${bot} 100%);border-radius:4px;margin:0 auto 10px"></div>`;
-  mHTML(`${coverHtml}
+  mHTML(`<button onclick="closeModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;font-size:18px;color:#7eceff;line-height:1;padding:4px">✕</button>
+    ${coverHtml}
     <div class="m-title" style="font-size:15px">${book.title}</div>
-    <div style="text-align:center;font-size:12px;color:#aaa;margin-bottom:4px">${book.author||''}</div>
+    <div style="text-align:center;font-size:12px;color:#aaa;margin-bottom:8px">${book.author||''}</div>
+    <div id="bd-stars" style="display:flex;justify-content:center;margin-bottom:8px">${starRatingHTML(_bdRating,true,'onBdStarClick')}</div>
     <div style="text-align:center;font-size:11px;color:#778;margin-bottom:12px">${book.pages} стор. · ${book.date||''}</div>
     <div class="flbl" style="opacity:.6">URL обкладинки</div>
     <input type="url" id="bd-cover-url" class="finput" placeholder="https://…" value="${book.coverUrl||''}" style="font-size:11px">
-    <button class="btn-ok" style="width:100%;margin-bottom:8px;padding:12px;font-size:13px" onclick="saveBookCover(${i})">Зберегти обкладинку</button>
+    <button class="btn-ok" style="width:100%;margin-bottom:8px;padding:12px;font-size:13px" onclick="saveBookDetail(${i})">Зберегти</button>
     <button class="btn-cancel" style="width:100%;padding:12px;font-size:13px" onclick="confirmDeleteBook(${i})">🗑️ Видалити книгу</button>`);
 }
+function onBdStarClick(event,i){
+  _bdRating=i-(_starClickIsHalf(event)?0.5:0);
+  document.getElementById('bd-stars').innerHTML=starRatingHTML(_bdRating,true,'onBdStarClick');
+}
 
-function saveBookCover(i){
+function saveBookDetail(i){
   const d=pd();const book=(d.books||[])[i];if(!book)return;
   const url=(document.getElementById('bd-cover-url').value||'').trim();
   book.coverUrl=url||null;
-  saveToCloud(cur);closeModal();setSideTab('library');
+  if(_bdRating)book.rating=_bdRating;else delete book.rating;
+  saveToCloud(cur);closeModal();renderLibraryTab();renderAchievementsWidget();renderGeneralStatsWidget();
 }
 
 function confirmDeleteBook(i){
@@ -1076,7 +1757,7 @@ function confirmDeleteBook(i){
   closeModal(); // openBookDetail's modal is shown via mHTML (outside the qM queue) —
                 // must tear it down before queuing this one, or its leftover #mOv
                 // stays clickable underneath and a second tap double-fires the delete.
-  qM(()=>mEmoji('🗑️','Видалити книжку?',`"${book.title}"\n\nЗабере назад 1📘 і ${book.coinsEarned??coinsForPages(book.pages)}🪙, які вона дала (може піти в мінус, якщо вже витрачено).`,
+  qM(()=>mEmoji('🗑️','Видалити книжку?',`"${book.title}"\n\nЗабере назад 1📙 і ${book.coinsEarned??coinsForPages(book.pages)}🪙, які вона дала (може піти в мінус, якщо вже витрачено).`,
     [{l:'Видалити',cb:()=>{
       closeModal();
       const coinsToRemove=book.coinsEarned??coinsForPages(book.pages);
@@ -1084,7 +1765,7 @@ function confirmDeleteBook(i){
       d.coins=(d.coins||0)-coinsToRemove;
       d.booksRead=(d.booksRead||0)-1;
       d.books.splice(i,1);
-      renderRes();saveToCloud(cur);setSideTab('library');
+      renderRes();saveToCloud(cur);renderLibraryTab();
     }},
      {l:'Скасувати',ok:true,cb:closeModal}]));
 }
@@ -1117,7 +1798,7 @@ function updSP(){
   if(v&&v>0){
     const coins=coinsForPages(v);
     el.style.display='block';
-    el.innerHTML=`<div class="ppill">+1📘 &nbsp; +${coins}🪙</div>`;
+    el.innerHTML=`<div class="ppill">+1📙 &nbsp; +${coins}🪙</div>`;
   } else el.style.display='none';
 }
 
@@ -1135,11 +1816,12 @@ function submitPages(){
   d.booksRead=(d.booksRead||0)+1;
   d.coins=(d.coins||0)+coins;
   if(!d.books)d.books=[];
-  const book={title,author,pages,date:new Date().toLocaleDateString('uk-UA'),coverUrl:coverUrl||null,coinsEarned:coins};
+  const book={title,author,pages,date:new Date().toLocaleDateString('uk-UA'),ts:Date.now(),coverUrl:coverUrl||null,coinsEarned:coins};
+  if(_addBookRating)book.rating=_addBookRating;
   d.books.push(book);
-  renderRes();renderActions();closeSidePanel();saveToCloud(cur);
+  renderRes();renderActions();renderLibraryTab();renderAchievementsWidget();renderGeneralStatsWidget();closeSidePanel();saveToCloud(cur);
   const preview=_renderBookPreviewHTML(book);
-  qM(()=>mHTML(`${preview}<div class="m-title">Книга додана!</div><div class="m-desc" style="text-align:center">+1📘 &nbsp; +${coins}🪙</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Вперед!</button></div>`));
+  qM(()=>mHTML(`${preview}<div class="m-title">Книга додана!</div><div class="m-desc" style="text-align:center">+1📙 &nbsp; +${coins}🪙</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Вперед!</button></div>`));
 }
 
 function showToast(msg){
