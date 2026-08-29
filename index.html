@@ -154,6 +154,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tier-mark-val{font-size:10px;color:#888;font-weight:600;}
 .tier-mark.reached .tier-mark-val{color:#fff;}
 .ach-back-btn{background:rgba(126,206,255,.1);border:1px solid rgba(126,206,255,.25);border-radius:20px;color:#7eceff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;padding:7px 14px;margin-bottom:8px;}
+.modal-box.ach-modal{max-height:76vh;display:flex;flex-direction:column;overflow:hidden;}
+.ach-modal-hdr{flex-shrink:0;padding-right:26px;}
+.ach-grid-scroll{flex:1;overflow-y:auto;margin:0 -6px;padding:0 6px 4px;}
 
 /* MODAL */
 .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;z-index:500;padding:1rem;}
@@ -166,7 +169,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .m-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:6px;text-align:center;}
 .m-desc{font-size:12px;color:#aaa;margin-bottom:1.25rem;text-align:center;line-height:1.6;}
 .m-btns{display:flex;gap:8px;}
-.m-btns button{flex:1;font-size:14px;padding:13px 10px;border-radius:12px;font-weight:600;cursor:pointer;min-height:44px;}
+.btn-ok,.btn-cancel{font-size:14px;padding:13px 10px;border-radius:12px;font-weight:600;cursor:pointer;min-height:44px;}
+.m-btns button{flex:1;}
 .btn-ok{background:#2563eb;color:#fff;border:none;}
 .btn-ok:hover{background:#1d4ed8;}
 .btn-cancel{background:rgba(255,255,255,.08);color:#ccc;border:1px solid rgba(255,255,255,.15);}
@@ -668,7 +672,7 @@ function checkGoalEvents(){
     d.currentGoalStreak=achieved>=g.target?(d.currentGoalStreak||0)+1:0;
     d.bestGoalStreak=Math.max(d.bestGoalStreak||0,d.currentGoalStreak);
     if(reward>0){
-      qM(()=>mHTML(`<div class="m-emoji">🎉</div><div class="m-title">Ціль на місяць виконано!</div><div class="m-desc">Ти поставив ціль <b>${g.target}</b> ${bookWord(g.target)} і прочитав <b>${achieved}</b> — отримуєш <b>+${reward}🪙</b>!</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Ура!</button></div>`));
+      qM(()=>mHTML(`${M_CLOSE_BTN}<div class="m-emoji">🎉</div><div class="m-title">Ціль на місяць виконано!</div><div class="m-desc">Ти поставив ціль <b>${g.target}</b> ${bookWord(g.target)} і прочитав <b>${achieved}</b> — отримуєш <b>+${reward}🪙</b>!</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Ура!</button></div>`));
     } else {
       qM(()=>mEmoji('📖','Ціль на місяць не досягнута',`Прогрес: ${achieved}/${g.target} ${bookWord(g.target)}.\nСпробуй ще наступного разу!`,[{l:'Ок',ok:true,cb:closeModal}]));
     }
@@ -682,9 +686,9 @@ function checkGoalEvents(){
     d.coins=(d.coins||0)+reward;
     g.resolved=true;
     if(achieved>=g.target){
-      qM(()=>mHTML(`<div class="m-emoji">🏆</div><div class="m-title">Річну ціль виконано!</div><div class="m-desc">Ти поставив ціль <b>${g.target}</b> ${bookWord(g.target)} на рік і прочитав <b>${achieved}</b> — отримуєш <b>+${reward}🪙</b>!</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Ура!</button></div>`));
+      qM(()=>mHTML(`${M_CLOSE_BTN}<div class="m-emoji">🏆</div><div class="m-title">Річну ціль виконано!</div><div class="m-desc">Ти поставив ціль <b>${g.target}</b> ${bookWord(g.target)} на рік і прочитав <b>${achieved}</b> — отримуєш <b>+${reward}🪙</b>!</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Ура!</button></div>`));
     } else if(reward>0){
-      qM(()=>mHTML(`<div class="m-emoji">🥈</div><div class="m-title">Майже вийшло!</div><div class="m-desc">Ціль була <b>${g.target}</b> ${bookWord(g.target)} на рік, прочитано <b>${achieved}</b>. За результат — <b>+${reward}🪙</b>!</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Дякую!</button></div>`));
+      qM(()=>mHTML(`${M_CLOSE_BTN}<div class="m-emoji">🥈</div><div class="m-title">Майже вийшло!</div><div class="m-desc">Ціль була <b>${g.target}</b> ${bookWord(g.target)} на рік, прочитано <b>${achieved}</b>. За результат — <b>+${reward}🪙</b>!</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Дякую!</button></div>`));
     } else {
       qM(()=>mEmoji('📖','Річну ціль не досягнуто',`Прогрес: ${achieved}/${g.target} ${bookWord(g.target)}.\nСпробуй ще наступного разу!`,[{l:'Ок',ok:true,cb:closeModal}]));
     }
@@ -772,7 +776,7 @@ function renderGoalWidget(){
       <defs><linearGradient id="goalGaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%" stop-color="#facc15"/><stop offset="100%" stop-color="#22c55e"/>
       </linearGradient></defs>
-      <path d="${arcD}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="${sw}" stroke-linecap="round"/>
+      <path d="${arcD}" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="${sw}" stroke-linecap="round"/>
       <path d="${arcD}" fill="none" stroke="url(#goalGaugeGrad)" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${arcLen}" stroke-dashoffset="${dashOffset}"/>
     </svg>
     <div class="goal-gauge-center">
@@ -872,10 +876,18 @@ function renderLocationProgressHTML(d){
     const caught=unlocked?caughtCountIn(d,[locId]):0;
     totalAll+=total;caughtAll+=caught;
     const frac=unlocked&&total?caught/total:0;
-    const fillLen=Math.max(0,segLen*frac-gapLen);
+    const color=LOC_COLORS[locId];
+    const segVis=Math.max(0,segLen-gapLen);
+    const fillVis=Math.max(0,segLen*frac-gapLen);
     const offset=-(i*segLen);
-    return`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${LOC_COLORS[locId]}" stroke-width="${sw}"
-      stroke-dasharray="${fillLen} ${circ-fillLen}" stroke-dashoffset="${offset}" transform="rotate(-90 ${cx} ${cy})"/>`;
+    // every slice always shows its own color — dim for the not-yet-caught part
+    // of the segment, full brightness for the caught part — so there's never a
+    // generic gray "hole", just a dimmer version of that location's own hue.
+    const track=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-opacity=".28" stroke-width="${sw}"
+      stroke-dasharray="${segVis} ${circ-segVis}" stroke-dashoffset="${offset}" transform="rotate(-90 ${cx} ${cy})"/>`;
+    const fill=fillVis>0?`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="${sw}"
+      stroke-dasharray="${fillVis} ${circ-fillVis}" stroke-dashoffset="${offset}" transform="rotate(-90 ${cx} ${cy})"/>`:'';
+    return track+fill;
   }).join('');
   const legend=locs.map(locId=>{
     const loc=LOCS[locId];
@@ -950,11 +962,15 @@ function renderGeneralStatsWidget(){
     </svg>
   </div>`;
 
-  const langDonut=renderLangDonutHTML(booksForPeriod(d,_statsPeriod));
-  const genreDonut=renderGenreDonutHTML(booksForPeriod(d,_statsPeriod));
+  // Language/genre/location breakdowns are always all-time — only the tiles
+  // right above (books/pages counts) are scoped by the Місяць/Рік/Весь час toggle.
+  const langDonut=renderLangDonutHTML(d.books||[]);
+  const genreDonut=renderGenreDonutHTML(d.books||[]);
   const locProgress=renderLocationProgressHTML(d);
 
-  el.innerHTML=`${periodTabs}${tiles}${chart}${langDonut}${genreDonut}${locProgress}`;
+  const periodCard=`<div class="stats-chart-card">${periodTabs}${tiles}</div>`;
+
+  el.innerHTML=`${periodCard}${chart}${langDonut}${genreDonut}${locProgress}`;
 }
 function showChartTip(evt,value){
   const g=evt.currentTarget;
@@ -1105,7 +1121,7 @@ function achBadgeHTML(a,d){
     :`<text x="35" y="36" font-size="24" text-anchor="middle" dominant-baseline="central">${locked?'🔒':a.emoji}</text>`;
   return`<div class="ach-badge" onclick="openAchievementDetail('${a.key}')">
     <svg viewBox="0 0 70 70" width="64" height="64">
-      <circle cx="35" cy="35" r="${r}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="6"/>
+      <circle cx="35" cy="35" r="${r}" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="6"/>
       <circle cx="35" cy="35" r="${r}" fill="none" stroke="${stroke}" stroke-width="6" stroke-linecap="round"
         stroke-dasharray="${circ}" stroke-dashoffset="${circ-dash}" transform="rotate(-90 35 35)"/>
       ${iconSvg}
@@ -1117,10 +1133,11 @@ function achBadgeHTML(a,d){
 function renderAchievementsGridHTML(d){
   const{unlocked,total}=achievementsTotals(d);
   const badges=ACHIEVEMENTS.map(a=>achBadgeHTML(a,d)).join('');
-  return`<button onclick="closeModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;font-size:18px;color:#7eceff;line-height:1;padding:4px">✕</button>
-    <div class="m-title" style="margin-bottom:2px">🏆 Досягнення</div>
-    <div style="font-size:12px;color:#888;margin-bottom:14px">${unlocked} з ${total} нагород відкрито</div>
-    <div class="ach-grid">${badges}</div>`;
+  return`${M_CLOSE_BTN}<div class="ach-modal-hdr">
+      <div class="m-title" style="margin-bottom:2px">🏆 Досягнення</div>
+      <div style="font-size:12px;color:#888">${unlocked} з ${total} нагород відкрито</div>
+    </div>
+    <div class="ach-grid-scroll"><div class="ach-grid">${badges}</div></div>`;
 }
 function achievementDetailHTML(a,d){
   const info=achievementTierInfo(a,d);
@@ -1138,19 +1155,21 @@ function achievementDetailHTML(a,d){
   const barHtml=segs.map(s=>`<div class="tier-seg"><div class="tier-seg-fill" style="width:${s.pct}%"></div></div>`).join('');
   const marksHtml=segs.map(s=>`<div class="tier-mark ${s.reached?'reached':''}"><span class="tier-mark-icon">${s.reached?'✅':'🔒'}</span><span class="tier-mark-val">${s.target}</span></div>`).join('');
   const captionText=info.nextTier?`${Math.min(info.val,info.nextTier)}/${info.nextTier} до наступного рівня`:'Усі рівні відкрито!';
-  return`<button onclick="openAchievementsModal()" class="ach-back-btn">← Усі нагороди</button>
-    ${iconHtml}
-    <div class="m-title">${a.title}</div>
-    <div class="m-desc" style="margin-bottom:4px">${a.resets?'Скидається щомісяця. ':''}Поточний показник: <b>${info.val}</b> ${a.unit}</div>
-    <div class="tier-caption">${captionText}</div>
-    <div class="tier-bar">${barHtml}</div>
-    <div class="tier-marks">${marksHtml}</div>`;
+  return`<div class="ach-modal-hdr"><button onclick="openAchievementsModal()" class="ach-back-btn">← Усі нагороди</button></div>
+    <div class="ach-grid-scroll">
+      ${iconHtml}
+      <div class="m-title">${a.title}</div>
+      <div class="m-desc" style="margin-bottom:4px">${a.resets?'Скидається щомісяця. ':''}Поточний показник: <b>${info.val}</b> ${a.unit}</div>
+      <div class="tier-caption">${captionText}</div>
+      <div class="tier-bar">${barHtml}</div>
+      <div class="tier-marks">${marksHtml}</div>
+    </div>`;
 }
 function openAchievementsModal(){
   const d=pd();
   const box=document.querySelector('#mOv .modal-box');
   if(box){box.innerHTML=renderAchievementsGridHTML(d);return;}
-  mHTML(renderAchievementsGridHTML(d),true);
+  mHTML(renderAchievementsGridHTML(d),true,'ach-modal');
 }
 function openAchievementDetail(key){
   const d=pd();const a=ACHIEVEMENTS.find(x=>x.key===key);if(!a)return;
@@ -1163,16 +1182,19 @@ function qM(fn){mQueue.push(fn);if(!mOpen)nextM();}
 function nextM(){if(!mQueue.length){mOpen=false;return;}mOpen=true;mQueue.shift()();}
 function closeModal(){const m=document.getElementById('mOv');if(m)m.remove();nextM();}
 
+// Every modal gets the same dismiss affordance — a fixed ✕ in the corner —
+// so no popup needs its own "Закрити"/"Скасувати" button just to go away.
+const M_CLOSE_BTN=`<button onclick="closeModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;font-size:18px;color:#7eceff;line-height:1;padding:4px;z-index:1">✕</button>`;
 function mImg(src,title,desc,btns){_mShow(`<img class="m-img" src="${src}" onerror="this.style.display='none'">`,title,desc,btns);}
 function mEmoji(em,title,desc,btns){_mShow(`<div class="m-emoji">${em}</div>`,title,desc,btns);}
 function _mShow(top,title,desc,btns){
   const bb=btns||[{l:'Ок',ok:true,cb:closeModal}];
   window._mb=bb;
   const bh=bb.map((b,i)=>`<button class="${b.ok?'btn-ok':'btn-cancel'}" onclick="window._mb[${i}].cb()">${b.l}</button>`).join('');
-  document.body.insertAdjacentHTML('beforeend',`<div class="modal-ov" id="mOv"><div class="modal-box">${top}<div class="m-title">${title}</div><div class="m-desc">${(desc||'').replace(/\n/g,'<br>')}</div><div class="m-btns">${bh}</div></div></div>`);
+  document.body.insertAdjacentHTML('beforeend',`<div class="modal-ov" id="mOv"><div class="modal-box">${M_CLOSE_BTN}${top}<div class="m-title">${title}</div><div class="m-desc">${(desc||'').replace(/\n/g,'<br>')}</div><div class="m-btns">${bh}</div></div></div>`);
 }
-function mHTML(html,wide=false){
-  document.body.insertAdjacentHTML('beforeend',`<div class="modal-ov" id="mOv"><div class="modal-box ${wide?'wide':''}" style="text-align:left">${html}</div></div>`);
+function mHTML(html,wide=false,extraClass=''){
+  document.body.insertAdjacentHTML('beforeend',`<div class="modal-ov" id="mOv"><div class="modal-box ${wide?'wide':''} ${extraClass}" style="text-align:left">${html}</div></div>`);
 }
 
 // ═══════════ SCREENS ═══════════
@@ -1292,18 +1314,16 @@ function openDexCard(chainId){
         <img src="${img(s.pid)}" style="width:76px;height:76px;object-fit:contain;image-rendering:pixelated" onerror="this.style.display='none'">
         <div style="font-size:10px;color:#ccc;margin-top:2px;max-width:82px">${s.name}</div>
       </div>`).join('');
-    mHTML(`<div class="m-title" style="text-align:center">🏆 Завершено!</div>
+    mHTML(`${M_CLOSE_BTN}<div class="m-title" style="text-align:center">🏆 Завершено!</div>
       <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:10px 0 14px">${gallery}</div>
-      <div style="font-size:10px;color:#888;text-align:center;margin-bottom:8px">📍 Де ловиться: <b style="color:#aaa">${loc?loc.name:'—'}</b></div>
-      <button class="btn-cancel" style="width:100%;padding:13px;font-size:14px;min-height:44px" onclick="closeModal()">Закрити</button>`);
+      <div style="font-size:10px;color:#888;text-align:center;margin-bottom:8px">📍 Де ловиться: <b style="color:#aaa">${loc?loc.name:'—'}</b></div>`);
     return;
   }
   const stage=chain.stages[idx];
-  mHTML(`<img class="m-img" src="${img(stage.pid)}" onerror="this.style.display='none'">
+  mHTML(`${M_CLOSE_BTN}<img class="m-img" src="${img(stage.pid)}" onerror="this.style.display='none'">
     <div class="m-title">${stage.name}</div>
     <div style="text-align:center;font-size:11px;color:#888;margin-bottom:10px">Стадія ${idx+1} / ${chain.stages.length}${stage.mega?' · 🐉 Мега':''}</div>
-    <div style="font-size:10px;color:#888;text-align:center;margin-bottom:8px">📍 Де ловиться: <b style="color:#aaa">${loc?loc.name:'—'}</b></div>
-    <button class="btn-cancel" style="width:100%;padding:13px;font-size:14px;min-height:44px" onclick="closeModal()">Закрити</button>`);
+    <div style="font-size:10px;color:#888;text-align:center;margin-bottom:8px">📍 Де ловиться: <b style="color:#aaa">${loc?loc.name:'—'}</b></div>`);
 }
 
 // ═══════════ UNLOCK CHECK ═══════════
@@ -1402,9 +1422,9 @@ function showLockedHint(locId){
   const hint=unlockHintText(loc);
   const req=loc.unlockReq;
   const btns=req&&req.type==='keyChain'
-    ?`<div class="m-btns"><button class="btn-cancel" onclick="closeModal()">Зрозуміло</button><button class="btn-ok" onclick="closeModal();openShop()">🛒 Магазин</button></div>`
-    :`<div class="m-btns"><button class="btn-ok" onclick="closeModal()">Зрозуміло</button></div>`;
-  qM(()=>mHTML(`<div style="margin-bottom:10px">${locIconEl(loc.id,72)}</div><div class="m-title" style="text-align:center">🔒 ${loc.name}</div><div class="m-desc">${hint||'Виконай умову для відкриття'}</div>${btns}`));
+    ?`<div style="display:flex;justify-content:center;margin-top:4px"><button class="btn-ok" style="flex:none;padding:10px 24px;font-size:14px;min-height:44px" onclick="closeModal();openShop()">🛒 Магазин</button></div>`
+    :'';
+  qM(()=>mHTML(`${M_CLOSE_BTN}<div style="margin-bottom:10px">${locIconEl(loc.id,72)}</div><div class="m-title" style="text-align:center">🔒 ${loc.name}</div><div class="m-desc">${hint||'Виконай умову для відкриття'}</div>${btns}`));
 }
 
 function onLocClick(locId){
@@ -1507,11 +1527,10 @@ function _buildShopHTML(){
       <button class="sh-btn" onclick="buyChainStage('${r.chain.id}',${r.idx})" ${d.coins<r.price?'disabled':''}>Купити</button></div>
     </div>`;
   }).join('');
-  return`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+  return`${M_CLOSE_BTN}<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-right:26px">
     <div class="m-title" style="margin:0">🛒 Магазин</div>
     <div style="font-size:14px;font-weight:700;color:#fbbf24">🪙${d.coins}</div>
-  </div><div style="max-height:340px;overflow-y:auto;padding-right:10px;margin-right:-10px">${html||'<div style="font-size:12px;color:#555;text-align:center;padding:1rem">Немає нічого на продаж — спочатку відкрий локації!</div>'}</div>
-  <button class="btn-cancel" style="width:100%;margin-top:12px;padding:13px;font-size:14px;min-height:44px" onclick="closeModal()">Закрити</button>`;
+  </div><div style="max-height:340px;overflow-y:auto;padding-right:10px;margin-right:-10px">${html||'<div style="font-size:12px;color:#555;text-align:center;padding:1rem">Немає нічого на продаж — спочатку відкрий локації!</div>'}</div>`;
 }
 function openShop(){
   const box=document.querySelector('#mOv .modal-box');
@@ -1546,9 +1565,9 @@ function _shopFlowNext(){
   if(_shopFlowQueue.length){
     const item=_shopFlowQueue.shift();
     if(item.type==='bought'){
-      box.innerHTML=`<img class="m-img" src="${img(item.pid)}" onerror="this.style.display='none'"><div class="m-title">Куплено!</div><div class="m-desc" style="text-align:center">${item.name} тепер у твоїй колекції.</div><div class="m-btns"><button class="btn-ok" onclick="_shopFlowNext()">Чудово!</button></div>`;
+      box.innerHTML=`${M_CLOSE_BTN}<img class="m-img" src="${img(item.pid)}" onerror="this.style.display='none'"><div class="m-title">Куплено!</div><div class="m-desc" style="text-align:center">${item.name} тепер у твоїй колекції.</div><div class="m-btns"><button class="btn-ok" onclick="_shopFlowNext()">Чудово!</button></div>`;
     } else {
-      box.innerHTML=`<div class="m-emoji">🎉</div><div class="m-title">Відкрито!</div><div class="m-desc" style="text-align:center">${item.emoji} ${item.name} тепер доступна!</div><div class="m-btns"><button class="btn-ok" onclick="_shopFlowNext()">Чудово!</button></div>`;
+      box.innerHTML=`${M_CLOSE_BTN}<div class="m-emoji">🎉</div><div class="m-title">Відкрито!</div><div class="m-desc" style="text-align:center">${item.emoji} ${item.name} тепер доступна!</div><div class="m-btns"><button class="btn-ok" onclick="_shopFlowNext()">Чудово!</button></div>`;
     }
   } else {
     openShop();
@@ -1580,7 +1599,7 @@ function openProfileSettings(){
   const url=d.avatarUrl||'';
   const curClr=pClr(p,d);
   const swatches=PROFILE_COLORS.map(c=>`<div onclick="selectProfileColor('${c}')" id="pclr${c.replace('#','')}" style="width:36px;height:36px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${c===curClr?'#fff':'transparent'};box-sizing:border-box;flex-shrink:0"></div>`).join('');
-  mHTML(`<div class="m-title">⚙️ Налаштування</div>
+  mHTML(`${M_CLOSE_BTN}<div class="m-title">⚙️ Налаштування</div>
     <div style="text-align:left;margin-bottom:16px">
       <div class="flbl">Нік</div>
       <input type="text" id="ps-name" class="finput" value="${name}" maxlength="20" placeholder="${p.name}">
@@ -1594,10 +1613,7 @@ function openProfileSettings(){
         <img id="ps-prev" src="${url}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid ${curClr};display:${url?'block':'none'};margin:0 auto" onerror="this.style.display='none'">
       </div>
     </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn-cancel" style="flex:1;padding:13px;font-size:14px;min-height:44px" onclick="closeModal()">Скасувати</button>
-      <button class="btn-ok" style="flex:1;padding:13px;font-size:14px;min-height:44px" onclick="saveProfileSettings()">Зберегти</button>
-    </div>`);
+    <button class="btn-ok" style="width:100%;padding:13px;font-size:14px;min-height:44px" onclick="saveProfileSettings()">Зберегти</button>`);
 }
 function selectProfileColor(c){
   document.getElementById('ps-color').value=c;
@@ -1794,7 +1810,7 @@ function openBookDetail(i){
   const coverHtml=book.coverUrl
     ?`<img src="${book.coverUrl}" style="width:${cw}px;height:${h}px;object-fit:cover;border-radius:4px;display:block;margin:0 auto 10px" onerror="this.style.display='none'">`
     :`<div style="width:${cw}px;height:${h}px;background:linear-gradient(150deg,${top} 0%,${bot} 100%);border-radius:4px;margin:0 auto 10px"></div>`;
-  mHTML(`<button onclick="closeModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;font-size:18px;color:#7eceff;line-height:1;padding:4px">✕</button>
+  mHTML(`${M_CLOSE_BTN}
     ${coverHtml}
     <div class="m-title" style="font-size:15px">${book.title}</div>
     <div style="text-align:center;font-size:12px;color:#aaa;margin-bottom:8px">${book.author||''}</div>
@@ -1896,7 +1912,7 @@ function submitPages(){
   d.books.push(book);
   renderRes();renderActions();renderLibraryTab();renderAchievementsWidget();renderGeneralStatsWidget();closeSidePanel();saveToCloud(cur);
   const preview=_renderBookPreviewHTML(book);
-  qM(()=>mHTML(`${preview}<div class="m-title">Книга додана!</div><div class="m-desc" style="text-align:center">+1📙 &nbsp; +${coins}🪙</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Вперед!</button></div>`));
+  qM(()=>mHTML(`${M_CLOSE_BTN}${preview}<div class="m-title">Книга додана!</div><div class="m-desc" style="text-align:center">+1📙 &nbsp; +${coins}🪙</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Вперед!</button></div>`));
 }
 
 function showToast(msg){
