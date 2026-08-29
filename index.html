@@ -217,6 +217,9 @@ select option{background:#1e2d4a;color:#fff;}
 /* TOAST */
 .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#1e2d4a;border:1px solid rgba(126,206,255,.3);color:#7eceff;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:700;white-space:nowrap;}
 .toast.show{opacity:1;}
+.loc-toast{position:fixed;top:64px;left:50%;transform:translateX(-50%);background:#0f1830;border:1px solid rgba(126,206,255,.4);color:#fff;padding:10px 20px;border-radius:14px;font-size:13px;font-weight:700;text-align:center;opacity:0;transition:opacity .3s;pointer-events:none;z-index:700;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.5);}
+.loc-toast.show{opacity:1;}
+.loc-toast small{display:block;font-size:11px;font-weight:600;color:#7eceff;margin-top:3px;}
 
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px;}
@@ -264,11 +267,6 @@ select option{background:#1e2d4a;color:#fff;}
         <g id="map-edges"></g><g id="map-nodes"></g><g id="map-markers"></g>
       </svg></div>
       <div class="act-card">
-        <div class="act-hdr">
-          <div class="act-hdr-emoji" id="act-emoji"></div>
-          <div class="act-hdr-info"><div class="act-hdr-name" id="act-name"></div><div class="act-hdr-desc" id="act-desc"></div></div>
-          <div class="act-hdr-badge" id="act-badge"></div>
-        </div>
         <div class="act-list" id="act-list"></div>
       </div>
     </div>
@@ -308,6 +306,7 @@ select option{background:#1e2d4a;color:#fff;}
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="loc-toast" id="loc-toast"></div>
 
 <script>
 // ═══════════ PLAYERS ═══════════
@@ -1418,26 +1417,21 @@ function doMove(locId){
   document.getElementById('hdr-loc').textContent='📍 '+loc.name;
   renderDex();renderMap();renderActions();
   saveToCloud(cur);
-  showToast('→ '+loc.name);
+  showLocToast('→ '+loc.name,locCaughtDesc(d,loc));
 }
 
 // ═══════════ ACTIONS / CATCH ═══════════
+function locCaughtDesc(d,loc){
+  const chains=chainsForLoc(loc.id);
+  if(!chains.length)return'';
+  const totalSpecies=chains.reduce((s,c)=>s+c.stages.length,0);
+  const caughtSpecies=chains.reduce((s,c)=>{const idx=d.progress[c.id];return s+(idx!==undefined?idx+1:0);},0);
+  const allDone=chains.every(c=>d.progress[c.id]===c.stages.length-1);
+  return'Спіймано: '+caughtSpecies+'/'+totalSpecies+(allDone?' ✓':'');
+}
 function renderActions(){
   const d=pd();
   const loc=cLoc();
-  document.getElementById('act-emoji').innerHTML=locIconEl(loc.id,48);
-  document.getElementById('act-name').textContent=loc.name;
-  const chains=chainsForLoc(loc.id);
-  let desc='';
-  if(chains.length){
-    const totalSpecies=chains.reduce((s,c)=>s+c.stages.length,0);
-    const caughtSpecies=chains.reduce((s,c)=>{const idx=d.progress[c.id];return s+(idx!==undefined?idx+1:0);},0);
-    const allDone=chains.every(c=>d.progress[c.id]===c.stages.length-1);
-    desc='Спіймано: '+caughtSpecies+'/'+totalSpecies+(allDone?' ✓':'');
-  }
-  document.getElementById('act-desc').textContent=desc;
-  const ab=document.getElementById('act-badge');
-  ab.textContent=loc.badge||'';ab.style.background=loc.badgeBg||'';ab.style.color=loc.badgeTxt||'';
   let html;
   if(loc.id==='map2'){
     html=`<div class="act-row" onclick="enterJohto()"><div class="act-icon">🌏</div><div class="act-body"><div class="act-title">Перейти до Регіону Джото</div><div class="act-desc">Новий регіон відкрито — покемони чекають попереду!</div></div></div>`;
@@ -1909,6 +1903,13 @@ function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2200);
+}
+function showLocToast(name,desc){
+  const t=document.getElementById('loc-toast');
+  t.innerHTML=name+(desc?`<small>${desc}</small>`:'');
+  t.classList.add('show');
+  clearTimeout(t._hideTimer);
+  t._hideTimer=setTimeout(()=>t.classList.remove('show'),2400);
 }
 
 // ═══════════ CLOUD SAVE ═══════════
