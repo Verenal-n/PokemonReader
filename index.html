@@ -7,9 +7,10 @@
 <title>Читальний Світ — Покемон</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1a1a2e;color:#eee;min-height:100vh;}
-.app{max-width:480px;margin:0 auto;min-height:100vh;background:#16213e;position:relative;}
-.screen{display:none;min-height:100vh;flex-direction:column;}.screen.active{display:flex;height:100vh;height:100dvh;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1a1a2e;color:#eee;}
+.app{max-width:480px;margin:0 auto;height:100vh;height:100dvh;background:#16213e;position:relative;overflow:hidden;}
+.screen{display:none;height:100%;flex-direction:column;}.screen.active{display:flex;}
 
 /* SELECT */
 .sel-bg{background:url('start.png') center top/cover no-repeat;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 1rem calc(6rem + env(safe-area-inset-bottom, 0px));overflow-y:auto;}
@@ -173,6 +174,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .flbl{font-size:10px;color:#7eceff;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;}
 .finput{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:9px 12px;color:#fff;font-size:13px;outline:none;margin-bottom:10px;}
 .finput:focus{border-color:#7eceff;}
+select option{background:#1e2d4a;color:#fff;}
 .ppill{background:rgba(126,206,255,.15);color:#7eceff;font-size:12px;font-weight:600;padding:8px;border-radius:10px;text-align:center;margin-bottom:10px;}
 .shelf-wrap{width:100%;display:flex;flex-direction:column;gap:16px;background:#111009;border-radius:10px;padding:14px 0;}
 .shelf-row{display:flex;flex-direction:column;}
@@ -587,6 +589,13 @@ function statsForPeriod(d,period){
 // Cyrillic titles are split into Ukrainian/Russian via letters unique to each
 // alphabet (і/ї/є/ґ vs ы/э/ъ); Latin titles are matched against a few common
 // diacritic sets, defaulting to English when nothing distinctive is found.
+const GENRES=['Фентезі','Пригоди','Наукова фантастика','Детектив','Дитяча','Підліткова','Гумор','Історичне','Жахи / Містика','Реалізм','Нонфікшн','Комікс / Манга','Романтика','Класика','Антиутопія','Трилер'];
+const GENRE_COLORS={
+  'Фентезі':'#a78bfa','Пригоди':'#fb923c','Наукова фантастика':'#38bdf8','Детектив':'#818cf8',
+  'Дитяча':'#facc15','Підліткова':'#f472b6','Гумор':'#a3e635','Історичне':'#fbbf24',
+  'Жахи / Містика':'#f87171','Реалізм':'#2dd4bf','Нонфікшн':'#22d3ee','Комікс / Манга':'#e879f9',
+  'Романтика':'#c084fc','Класика':'#60a5fa','Антиутопія':'#34d399','Трилер':'#4ade80',
+};
 const LANG_META={
   uk:{label:'Українська',color:'#60a5fa'},
   ru:{label:'Оркська',color:'#4d7c3a'},
@@ -814,6 +823,44 @@ function renderLangDonutHTML(books){
     </div>
   </div>`;
 }
+function genreBreakdown(books){
+  const counts={};
+  books.forEach(b=>{if(b.genre)counts[b.genre]=(counts[b.genre]||0)+1;});
+  return Object.entries(counts).filter(([,n])=>n>0).sort((a,b)=>b[1]-a[1])
+    .map(([genre,count])=>({genre,label:genre,count,color:GENRE_COLORS[genre]||'#94a3b8'}));
+}
+function renderGenreDonutHTML(books){
+  const breakdown=genreBreakdown(books);
+  const total=breakdown.reduce((s,g)=>s+g.count,0);
+  if(!total){
+    return`<div class="stats-chart-card">
+      <div class="stats-chart-title">Топ за жанрами</div>
+      <div style="text-align:center;color:#666;font-size:12px;padding:20px 0">Ще не вказано жанр для книг цього періоду</div>
+    </div>`;
+  }
+  const r=45,cx=60,cy=60,sw=22,circ=2*Math.PI*r,gapLen=breakdown.length>1?4:0;
+  let acc=0;
+  const arcs=breakdown.map(({count,color})=>{
+    const len=circ*(count/total);
+    const visLen=Math.max(0,len-gapLen);
+    const offset=-acc;
+    acc+=len;
+    return`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="${sw}"
+      stroke-dasharray="${visLen} ${circ-visLen}" stroke-dashoffset="${offset}" transform="rotate(-90 ${cx} ${cy})"/>`;
+  }).join('');
+  const legend=breakdown.map(({label,color,count})=>
+    `<div class="lang-legend-row"><span class="lang-dot" style="background:${color}"></span><span class="lang-legend-lbl">${label}</span><span class="lang-legend-val">${count}</span></div>`
+  ).join('');
+  return`<div class="stats-chart-card">
+    <div class="stats-chart-title">Топ за жанрами</div>
+    <div class="lang-donut-row">
+      <svg viewBox="0 0 120 120" class="lang-donut-svg">${arcs}
+        <text x="60" y="60" text-anchor="middle" dominant-baseline="central" font-size="26" font-weight="800" fill="#fff">${total}</text>
+      </svg>
+      <div class="lang-legend">${legend}</div>
+    </div>
+  </div>`;
+}
 const LOC_COLORS={oak:'#4ade80',pallet:'#38bdf8',forest:'#facc15',glade:'#a78bfa',butterfly:'#f472b6',caves:'#94a3b8',shore:'#fb923c'};
 function renderLocationProgressHTML(d){
   const locs=ALL_KANTO_LOCS.filter(locId=>chainsForLoc(locId).length>0);
@@ -846,7 +893,7 @@ function renderLocationProgressHTML(d){
     <div class="stats-chart-title">Прогрес по локаціях</div>
     <div class="lang-donut-row">
       <svg viewBox="0 0 120 120" class="lang-donut-svg">
-        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="${sw}"/>
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="${sw}"/>
         ${arcs}
         <text x="60" y="60" text-anchor="middle" dominant-baseline="central" font-size="20" font-weight="800" fill="#fff">${caughtAll}/${totalAll}</text>
       </svg>
@@ -905,9 +952,10 @@ function renderGeneralStatsWidget(){
   </div>`;
 
   const langDonut=renderLangDonutHTML(booksForPeriod(d,_statsPeriod));
+  const genreDonut=renderGenreDonutHTML(booksForPeriod(d,_statsPeriod));
   const locProgress=renderLocationProgressHTML(d);
 
-  el.innerHTML=`${periodTabs}${tiles}${chart}${langDonut}${locProgress}`;
+  el.innerHTML=`${periodTabs}${tiles}${chart}${langDonut}${genreDonut}${locProgress}`;
 }
 function showChartTip(evt,value){
   const g=evt.currentTarget;
@@ -937,6 +985,17 @@ function maxByAuthor(d){
   });
   const vals=Object.values(counts);
   return vals.length?Math.max(...vals):0;
+}
+function maxByGenre(d){
+  const counts={};
+  (d.books||[]).forEach(b=>{if(b.genre)counts[b.genre]=(counts[b.genre]||0)+1;});
+  const vals=Object.values(counts);
+  return vals.length?Math.max(...vals):0;
+}
+function distinctActiveMonths(d){
+  const months=new Set();
+  (d.books||[]).forEach(b=>{const m=bookPeriodKeys(b).month;if(m)months.add(m);});
+  return months.size;
 }
 function lastCaughtSprite(d,filterFn){
   const order=[...(d.progressOrder||[])].reverse();
@@ -983,6 +1042,15 @@ const ACHIEVEMENTS=[
   {key:'polyglot',title:'Поліглот',emoji:'🌐',unit:'мов серед прочитаного',tiers:[2,3],
     valueFn:d=>langBreakdown(d.books||[]).length,
     desc:t=>`Прочитати книги ${t} різними мовами`},
+  {key:'genreVariety',title:'Всеїдний читач',emoji:'🎭',unit:'жанрів серед прочитаного',tiers:[3,6,10,16],
+    valueFn:d=>new Set((d.books||[]).map(b=>b.genre).filter(Boolean)).size,
+    desc:t=>`Прочитати книги ${t} різних жанрів`},
+  {key:'genreFan',title:'Знавець жанру',emoji:'📗',unit:'книг одного жанру',tiers:[5,10,25,50],
+    valueFn:maxByGenre,
+    desc:t=>`Прочитати ${t} ${bookWord(t)} одного жанру`},
+  {key:'longPlayer',title:'Довгограй',emoji:'📆',unit:'місяців з хоча б 1 книгою',tiers:[3,6,12,24],
+    valueFn:distinctActiveMonths,
+    desc:t=>`Прочитати хоча б 1 книгу у ${t} різних місяцях`},
   {key:'fiveStars',title:'Найвища оцінка',emoji:'⭐',unit:'книг з оцінкою 5',tiers:[5,10,20],
     valueFn:d=>(d.books||[]).filter(b=>b.rating===5).length,
     desc:t=>`Оцінити ${t} ${bookWord(t)} на 5 зірок`},
@@ -1601,6 +1669,11 @@ function _buildPagesHTML(){
       <input type="text" id="sp-author" class="finput" placeholder="Дж. К. Роулінґ">
       <div class="flbl">Кількість сторінок</div>
       <input type="number" id="sp-pages" class="finput" min="1" oninput="updSP()">
+      <div class="flbl" style="opacity:.6">Жанр</div>
+      <select id="sp-genre" class="finput">
+        <option value="">Оберіть жанр</option>
+        ${GENRES.map(g=>`<option value="${g}">${g}</option>`).join('')}
+      </select>
       <div class="flbl" style="opacity:.6">Посилання на обкладинку</div>
       <input type="url" id="sp-cover" class="finput" placeholder="https://…" style="font-size:11px">
       <div id="sp-prev" style="display:none;margin-bottom:10px"></div>
@@ -1733,6 +1806,11 @@ function openBookDetail(i){
     <div style="text-align:center;font-size:12px;color:#aaa;margin-bottom:8px">${book.author||''}</div>
     <div id="bd-stars" style="display:flex;justify-content:center;margin-bottom:8px">${starRatingHTML(_bdRating,true,'onBdStarClick')}</div>
     <div style="text-align:center;font-size:11px;color:#778;margin-bottom:12px">${book.pages} стор. · ${book.date||''}</div>
+    <div class="flbl" style="opacity:.6">Жанр</div>
+    <select id="bd-genre" class="finput">
+      <option value="">Оберіть жанр</option>
+      ${GENRES.map(g=>`<option value="${g}" ${book.genre===g?'selected':''}>${g}</option>`).join('')}
+    </select>
     <div class="flbl" style="opacity:.6">URL обкладинки</div>
     <input type="url" id="bd-cover-url" class="finput" placeholder="https://…" value="${book.coverUrl||''}" style="font-size:11px">
     <button class="btn-ok" style="width:100%;margin-bottom:8px;padding:12px;font-size:13px" onclick="saveBookDetail(${i})">Зберегти</button>
@@ -1746,7 +1824,9 @@ function onBdStarClick(event,i){
 function saveBookDetail(i){
   const d=pd();const book=(d.books||[])[i];if(!book)return;
   const url=(document.getElementById('bd-cover-url').value||'').trim();
+  const genre=document.getElementById('bd-genre').value||'';
   book.coverUrl=url||null;
+  if(genre)book.genre=genre;else delete book.genre;
   if(_bdRating)book.rating=_bdRating;else delete book.rating;
   saveToCloud(cur);closeModal();renderLibraryTab();renderAchievementsWidget();renderGeneralStatsWidget();
 }
@@ -1806,6 +1886,7 @@ function submitPages(){
   const title=(document.getElementById('sp-book').value||'').trim();
   const author=(document.getElementById('sp-author').value||'').trim();
   const coverUrl=(document.getElementById('sp-cover').value||'').trim();
+  const genre=document.getElementById('sp-genre').value||'';
   if(!title){showToast('Введи назву книги');return;}
   if(!author){showToast('Введи автора');return;}
   if(!pages||pages<1){showToast('Введи кількість сторінок');return;}
@@ -1817,6 +1898,7 @@ function submitPages(){
   if(!d.books)d.books=[];
   const book={title,author,pages,date:new Date().toLocaleDateString('uk-UA'),ts:Date.now(),coverUrl:coverUrl||null,coinsEarned:coins};
   if(_addBookRating)book.rating=_addBookRating;
+  if(genre)book.genre=genre;
   d.books.push(book);
   renderRes();renderActions();renderLibraryTab();renderAchievementsWidget();renderGeneralStatsWidget();closeSidePanel();saveToCloud(cur);
   const preview=_renderBookPreviewHTML(book);
