@@ -119,6 +119,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stats-metric-tab{padding:4px 7px;font-size:10px;font-weight:600;border-radius:10px;border:none;background:transparent;color:#888;cursor:pointer;font-family:inherit;white-space:nowrap;}
 .stats-metric-tab.act{background:#2a3550;color:#fff;}
 .stats-chart-svg{display:block;width:100%;height:110px;}
+.wrap-book-row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+.wrap-book-card{flex:1 1 140px;display:flex;gap:8px;background:rgba(255,255,255,.04);border-radius:10px;padding:8px;min-width:0;}
+.wrap-book-info{min-width:0;}
+.wrap-book-lbl{font-size:9px;color:#7eceff;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.wrap-book-title{font-size:11px;color:#fff;font-weight:600;margin:2px 0;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.wrap-book-pages{font-size:14px;color:#facc15;font-weight:800;}
+.wrap-facts{display:flex;flex-direction:column;gap:8px;margin:10px 0;}
+.wrap-fact-row{display:flex;align-items:center;gap:8px;font-size:12px;}
+.wrap-fact-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+.wrap-fact-lbl{flex:1;color:#999;}
+.wrap-fact-val{color:#fff;font-weight:700;text-align:right;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.wrap-month-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px;text-align:center;margin-top:4px;}
+.wrap-month-lbl{font-size:10px;color:#c9a54d;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
+.wrap-month-name{font-size:15px;color:#fff;font-weight:700;}
+.wrap-month-count{font-size:19px;color:#e0b84d;font-weight:800;margin-top:2px;}
 .stats-chart-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:10px;}
 .lang-donut-row{display:flex;align-items:center;gap:14px;}
 .lang-donut-svg{width:110px;height:110px;flex-shrink:0;}
@@ -131,11 +146,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .star-slot{position:relative;font-size:24px;line-height:1;color:rgba(255,255,255,.15);}
 .star-rating.editable .star-slot{cursor:pointer;}
 .star-fg{position:absolute;left:0;top:0;overflow:hidden;white-space:nowrap;color:#fbbf24;}
-.ach-card{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px;cursor:pointer;transition:background .15s;}
-.ach-card:hover{background:rgba(255,255,255,.09);}
+.ach-card{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(126,206,255,.12),rgba(37,99,235,.08));border:1px solid rgba(126,206,255,.25);border-radius:12px;padding:12px;cursor:pointer;transition:background .15s;}
+.ach-card:hover{background:linear-gradient(135deg,rgba(126,206,255,.18),rgba(37,99,235,.12));}
 .ach-info{flex:1;min-width:0;}
-.ach-title{font-size:12px;font-weight:600;color:#fff;}
-.ach-count{font-size:10px;color:#888;margin-top:1px;margin-bottom:6px;}
+.ach-title{font-size:13px;font-weight:700;color:#fff;}
+.ach-count{font-size:11px;color:#7eceff;font-weight:600;margin-top:1px;margin-bottom:6px;}
 .ach-bar-wrap{height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;}
 .ach-bar-fill{height:100%;background:linear-gradient(90deg,#facc15,#22c55e);border-radius:4px;}
 .ach-arrow{font-size:20px;color:#7eceff;flex-shrink:0;}
@@ -149,6 +164,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tier-seg{flex:1;height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;}
 .tier-seg-fill{height:100%;background:#22c55e;border-radius:4px;}
 .tier-marks{display:flex;gap:3px;}
+.ach-reward-box{display:flex;flex-direction:column;align-items:center;gap:4px;background:rgba(251,191,36,.06);border:1px dashed rgba(251,191,36,.3);border-radius:10px;padding:10px;margin-top:12px;}
+.ach-reward-box.unlocked{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.35);}
+.ach-reward-lock{font-size:24px;opacity:.6;}
+.ach-reward-lbl{font-size:10px;color:#999;text-align:center;font-weight:600;}
+.ach-reward-box.unlocked .ach-reward-lbl{color:#4ade80;}
 .tier-mark{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;}
 .tier-mark-icon{font-size:11px;}
 .tier-mark-val{font-size:10px;color:#888;font-weight:600;}
@@ -182,6 +202,8 @@ select option{background:#1e2d4a;color:#fff;}
 .ppill{background:rgba(126,206,255,.15);color:#7eceff;font-size:12px;font-weight:600;padding:8px;border-radius:10px;text-align:center;margin-bottom:10px;}
 .sp-error{background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.35);color:#f87171;font-size:12px;font-weight:600;padding:9px 12px;border-radius:10px;text-align:center;margin-bottom:10px;}
 .shelf-wrap{width:100%;display:flex;flex-direction:column;gap:16px;background:#111009;border-radius:10px;padding:14px 0;}
+.wall-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px;}
+.wall-tile{aspect-ratio:2/3;border-radius:6px;overflow:hidden;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.4);}
 .shelf-row{display:flex;flex-direction:column;}
 .shelf-label{font-size:9px;color:#a08a5c;padding:0 10px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;}
 .shelf-books{display:flex;align-items:flex-end;gap:5px;padding:16px 10px 0;height:192px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent;}
@@ -288,6 +310,9 @@ select option{background:#1e2d4a;color:#fff;}
       <div class="stats-divider"></div>
       <div class="stats-sub-hdr">Досягнення</div>
       <div id="achievements-widget"></div>
+      <div class="stats-divider"></div>
+      <div class="stats-sub-hdr">Рік у книгах</div>
+      <div id="year-wrap-widget"></div>
     </div>
   </div>
   <div class="bottom-tabs">
@@ -670,8 +695,10 @@ function checkGoalEvents(){
     const reward=monthlyGoalReward(g.target,achieved);
     d.coins=(d.coins||0)+reward;
     g.resolved=true;
+    const beforeAch=fullyCompletedKeys(d);
     d.currentGoalStreak=achieved>=g.target?(d.currentGoalStreak||0)+1:0;
     d.bestGoalStreak=Math.max(d.bestGoalStreak||0,d.currentGoalStreak);
+    celebrateNewAchievements(d,beforeAch);
     if(reward>0){
       qM(()=>mHTML(`${M_CLOSE_BTN}<div class="m-emoji">🎉</div><div class="m-title">Ціль на місяць виконано!</div><div class="m-desc">Ти поставив ціль <b>${g.target}</b> ${bookWord(g.target)} і прочитав <b>${achieved}</b> — отримуєш <b>+${reward}🪙</b>!</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Ура!</button></div>`));
     } else {
@@ -742,7 +769,7 @@ function setMainTab(tab){
     document.getElementById('bt-'+t).classList.toggle('act',t===tab);
   });
   if(tab==='library')renderLibraryTab();
-  else if(tab==='stats'){renderGoalWidget();renderGeneralStatsWidget();renderAchievementsWidget();}
+  else if(tab==='stats'){renderGoalWidget();renderGeneralStatsWidget();renderAchievementsWidget();renderYearWrapWidget();}
 }
 function renderLibraryTab(){
   const el=document.getElementById('library-fullscreen');if(!el)return;
@@ -915,6 +942,109 @@ function renderLocationProgressHTML(d){
     </div>
   </div>`;
 }
+
+// ═══════════ YEAR IN BOOKS ═══════════
+let _wrapYear=null,_wrapScope='own';
+function setWrapYear(y){_wrapYear=y;renderYearWrapWidget();}
+function setWrapScope(s){_wrapScope=s;renderYearWrapWidget();}
+function computeYearWrap(books,yearKey){
+  const yearBooks=books.filter(b=>bookPeriodKeys(b).year===yearKey);
+  const count=yearBooks.length;
+  if(!count)return null;
+  const pages=yearBooks.reduce((s,b)=>s+(b.pages||0),0);
+  const avgPages=Math.round(pages/count);
+  const rated=yearBooks.filter(b=>b.rating);
+  const avgRating=rated.length?Math.round((rated.reduce((s,b)=>s+b.rating,0)/rated.length)*10)/10:null;
+  const shortestBook=yearBooks.reduce((m,b)=>(!m||(b.pages||0)<(m.pages||0))?b:m,null);
+  const longestBook=yearBooks.reduce((m,b)=>(!m||(b.pages||0)>(m.pages||0))?b:m,null);
+  // ties at the top rating go to whichever was read most recently
+  let topRatedBook=null;
+  if(rated.length){
+    const maxRating=Math.max(...rated.map(b=>b.rating));
+    topRatedBook=rated.filter(b=>b.rating===maxRating)
+      .reduce((latest,b)=>(!latest||(b.ts||0)>(latest.ts||0))?b:latest,null);
+  }
+  const favLang=langBreakdown(yearBooks)[0]||null;
+  const favGenre=genreBreakdown(yearBooks)[0]||null;
+  const authorCounts={};
+  yearBooks.forEach(b=>{
+    const a=(b.author||'').trim();if(!a)return;
+    const key=a.toLowerCase();
+    if(!authorCounts[key])authorCounts[key]={name:a,count:0};
+    authorCounts[key].count++;
+  });
+  const favAuthor=Object.values(authorCounts).sort((a,b)=>b.count-a.count)[0]||null;
+  const monthCounts=Array(12).fill(0);
+  yearBooks.forEach(b=>{
+    const m=bookPeriodKeys(b).month;if(!m)return;
+    monthCounts[parseInt(m.split('-')[1],10)-1]++;
+  });
+  let bestIdx=0;monthCounts.forEach((c,i)=>{if(c>monthCounts[bestIdx])bestIdx=i;});
+  const bestMonth=monthCounts[bestIdx]>0?{idx:bestIdx,count:monthCounts[bestIdx]}:null;
+  return{count,pages,avgPages,avgRating,shortestBook,longestBook,topRatedBook,favLang,favGenre,favAuthor,bestMonth};
+}
+function _wrapBookCardHTML(book,label,statText){
+  if(!book)return'';
+  const cw=44,h=64;
+  const[top,bot]=_colorFor(book.title);
+  const cover=book.coverUrl
+    ?`<img src="${book.coverUrl}" style="width:${cw}px;height:${h}px;object-fit:cover;border-radius:4px;flex-shrink:0">`
+    :`<div style="width:${cw}px;height:${h}px;background:linear-gradient(150deg,${top},${bot});border-radius:4px;flex-shrink:0"></div>`;
+  return`<div class="wrap-book-card">${cover}
+    <div class="wrap-book-info">
+      <div class="wrap-book-lbl">${label}</div>
+      <div class="wrap-book-title">${book.title}</div>
+      <div class="wrap-book-pages">${statText}</div>
+    </div>
+  </div>`;
+}
+function renderYearWrapWidget(){
+  const el=document.getElementById('year-wrap-widget');if(!el)return;
+  const d=pd();
+  if(!_wrapYear)_wrapYear=curYearKey();
+  const years=availableStatsYears(d);
+  const books=_wrapScope==='family'?PLAYERS.flatMap(p=>(state.players[p.id]&&state.players[p.id].books)||[]):(d.books||[]);
+  const wrap=computeYearWrap(books,_wrapYear);
+  const isCurrentYear=_wrapYear===curYearKey();
+  const monthLbls=['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
+
+  const controls=`<div class="stats-chart-hdr">
+    <select class="stats-year-sel" onchange="setWrapYear(this.value)">
+      ${years.map(y=>`<option value="${y}" ${y===_wrapYear?'selected':''}>${y}</option>`).join('')}
+    </select>
+    <div class="stats-metric-tabs">
+      <button class="stats-metric-tab ${_wrapScope==='own'?'act':''}" onclick="setWrapScope('own')">Моє</button>
+      <button class="stats-metric-tab ${_wrapScope==='family'?'act':''}" onclick="setWrapScope('family')">Родина разом</button>
+    </div>
+  </div>`;
+
+  if(!wrap){
+    el.innerHTML=`<div class="stats-chart-card">${controls}<div style="text-align:center;color:#666;font-size:12px;padding:20px 0">Ще нічого не прочитано у ${_wrapYear}${_wrapScope==='family'?' родиною':''}</div></div>`;
+    return;
+  }
+
+  const inProgressNote=isCurrentYear?`<div style="text-align:center;font-size:10px;color:#7eceff;margin-bottom:8px">рік ще триває</div>`:'';
+  const heroTiles=`<div class="stat-tiles">
+    <div class="stat-tile"><div class="stat-tile-val">${wrap.count}</div><div class="stat-tile-lbl">${bookWord(wrap.count)}</div></div>
+    <div class="stat-tile"><div class="stat-tile-val">${wrap.pages}</div><div class="stat-tile-lbl">сторінок</div></div>
+  </div>`;
+  const bookCards=`<div class="wrap-book-row">${_wrapBookCardHTML(wrap.shortestBook,'Найкоротша',wrap.shortestBook?wrap.shortestBook.pages+' стор.':'')}${_wrapBookCardHTML(wrap.longestBook,'Найдовша',wrap.longestBook?wrap.longestBook.pages+' стор.':'')}${_wrapBookCardHTML(wrap.topRatedBook,'Найвища оцінка',wrap.topRatedBook?'★ '+wrap.topRatedBook.rating:'')}</div>`;
+  const facts=[
+    ['📄','Середня довжина',wrap.avgPages+' стор.'],
+    ['⭐','Середня оцінка',wrap.avgRating!=null?wrap.avgRating:'—'],
+    ['🌐','Улюблена мова',wrap.favLang?wrap.favLang.label:'—'],
+    ['🎭','Улюблений жанр',wrap.favGenre?wrap.favGenre.label:'—'],
+    ['✍️','Улюблений автор',wrap.favAuthor?wrap.favAuthor.name:'—'],
+  ].map(([icon,lbl,val])=>`<div class="wrap-fact-row"><span class="wrap-fact-icon">${icon}</span><span class="wrap-fact-lbl">${lbl}</span><span class="wrap-fact-val">${val}</span></div>`).join('');
+  const bestMonthCard=wrap.bestMonth?`<div class="wrap-month-card">
+    <div class="wrap-month-lbl">📅 Найпродуктивніший місяць</div>
+    <div class="wrap-month-name">${monthLbls[wrap.bestMonth.idx]}</div>
+    <div class="wrap-month-count">${wrap.bestMonth.count} ${bookWord(wrap.bestMonth.count)}</div>
+  </div>`:'';
+
+  el.innerHTML=`<div class="stats-chart-card">${controls}${inProgressNote}${heroTiles}${bookCards}<div class="wrap-facts">${facts}</div>${bestMonthCard}</div>`;
+}
+
 function renderGeneralStatsWidget(){
   const el=document.getElementById('general-stats-widget');if(!el)return;
   const d=pd();
@@ -1027,9 +1157,11 @@ function lastCaughtSprite(d,filterFn){
 const ACHIEVEMENTS=[
   {key:'books',title:'Книгоман',emoji:'📚',unit:'книг',tiers:[10,50,100,200,300,500],
     valueFn:d=>(d.books||[]).length,
+    reward:{pid:151,name:'Мью'},
     desc:t=>`Прочитати ${t} ${bookWord(t)}`},
   {key:'pages',title:'Сторінкоїд',emoji:'📖',unit:'сторінок',tiers:[500,5000,10000,50000,100000,150000],
     valueFn:d=>(d.books||[]).reduce((s,b)=>s+(b.pages||0),0),
+    reward:{pid:150,name:'Мьюту'},
     desc:t=>`Прочитати ${t} сторінок`},
   {key:'monthBooks',title:'Місячний ривок',emoji:'🗓️',unit:'книг цього місяця',resets:true,tiers:[3,5,10],
     valueFn:d=>booksInMonth(d,curMonthKey()),
@@ -1039,10 +1171,12 @@ const ACHIEVEMENTS=[
     desc:t=>`Прочитати книгу на ${t}+ сторінок`},
   {key:'author',title:'Фанат автора',emoji:'✍️',unit:'книг одного автора',tiers:[3,5,10,20],
     valueFn:maxByAuthor,
+    reward:{pid:144,name:'Артикуно'},
     desc:t=>`Прочитати ${t} ${bookWord(t)} одного автора`},
   {key:'species',title:'Колекціонер видів',emoji:'🐣',unit:'видів',tiers:[10,25,50,100],
     valueFn:d=>Object.keys(d.progress||{}).length,
     iconFn:d=>lastCaughtSprite(d),
+    reward:{pid:249,name:'Лугія'},
     desc:t=>`Спіймати ${t} різних видів покемонів`},
   {key:'bought',title:'Покупець',emoji:'🛒',unit:'покупок',tiers:[3,10,25,50],
     valueFn:d=>d.totalBought||0,
@@ -1050,6 +1184,7 @@ const ACHIEVEMENTS=[
   {key:'mega',title:'Мега-майстер',emoji:'🐉',unit:'мег',tiers:[1,5,10,15],
     valueFn:d=>megasCaughtIn(d,ALL_KANTO_LOCS),
     iconFn:d=>lastCaughtSprite(d,(ch,idx)=>ch.stages[idx].mega),
+    reward:{pid:243,name:'Райкоу'},
     desc:t=>`Виростити ${t} ${pokeWord(t)} до Мега-еволюції`},
   {key:'coinsSpent',title:'Транжира',emoji:'🪙',unit:'монет витрачено',tiers:[25,75,150,300,600,1000],
     valueFn:d=>d.totalCoinsSpent||0,
@@ -1057,23 +1192,28 @@ const ACHIEVEMENTS=[
   {key:'locations',title:'Дослідник',emoji:'🗺️',unit:'локацій',tiers:[3,5,7],
     valueFn:d=>(d.unlockedLocs||[]).length,
     desc:t=>`Відкрити ${t} ${locWord(t)}`},
-  {key:'polyglot',title:'Поліглот',emoji:'🌐',unit:'мов серед прочитаного',tiers:[2,3],
+  {key:'polyglot',title:'Поліглот',emoji:'🌐',unit:'мов серед прочитаного',tiers:[2,3,4],
     valueFn:d=>langBreakdown(d.books||[]).length,
     desc:t=>`Прочитати книги ${t} різними мовами`},
   {key:'genreVariety',title:'Всеїдний читач',emoji:'🎭',unit:'жанрів серед прочитаного',tiers:[3,6,10,16],
     valueFn:d=>new Set((d.books||[]).map(b=>b.genre).filter(Boolean)).size,
+    reward:{pid:146,name:'Молтрес'},
     desc:t=>`Прочитати книги ${t} різних жанрів`},
   {key:'genreFan',title:'Знавець жанру',emoji:'📗',unit:'книг одного жанру',tiers:[5,10,25,50],
     valueFn:maxByGenre,
+    reward:{pid:244,name:'Ентей'},
     desc:t=>`Прочитати ${t} ${bookWord(t)} одного жанру`},
   {key:'longPlayer',title:'Довгограй',emoji:'📆',unit:'місяців з хоча б 1 книгою',tiers:[3,6,12,24],
     valueFn:distinctActiveMonths,
+    reward:{pid:250,name:'Хо-Ох'},
     desc:t=>`Прочитати хоча б 1 книгу у ${t} різних місяцях`},
   {key:'fiveStars',title:'Найвища оцінка',emoji:'⭐',unit:'книг з оцінкою 5',tiers:[5,10,20],
     valueFn:d=>(d.books||[]).filter(b=>b.rating===5).length,
+    reward:{pid:145,name:'Запдос'},
     desc:t=>`Оцінити ${t} ${bookWord(t)} на 5 зірок`},
   {key:'streak',title:'Серія без пропусків',emoji:'🔥',unit:'місяців поспіль',tiers:[2,3,6,12],
     valueFn:d=>d.bestGoalStreak||0,
+    reward:{pid:245,name:'Суікун'},
     desc:t=>`Виконати місячну ціль ${t} ${pluralUA(t,'місяць','місяці','місяців')} поспіль`},
 ];
 function achievementTierInfo(a,d){
@@ -1088,6 +1228,42 @@ function achievementsTotals(d){
   let unlocked=0,total=0;
   ACHIEVEMENTS.forEach(a=>{const info=achievementTierInfo(a,d);unlocked+=info.unlockedCount;total+=info.totalTiers;});
   return{unlocked,total};
+}
+// Snapshot which achievements are FULLY maxed right now — call before and
+// after a mutating action, then diff to find newly-completed ones (works for
+// resettable achievements too, since valueFn is always recomputed live).
+function fullyCompletedKeys(d){
+  return new Set(ACHIEVEMENTS.filter(a=>{
+    const info=achievementTierInfo(a,d);
+    return info.unlockedCount>=info.totalTiers;
+  }).map(a=>a.key));
+}
+function newlyCompletedAchievements(d,beforeSet){
+  return ACHIEVEMENTS.filter(a=>{
+    if(beforeSet.has(a.key))return false;
+    const info=achievementTierInfo(a,d);
+    return info.unlockedCount>=info.totalTiers;
+  });
+}
+function celebrateNewAchievements(d,beforeSet){
+  newlyCompletedAchievements(d,beforeSet).forEach(a=>qM(()=>showAchievementCelebration(a)));
+}
+function _achievementCelebrationContentHTML(a){
+  const marksHtml=a.tiers.map(t=>`<div class="tier-mark reached"><span class="tier-mark-icon">✅</span><span class="tier-mark-val">${t}</span></div>`).join('');
+  const barHtml=a.tiers.map(()=>`<div class="tier-seg"><div class="tier-seg-fill" style="width:100%"></div></div>`).join('');
+  const rewardHtml=a.reward?`<div class="ach-reward-box unlocked" style="margin-top:14px">
+      <img src="${img(a.reward.pid)}" style="width:64px;height:64px;image-rendering:pixelated" onerror="this.style.display='none'">
+      <div class="ach-reward-lbl">Нова нагорода: ${a.reward.name}!</div>
+    </div>`:'';
+  return`<div class="m-emoji">🏆</div>
+    <div class="m-title" style="text-align:center">Ачівку завершено!</div>
+    <div class="m-desc" style="text-align:center;margin-bottom:6px"><b>${a.title}</b> — усі рівні відкрито!</div>
+    <div class="tier-bar">${barHtml}</div>
+    <div class="tier-marks">${marksHtml}</div>
+    ${rewardHtml}`;
+}
+function showAchievementCelebration(a){
+  mHTML(`${M_CLOSE_BTN}${_achievementCelebrationContentHTML(a)}`);
 }
 function renderAchievementsWidget(){
   const el=document.getElementById('achievements-widget');if(!el)return;
@@ -1158,6 +1334,16 @@ function achievementDetailHTML(a,d){
   const barHtml=segs.map(s=>`<div class="tier-seg"><div class="tier-seg-fill" style="width:${s.pct}%"></div></div>`).join('');
   const marksHtml=segs.map(s=>`<div class="tier-mark ${s.reached?'reached':''}"><span class="tier-mark-icon">${s.reached?'✅':'🔒'}</span><span class="tier-mark-val">${s.target}</span></div>`).join('');
   const captionText=info.nextTier?`${Math.min(info.val,info.nextTier)}/${info.nextTier} до наступного рівня`:'Усі рівні відкрито!';
+  const maxed=info.unlockedCount>=info.totalTiers;
+  const rewardBox=a.reward?(maxed
+    ?`<div class="ach-reward-box unlocked">
+        <img src="${img(a.reward.pid)}" style="width:56px;height:56px;image-rendering:pixelated" onerror="this.style.display='none'">
+        <div class="ach-reward-lbl">Нагорода: ${a.reward.name}</div>
+      </div>`
+    :`<div class="ach-reward-box">
+        <div class="ach-reward-lock">🔒</div>
+        <div class="ach-reward-lbl">Легендарна нагорода за останній рівень</div>
+      </div>`):'';
   return`<div class="ach-modal-hdr"><button onclick="openAchievementsModal()" class="ach-back-btn">← Усі нагороди</button></div>
     <div class="ach-grid-scroll">
       ${iconHtml}
@@ -1166,6 +1352,7 @@ function achievementDetailHTML(a,d){
       <div class="tier-caption">${captionText}</div>
       <div class="tier-bar">${barHtml}</div>
       <div class="tier-marks">${marksHtml}</div>
+      ${rewardBox}
     </div>`;
 }
 function openAchievementsModal(){
@@ -1480,6 +1667,7 @@ function doCatch(){
   }
   const pool=catchableStages(d.location);
   if(!pool.length){showToast('Тут усі покемони вже спіймані!');return;}
+  const beforeAch=fullyCompletedKeys(d);
   d.bookPoints--;
   const pick=pool[ri(0,pool.length-1)];
   d.progress[pick.chain.id]=pick.idx;
@@ -1491,6 +1679,7 @@ function doCatch(){
   saveToCloud(cur);
   qM(()=>mImg(img(stage.pid),'Спіймано '+stage.name+'!','Тепер у твоїй колекції.',[{l:'Чудово!',ok:true,cb:closeModal}]));
   opened.forEach(u=>qM(()=>mEmoji('🎉','Відкрито!',`${u.emoji} ${u.name} тепер доступна!`,[{l:'Чудово!',ok:true,cb:closeModal}])));
+  celebrateNewAchievements(d,beforeAch);
 }
 
 // ═══════════ SHOP (buy pokemon for coins) ═══════════
@@ -1545,6 +1734,7 @@ function buyChainStage(chainId,idx){
   const d=pd();const chain=CHAINS.find(c=>c.id===chainId);if(!chain)return;
   const price=stagePrice(chain,idx);
   if(d.coins<price)return;
+  const beforeAch=fullyCompletedKeys(d);
   d.coins-=price;d.progress[chainId]=idx;
   d.totalBought=(d.totalBought||0)+1;
   d.totalCoinsSpent=(d.totalCoinsSpent||0)+price;
@@ -1553,12 +1743,16 @@ function buyChainStage(chainId,idx){
   const opened=checkUnlocks();
   if(opened.length)renderMap();
   saveToCloud(cur);
+  const newAch=newlyCompletedAchievements(d,beforeAch);
   // Stay inside the same modal box throughout — swap content in place (bought ->
-  // any unlock notices -> back to the shop) instead of closing it, so the player
-  // lands back in the shop afterward rather than getting bounced out entirely.
+  // any unlock notices -> any newly-finished achievements -> back to the shop)
+  // instead of closing it, so the player lands back in the shop afterward
+  // rather than getting bounced out entirely. Achievement celebrations ride
+  // this same queue (not qM) so they never fight the shop over the modal box.
   _shopFlowQueue=[
     {type:'bought',pid:chain.stages[idx].pid,name:chain.stages[idx].name},
     ...opened.map(u=>({type:'unlocked',emoji:u.emoji,name:u.name})),
+    ...newAch.map(a=>({type:'achievement',achievement:a})),
   ];
   _shopFlowNext();
 }
@@ -1568,8 +1762,10 @@ function _shopFlowNext(){
     const item=_shopFlowQueue.shift();
     if(item.type==='bought'){
       box.innerHTML=`${M_CLOSE_BTN}<img class="m-img" src="${img(item.pid)}" onerror="this.style.display='none'"><div class="m-title">Куплено!</div><div class="m-desc" style="text-align:center">${item.name} тепер у твоїй колекції.</div><div class="m-btns"><button class="btn-ok" onclick="_shopFlowNext()">Чудово!</button></div>`;
-    } else {
+    } else if(item.type==='unlocked'){
       box.innerHTML=`${M_CLOSE_BTN}<div class="m-emoji">🎉</div><div class="m-title">Відкрито!</div><div class="m-desc" style="text-align:center">${item.emoji} ${item.name} тепер доступна!</div><div class="m-btns"><button class="btn-ok" onclick="_shopFlowNext()">Чудово!</button></div>`;
+    } else {
+      box.innerHTML=`${M_CLOSE_BTN}${_achievementCelebrationContentHTML(item.achievement)}<div class="m-btns" style="margin-top:12px"><button class="btn-ok" onclick="_shopFlowNext()">Чудово!</button></div>`;
     }
   } else {
     openShop();
@@ -1774,30 +1970,88 @@ function _renderBookHTML(book, i, sc=1){
   </div>`;
 }
 
-function _buildLibraryHTML(){
-  const d=pd();
-  const books=d.books||[];
-  const totalPages=books.reduce((s,b)=>s+(b.pages||0),0);
-  const header=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#7eceff;font-weight:600">Моя Бібліотека</div>
-    <div style="font-size:11px;color:#778">${books.length} книг · ${totalPages} стор.</div></div>`;
-  if(!books.length){
-    return header+`<div style="text-align:center;padding:40px 0;color:#778;font-size:13px;line-height:2">📚<br>Ще немає книжок.<br>Додай першу книгу!</div>`;
+let _libViewMode='shelves',_libSortBy='size';
+function _computeShelfGroups(withIdx,sortBy){
+  if(sortBy==='genre'){
+    const groups={};
+    withIdx.forEach(({b,i})=>{
+      const key=b.genre||'Без жанру';
+      if(!groups[key])groups[key]=[];
+      groups[key].push({b,i});
+    });
+    return Object.entries(groups).sort((a,b)=>b[1].length-a[1].length)
+      .map(([label,items])=>({label,cls:'',items}));
   }
-  // Fixed 3 shelves by size — each one scrolls sideways instead of spawning new rows.
+  if(sortBy==='author'){
+    const groups={};
+    withIdx.forEach(({b,i})=>{
+      const raw=(b.author||'').trim();
+      const key=raw?raw.toLowerCase():'__unknown__';
+      if(!groups[key])groups[key]={label:raw||'Невідомий автор',items:[]};
+      groups[key].items.push({b,i});
+    });
+    return Object.values(groups).sort((a,b)=>b.items.length-a.items.length)
+      .map(g=>({label:g.label,cls:'',items:g.items}));
+  }
+  // default: fixed shelves by size — each one scrolls sideways instead of spawning new rows.
   const SHELVES=[
     {label:'Менші книги · до 300 стор.',    test:p=>p<300,              cls:'compact'},
     {label:'Середні книги · 300–700 стор.', test:p=>p>=300&&p<700,      cls:''},
     {label:'Цеглини · 700+ стор.',          test:p=>p>=700,             cls:''},
   ];
+  return SHELVES.map(sh=>({label:sh.label,cls:sh.cls,items:withIdx.filter(({b})=>sh.test(b.pages||0))}));
+}
+function _buildWallHTML(books){
+  const withIdx=[...books].map((b,i)=>({b,i})).reverse();
+  const tiles=withIdx.map(({b,i})=>{
+    const[top,bot]=_colorFor(b.title);
+    const cover=b.coverUrl
+      ?`<img src="${b.coverUrl}" style="width:100%;height:100%;object-fit:cover">`
+      :`<div style="width:100%;height:100%;background:linear-gradient(150deg,${top},${bot});display:flex;align-items:center;justify-content:center;padding:5px;text-align:center;font-size:9px;font-weight:700;color:rgba(255,255,255,.75);overflow:hidden">${b.title}</div>`;
+    return`<div class="wall-tile" onclick="openBookDetail(${i})">${cover}</div>`;
+  }).join('');
+  return`<div class="wall-grid">${tiles}</div>`;
+}
+function _buildLibrarySettingsHTML(){
+  return`${M_CLOSE_BTN}<div class="m-title">⚙️ Вигляд бібліотеки</div>
+    <div class="flbl">Вигляд</div>
+    <div class="goal-tabs" style="margin-bottom:14px">
+      <button class="goal-tab ${_libViewMode==='shelves'?'act':''}" onclick="setLibViewMode('shelves')">📚 Полиці</button>
+      <button class="goal-tab ${_libViewMode==='wall'?'act':''}" onclick="setLibViewMode('wall')">🖼️ Стіна</button>
+    </div>
+    <div class="flbl" style="${_libViewMode==='wall'?'opacity:.4':''}">Сортування полиць</div>
+    <div class="goal-tabs" style="${_libViewMode==='wall'?'opacity:.4;pointer-events:none':''}">
+      <button class="goal-tab ${_libSortBy==='size'?'act':''}" onclick="setLibSortBy('size')">Розмір</button>
+      <button class="goal-tab ${_libSortBy==='genre'?'act':''}" onclick="setLibSortBy('genre')">Жанр</button>
+      <button class="goal-tab ${_libSortBy==='author'?'act':''}" onclick="setLibSortBy('author')">Автор</button>
+    </div>`;
+}
+function openLibrarySettings(){
+  const box=document.querySelector('#mOv .modal-box');
+  if(box){box.innerHTML=_buildLibrarySettingsHTML();return;}
+  mHTML(_buildLibrarySettingsHTML());
+}
+function setLibViewMode(m){_libViewMode=m;openLibrarySettings();renderLibraryTab();}
+function setLibSortBy(s){_libSortBy=s;openLibrarySettings();renderLibraryTab();}
+function _buildLibraryHTML(){
+  const d=pd();
+  const books=d.books||[];
+  const header=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#7eceff;font-weight:600">Моя Бібліотека</div>
+    <button onclick="openLibrarySettings()" style="background:none;border:none;cursor:pointer;font-size:18px;color:#7eceff;padding:4px" title="Налаштування вигляду">⚙️</button>
+  </div>`;
+  if(!books.length){
+    return header+`<div style="text-align:center;padding:40px 0;color:#778;font-size:13px;line-height:2">📚<br>Ще немає книжок.<br>Додай першу книгу!</div>`;
+  }
+  if(_libViewMode==='wall')return header+_buildWallHTML(books);
   const withIdx=[...books].map((b,i)=>({b,i})).reverse(); // newest first within each shelf
+  const groups=_computeShelfGroups(withIdx,_libSortBy);
   let shelves='';
-  SHELVES.forEach(sh=>{
-    const items=withIdx.filter(({b})=>sh.test(b.pages||0));
-    if(!items.length)return;
+  groups.forEach(sh=>{
+    if(!sh.items.length)return;
     shelves+=`<div class="shelf-row">
-      <div class="shelf-label">${sh.label} · ${items.length}</div>
-      <div class="shelf-books ${sh.cls}">${items.map(({b,i})=>_renderBookHTML(b,i,0.72)).join('')}</div>
+      <div class="shelf-label">${sh.label} · ${sh.items.length}</div>
+      <div class="shelf-books ${sh.cls}">${sh.items.map(({b,i})=>_renderBookHTML(b,i,0.72)).join('')}</div>
       <div class="shelf-plank"></div>
     </div>`;
   });
@@ -1836,12 +2090,14 @@ function onBdStarClick(event,i){
 
 function saveBookDetail(i){
   const d=pd();const book=(d.books||[])[i];if(!book)return;
+  const beforeAch=fullyCompletedKeys(d);
   const url=(document.getElementById('bd-cover-url').value||'').trim();
   const genre=document.getElementById('bd-genre').value||'';
   book.coverUrl=url||null;
   if(genre)book.genre=genre;else delete book.genre;
   if(_bdRating)book.rating=_bdRating;else delete book.rating;
   saveToCloud(cur);closeModal();renderLibraryTab();renderAchievementsWidget();renderGeneralStatsWidget();
+  celebrateNewAchievements(d,beforeAch);
 }
 
 function confirmDeleteBook(i){
@@ -1904,6 +2160,7 @@ function submitPages(){
   if(!author){showFormError('Введи автора');return;}
   if(!pages||pages<1){showFormError('Введи кількість сторінок');return;}
   const d=pd();
+  const beforeAch=fullyCompletedKeys(d);
   const coins=coinsForPages(pages);
   d.bookPoints=(d.bookPoints||0)+1;
   d.booksRead=(d.booksRead||0)+1;
@@ -1916,6 +2173,7 @@ function submitPages(){
   renderRes();renderActions();renderLibraryTab();renderAchievementsWidget();renderGeneralStatsWidget();closeSidePanel();saveToCloud(cur);
   const preview=_renderBookPreviewHTML(book);
   qM(()=>mHTML(`${M_CLOSE_BTN}${preview}<div class="m-title">Книга додана!</div><div class="m-desc" style="text-align:center">+1📙 &nbsp; +${coins}🪙</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Вперед!</button></div>`));
+  celebrateNewAchievements(d,beforeAch);
 }
 
 function showToast(msg){
