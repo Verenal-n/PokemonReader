@@ -1690,7 +1690,13 @@ function enterGame(){
   initState(cur);
   renderGuestBar();
   friendsData={friends:[],incoming:[],outgoing:[]};
-  if(!me.guest)loadFriends(true);   // тихо, у фоні — гру не затримує
+  if(!me.guest){
+    // Спершу викладаємо свій зліпок, потім забираємо друзів — обидва тихо,
+    // у фоні. Без pushPublic картка в друзів висіла б порожньою («щойно
+    // приєднався») аж до моменту, коли ти щось зробиш у грі.
+    pushPublic();
+    loadFriends(true);
+  }
   checkUnlocks();
   renderMain();
   show('screen-main');
@@ -1886,6 +1892,15 @@ function countMega(d){
     if(ch&&ch.stages[st-1]&&ch.stages[st-1].mega)n++;
   });
   return n;
+}
+
+// Викласти свій публічний зліпок, не перезаписуючи блоб сейву.
+async function pushPublic(){
+  if(!me||me.guest||!me.token||!cur)return;
+  try{
+    await _api({action:'pubSet',userId:me.userId,token:me.token,
+                pub:JSON.stringify(buildPublicSummary(state.players[cur]))});
+  }catch(e){console.warn('[pub] не вдалося оновити зліпок',e);}
 }
 
 async function loadFriends(silent){
@@ -2516,7 +2531,7 @@ function openProfileSettings(){
     <div style="position:relative;width:86px;height:86px;margin:2px auto 12px">
       <div id="ps-av-box" onclick="togglePsAvatarForm()" title="Змінити аватар"
         style="width:100%;height:100%;border-radius:50%;overflow:hidden;cursor:pointer;border:3px solid ${curClr};box-sizing:border-box;background:rgba(255,255,255,.04)">${avInner}</div>
-      <div onclick="togglePsAvatarForm()" title="Змінити аватар"
+      <div id="ps-av-pencil" onclick="togglePsAvatarForm()" title="Змінити аватар"
         style="position:absolute;right:-3px;bottom:-3px;width:28px;height:28px;border-radius:50%;background:${curClr};box-shadow:0 0 0 2px #1e2d4a;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer">✎</div>
     </div>
     <div id="ps-av-form" style="display:none;margin-bottom:14px" onclick="event.stopPropagation()">
@@ -2529,14 +2544,13 @@ function openProfileSettings(){
     <div style="text-align:left;margin-bottom:16px">
       <div class="flbl">Нікнейм</div>
       <input type="text" id="ps-name" class="finput" value="${name}" maxlength="20" placeholder="${p.name}">
-      <div class="flbl" style="margin-top:10px">Колір</div>
-      <div style="display:flex;gap:8px;margin-bottom:4px">${swatches}</div>
+      <div style="display:flex;gap:8px;margin:12px 0 4px">${swatches}</div>
       <input type="hidden" id="ps-color" value="${curClr}">
     </div>
     <button class="btn-ok" id="ps-save" style="width:100%;padding:13px;font-size:14px;min-height:44px" onclick="saveProfileSettings()">Зберегти</button>
     <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:7px">
       <div style="font-size:10.5px;color:#8a97ad;text-align:center">
-        ${me&&me.guest?'Гість — прогрес лише на цьому пристрої':'Читач · вхід: '+(me&&me.nick||'')}
+        ${me&&me.guest?'Гість — прогрес лише на цьому пристрої':'Читач'}
       </div>
       ${me&&me.guest?`<button class="btn-cancel" style="width:100%" onclick="closeModal();openClaim()">🔑 У мене є код запрошення</button>`:''}
       <button class="btn-cancel" style="width:100%" onclick="openChangePass()">Змінити пароль</button>
@@ -2565,7 +2579,15 @@ function openAbout(){
 function selectProfileColor(c){
   document.getElementById('ps-color').value=c;
   PROFILE_COLORS.forEach(h=>{const el=document.getElementById('pclr'+h.replace('#',''));if(el)el.style.borderColor=h===c?'#fff':'transparent';});
-  const prev=document.getElementById('ps-prev');if(prev)prev.style.borderColor=c;
+  // Колір видно на кружечку одразу, не чекаючи «Зберегти»: обідок, олівець
+  // і намальована заглушка перефарбовуються на місці.
+  const box=document.getElementById('ps-av-box');
+  if(box){
+    box.style.borderColor=c;
+    if(!box.querySelector('img'))box.innerHTML=avatarPlaceholderSVG(c,86);
+  }
+  const pencil=document.getElementById('ps-av-pencil');
+  if(pencil)pencil.style.background=c;
 }
 // Нік один і той самий і для входу, і для показу — щоб не було двох різних
 // "ніків". Змінюється тут; userId при цьому не змінюється ніколи.
