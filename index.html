@@ -120,7 +120,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stats-metric-tab.act{background:#2a3550;color:#fff;}
 .stats-chart-svg{display:block;width:100%;height:110px;}
 .wrap-book-row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
-.wrap-book-card{flex:1 1 140px;display:flex;gap:8px;background:rgba(255,255,255,.04);border-radius:10px;padding:8px;min-width:0;}
+.wrap-book-card{flex:1 1 140px;display:flex;gap:8px;background:rgba(255,255,255,.04);border-radius:10px;padding:8px;min-width:0;cursor:pointer;}
 .wrap-book-info{min-width:0;}
 .wrap-book-lbl{font-size:9px;color:#7eceff;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
 .wrap-book-title{font-size:11px;color:#fff;font-weight:600;margin:2px 0;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
@@ -196,11 +196,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-cancel{background:rgba(255,255,255,.08);color:#ccc;border:1px solid rgba(255,255,255,.15);}
 .btn-cancel:hover{background:rgba(255,255,255,.14);}
 .flbl{font-size:10px;color:#7eceff;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;}
+.form-section{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px;margin-bottom:14px;}
+.form-section-title{font-size:12px;font-weight:700;color:#fff;margin-bottom:10px;}
+.cover-preview-box{width:52px;height:74px;border-radius:8px;background:rgba(255,255,255,.06);border:1px dashed rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden;}
+.cover-pencil-btn{background:rgba(126,206,255,.12);border:1px solid rgba(126,206,255,.3);border-radius:8px;color:#7eceff;font-size:14px;padding:8px 10px;cursor:pointer;font-family:inherit;}
 .finput{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:9px 12px;color:#fff;font-size:13px;outline:none;margin-bottom:10px;}
 .finput:focus{border-color:#7eceff;}
 select option{background:#1e2d4a;color:#fff;}
 .ppill{background:rgba(126,206,255,.15);color:#7eceff;font-size:12px;font-weight:600;padding:8px;border-radius:10px;text-align:center;margin-bottom:10px;}
 .sp-error{background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.35);color:#f87171;font-size:12px;font-weight:600;padding:9px 12px;border-radius:10px;text-align:center;margin-bottom:10px;}
+.bd-hero{position:relative;margin:-1.5rem -1.5rem 14px;padding:26px 1.5rem 14px;display:flex;justify-content:center;overflow:hidden;}
+.bd-hero-bg{position:absolute;inset:-25%;background-size:cover;background-position:center;filter:blur(30px) saturate(150%) brightness(.65);transform:scale(1.15);}
+.bd-hero-fade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(30,45,74,0) 45%,#1e2d4a 100%);}
+.bd-cover-tap{position:relative;cursor:pointer;z-index:1;}
+.bd-delete-btn{display:block;margin:6px auto 0;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#a0a8bb;font-size:14px;cursor:pointer;}
+.bd-delete-btn:hover{background:rgba(239,68,68,.15);color:#f87171;border-color:rgba(239,68,68,.3);}
 .shelf-wrap{width:100%;display:flex;flex-direction:column;gap:16px;background:#111009;border-radius:10px;padding:14px 0;}
 .wall-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px;}
 .wall-tile{aspect-ratio:2/3;border-radius:6px;overflow:hidden;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.4);}
@@ -618,12 +628,12 @@ function statsForPeriod(d,period){
 // Cyrillic titles are split into Ukrainian/Russian via letters unique to each
 // alphabet (і/ї/є/ґ vs ы/э/ъ); Latin titles are matched against a few common
 // diacritic sets, defaulting to English when nothing distinctive is found.
-const GENRES=['Фентезі','Пригоди','Наукова фантастика','Детектив','Дитяча','Підліткова','Гумор','Історичне','Жахи / Містика','Реалізм','Нонфікшн','Комікс / Манга','Романтика','Класика','Антиутопія','Трилер'];
+const GENRES=['Фентезі','Пригоди','Наукова фантастика','Детектив','Дитяча','Історичне','Жахи / Містика','Реалізм','Нонфікшн','Комікс / Манга','Романтика','Класика','Антиутопія','Трилер','Інше'];
 const GENRE_COLORS={
   'Фентезі':'#a78bfa','Пригоди':'#fb923c','Наукова фантастика':'#38bdf8','Детектив':'#818cf8',
-  'Дитяча':'#facc15','Підліткова':'#f472b6','Гумор':'#a3e635','Історичне':'#fbbf24',
+  'Дитяча':'#facc15','Історичне':'#fbbf24',
   'Жахи / Містика':'#f87171','Реалізм':'#2dd4bf','Нонфікшн':'#22d3ee','Комікс / Манга':'#e879f9',
-  'Романтика':'#c084fc','Класика':'#60a5fa','Антиутопія':'#34d399','Трилер':'#4ade80',
+  'Романтика':'#c084fc','Класика':'#60a5fa','Антиутопія':'#34d399','Трилер':'#4ade80','Інше':'#9ca3af',
 };
 const LANG_META={
   uk:{label:'Українська',color:'#60a5fa'},
@@ -990,7 +1000,7 @@ function _wrapBookCardHTML(book,label,statText){
   const cover=book.coverUrl
     ?`<img src="${book.coverUrl}" style="width:${cw}px;height:${h}px;object-fit:cover;border-radius:4px;flex-shrink:0">`
     :`<div style="width:${cw}px;height:${h}px;background:linear-gradient(150deg,${top},${bot});border-radius:4px;flex-shrink:0"></div>`;
-  return`<div class="wrap-book-card">${cover}
+  return`<div class="wrap-book-card" onclick="openBookDetail(${book._ownerIdx},'${book._ownerId}')">${cover}
     <div class="wrap-book-info">
       <div class="wrap-book-lbl">${label}</div>
       <div class="wrap-book-title">${book.title}</div>
@@ -1003,7 +1013,9 @@ function renderYearWrapWidget(){
   const d=pd();
   if(!_wrapYear)_wrapYear=curYearKey();
   const years=availableStatsYears(d);
-  const books=_wrapScope==='family'?PLAYERS.flatMap(p=>(state.players[p.id]&&state.players[p.id].books)||[]):(d.books||[]);
+  const books=_wrapScope==='family'
+    ?PLAYERS.flatMap(p=>((state.players[p.id]&&state.players[p.id].books)||[]).map((b,idx)=>({...b,_ownerId:p.id,_ownerIdx:idx})))
+    :(d.books||[]).map((b,idx)=>({...b,_ownerId:cur,_ownerIdx:idx}));
   const wrap=computeYearWrap(books,_wrapYear);
   const isCurrentYear=_wrapYear===curYearKey();
   const monthLbls=['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
@@ -1195,7 +1207,7 @@ const ACHIEVEMENTS=[
   {key:'polyglot',title:'Поліглот',emoji:'🌐',unit:'мов серед прочитаного',tiers:[2,3,4],
     valueFn:d=>langBreakdown(d.books||[]).length,
     desc:t=>`Прочитати книги ${t} різними мовами`},
-  {key:'genreVariety',title:'Всеїдний читач',emoji:'🎭',unit:'жанрів серед прочитаного',tiers:[3,6,10,16],
+  {key:'genreVariety',title:'Всеїдний читач',emoji:'🎭',unit:'жанрів серед прочитаного',tiers:[3,6,10,15],
     valueFn:d=>new Set((d.books||[]).map(b=>b.genre).filter(Boolean)).size,
     reward:{pid:146,name:'Молтрес'},
     desc:t=>`Прочитати книги ${t} різних жанрів`},
@@ -1853,8 +1865,10 @@ function _starClickIsHalf(event){
 
 // ═══════════ SIDE PANEL ═══════════
 let _addBookRating=0;
+let _spSectionOpen={data:false,genre:false};
 function openSidePanel(){
   _addBookRating=0;
+  _spSectionOpen={data:false,genre:false};
   document.getElementById('side-content').innerHTML=_buildPagesHTML();
   document.getElementById('side-panel').classList.add('open');
   document.getElementById('side-ov').classList.add('open');
@@ -1864,32 +1878,86 @@ function onAddStarClick(event,i){
   document.getElementById('add-book-stars').innerHTML=starRatingHTML(_addBookRating,true,'onAddStarClick');
 }
 
+function _spSectionHdr(key,label){
+  const open=_spSectionOpen[key];
+  return`<div class="form-section-title" onclick="toggleSpSection('${key}')" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:${open?'10px':'0'}">
+    <span>${label}</span><span id="sp-chevron-${key}">${open?'▾':'▸'}</span>
+  </div>`;
+}
 function _buildPagesHTML(){
   return`<div style="margin-bottom:1rem">
-      <div class="flbl">Посилання на Goodreads <span style="color:#9cc9f0;font-weight:400;text-transform:none;letter-spacing:normal">(це автоматично заповнить поля нижче)</span></div>
-      <div style="display:flex;gap:6px;margin-bottom:10px">
-        <input type="url" id="sp-goodreads" class="finput" placeholder="https://www.goodreads.com/book/show/…" style="font-size:11px;margin-bottom:0;flex:1">
-        <button id="sp-parse-btn" onclick="parseGoodreadsLink()" style="flex-shrink:0;padding:0 14px;font-size:12px;font-weight:600;background:rgba(126,206,255,.15);border:1px solid rgba(126,206,255,.3);border-radius:10px;color:#7eceff;cursor:pointer">Розпізнати</button>
+      <div class="form-section">
+        <div class="form-section-title">🔍 Розпізнавання</div>
+        <div class="flbl">Посилання на Goodreads <a href="https://www.goodreads.com" target="_blank" rel="noopener" style="color:#9cc9f0;font-weight:400;text-transform:none;letter-spacing:normal;text-decoration:underline">goodreads.com ↗</a></div>
+        <div style="display:flex;gap:6px">
+          <input type="url" id="sp-goodreads" class="finput" placeholder="https://www.goodreads.com/book/show/…" style="font-size:11px;margin-bottom:0;flex:1">
+          <button id="sp-parse-btn" onclick="parseGoodreadsLink()" style="flex-shrink:0;padding:0 14px;font-size:12px;font-weight:600;background:rgba(126,206,255,.15);border:1px solid rgba(126,206,255,.3);border-radius:10px;color:#7eceff;cursor:pointer">Розпізнати</button>
+        </div>
+        <div id="sp-goodreads-error" class="sp-error" style="display:none;margin-top:8px;margin-bottom:0"></div>
       </div>
-      <div class="flbl">Назва книги</div>
-      <input type="text" id="sp-book" class="finput" placeholder="Гаррі Поттер і філософський камінь">
-      <div class="flbl">Автор</div>
-      <input type="text" id="sp-author" class="finput" placeholder="Дж. К. Роулінґ">
-      <div class="flbl">Кількість сторінок</div>
-      <input type="number" id="sp-pages" class="finput" min="1" oninput="updSP()">
-      <div class="flbl" style="opacity:.6">Жанр</div>
-      <select id="sp-genre" class="finput">
-        <option value="">Оберіть жанр</option>
-        ${GENRES.map(g=>`<option value="${g}">${g}</option>`).join('')}
-      </select>
-      <div class="flbl" style="opacity:.6">Посилання на обкладинку</div>
-      <input type="url" id="sp-cover" class="finput" placeholder="https://…" style="font-size:11px">
-      <div id="sp-prev" style="display:none;margin-bottom:10px"></div>
-      <div class="flbl">Оцінка</div>
-      <div id="add-book-stars" style="margin-bottom:14px">${starRatingHTML(_addBookRating,true,'onAddStarClick')}</div>
+
+      <div class="form-section">
+        ${_spSectionHdr('data','📖 Дані книги')}
+        <div id="sp-section-data" style="display:${_spSectionOpen.data?'':'none'}">
+          <div class="flbl">Назва книги</div>
+          <input type="text" id="sp-book" class="finput" placeholder="Гаррі Поттер і філософський камінь">
+          <div class="flbl">Автор</div>
+          <input type="text" id="sp-author" class="finput" placeholder="Дж. К. Роулінґ">
+          <div class="flbl">Кількість сторінок</div>
+          <input type="number" id="sp-pages" class="finput" min="1" oninput="updSP()">
+          <div class="flbl" style="opacity:.6">Обкладинка</div>
+          <div class="cover-preview-wrap" onclick="toggleCoverEdit()" style="margin-bottom:8px">
+            <div class="cover-preview-box" id="sp-cover-preview">🖼️</div>
+          </div>
+          <div id="sp-cover-editform" style="display:none;margin-bottom:8px" onclick="event.stopPropagation()">
+            <input type="url" id="sp-cover" class="finput" placeholder="https://…" style="font-size:11px;margin-bottom:6px" oninput="updSpCoverPreview()">
+            <button type="button" class="btn-ok" style="width:100%;padding:8px;font-size:12px" onclick="confirmCoverEdit()">Зберегти обкладинку</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        ${_spSectionHdr('genre','🏷️ Жанр та оцінка')}
+        <div id="sp-section-genre" style="display:${_spSectionOpen.genre?'':'none'}">
+          <div class="flbl">Жанр</div>
+          <select id="sp-genre" class="finput">
+            <option value="">Оберіть жанр</option>
+            ${GENRES.map(g=>`<option value="${g}">${g}</option>`).join('')}
+          </select>
+          <div class="flbl">Оцінка</div>
+          <div id="add-book-stars" style="margin-bottom:0">${starRatingHTML(_addBookRating,true,'onAddStarClick')}</div>
+        </div>
+      </div>
+
       <div id="sp-error" class="sp-error" style="display:none"></div>
+      <div id="sp-prev" style="display:none;text-align:center"></div>
       <button class="btn-ok" id="sp-submit" onclick="submitPages()" style="width:100%;padding:14px;font-size:14px;min-height:48px">Зарахувати книгу</button>
     </div>`;
+}
+function toggleSpSection(key){
+  _spSectionOpen[key]=!_spSectionOpen[key];
+  document.getElementById('sp-section-'+key).style.display=_spSectionOpen[key]?'':'none';
+  document.getElementById('sp-chevron-'+key).textContent=_spSectionOpen[key]?'▾':'▸';
+}
+function openSpSection(key){
+  if(_spSectionOpen[key])return;
+  _spSectionOpen[key]=true;
+  document.getElementById('sp-section-'+key).style.display='';
+  document.getElementById('sp-chevron-'+key).textContent='▾';
+}
+function updSpCoverPreview(){
+  const url=(document.getElementById('sp-cover').value||'').trim();
+  const el=document.getElementById('sp-cover-preview');
+  el.innerHTML=url?`<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:8px" onerror="this.parentElement.textContent='🖼️'">`:'🖼️';
+}
+function toggleCoverEdit(){
+  const form=document.getElementById('sp-cover-editform');
+  const open=form.style.display==='none'||!form.style.display;
+  form.style.display=open?'':'none';
+  if(open)document.getElementById('sp-cover').focus();
+}
+function confirmCoverEdit(){
+  document.getElementById('sp-cover-editform').style.display='none';
 }
 
 const _BPALETTE=[
@@ -2059,39 +2127,64 @@ function _buildLibraryHTML(){
 }
 
 let _bdRating=0;
-function openBookDetail(i){
-  const d=pd();const book=(d.books||[])[i];if(!book)return;
+function openBookDetail(i,playerId){
+  const pid=playerId||cur;
+  const pdata=state.players[pid];const book=(pdata&&pdata.books||[])[i];if(!book)return;
+  const editable=pid===cur;
   _bdRating=book.rating||0;
   const [top,bot]=_colorFor(book.title);
   const cw=_coverW(book.pages||1),h=_bookH(book.pages||1);
-  const coverHtml=book.coverUrl
-    ?`<img src="${book.coverUrl}" style="width:${cw}px;height:${h}px;object-fit:cover;border-radius:4px;display:block;margin:0 auto 10px" onerror="this.style.display='none'">`
-    :`<div style="width:${cw}px;height:${h}px;background:linear-gradient(150deg,${top} 0%,${bot} 100%);border-radius:4px;margin:0 auto 10px"></div>`;
-  mHTML(`${M_CLOSE_BTN}
-    ${coverHtml}
-    <div class="m-title" style="font-size:15px">${book.title}</div>
-    <div style="text-align:center;font-size:12px;color:#aaa;margin-bottom:8px">${book.author||''}</div>
-    <div id="bd-stars" style="display:flex;justify-content:center;margin-bottom:8px">${starRatingHTML(_bdRating,true,'onBdStarClick')}</div>
-    <div style="text-align:center;font-size:11px;color:#778;margin-bottom:12px">${book.pages} стор. · ${book.date||''}</div>
-    <div class="flbl" style="opacity:.6">Жанр</div>
+  const heroStyle=book.coverUrl?`background-image:url('${book.coverUrl}')`:`background:linear-gradient(150deg,${top} 0%,${bot} 100%)`;
+  const coverBoxHtml=`<div id="bd-cover-box" style="width:${cw}px;height:${h}px;border-radius:6px;overflow:hidden;box-shadow:0 10px 24px rgba(0,0,0,.45);${book.coverUrl?'':`background:linear-gradient(150deg,${top} 0%,${bot} 100%);`}">${book.coverUrl?`<img id="bd-cover-img" src="${book.coverUrl}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`:''}</div>`;
+  const coverHtml=editable?`<div class="bd-cover-tap" onclick="toggleBdCoverEdit()">${coverBoxHtml}</div>`:coverBoxHtml;
+  const coverEditForm=editable?`<div id="bd-cover-editform" style="display:none;margin-bottom:12px" onclick="event.stopPropagation()">
+      <input type="url" id="bd-cover-input" class="finput" placeholder="https://…" style="font-size:11px;margin-bottom:6px" value="${book.coverUrl||''}" oninput="updBdCoverPreview()">
+      <button class="btn-ok" style="width:100%;padding:10px;font-size:13px" onclick="confirmBdCoverEdit()">Зберегти обкладинку</button>
+    </div>`:'';
+  const genreHtml=editable?`<div class="flbl" style="opacity:.6">Жанр</div>
     <select id="bd-genre" class="finput">
       <option value="">Оберіть жанр</option>
       ${GENRES.map(g=>`<option value="${g}" ${book.genre===g?'selected':''}>${g}</option>`).join('')}
-    </select>
-    <div class="flbl" style="opacity:.6">URL обкладинки</div>
-    <input type="url" id="bd-cover-url" class="finput" placeholder="https://…" value="${book.coverUrl||''}" style="font-size:11px">
-    <button class="btn-ok" style="width:100%;margin-bottom:8px;padding:12px;font-size:13px" onclick="saveBookDetail(${i})">Зберегти</button>
-    <button class="btn-cancel" style="width:100%;padding:12px;font-size:13px" onclick="confirmDeleteBook(${i})">🗑️ Видалити книгу</button>`);
+    </select>`:(book.genre?`<div style="text-align:center;font-size:12px;color:#ccc;margin-bottom:12px">${book.genre}</div>`:'');
+  const footer=editable?`<button class="btn-ok" style="width:100%;margin-top:4px;padding:12px;font-size:13px" onclick="saveBookDetail(${i})">Зберегти</button>
+    <button class="bd-delete-btn" onclick="confirmDeleteBook(${i})" title="Видалити книгу">🗑️</button>`:'';
+  mHTML(`${M_CLOSE_BTN}
+    <div class="bd-hero">
+      <div class="bd-hero-bg" style="${heroStyle}"></div>
+      <div class="bd-hero-fade"></div>
+      ${coverHtml}
+    </div>
+    ${coverEditForm}
+    <div class="m-title" style="font-size:15px">${book.title}</div>
+    <div style="text-align:center;font-size:12px;color:#aaa;margin-bottom:8px">${book.author||''}</div>
+    <div id="bd-stars" style="display:flex;justify-content:center;margin-bottom:8px">${starRatingHTML(_bdRating,editable,'onBdStarClick')}</div>
+    <div style="text-align:center;font-size:11px;color:#778;margin-bottom:12px">${book.pages} стор. · ${book.date||''}</div>
+    ${genreHtml}
+    ${footer}`);
 }
 function onBdStarClick(event,i){
   _bdRating=i-(_starClickIsHalf(event)?0.5:0);
   document.getElementById('bd-stars').innerHTML=starRatingHTML(_bdRating,true,'onBdStarClick');
 }
+function toggleBdCoverEdit(){
+  const form=document.getElementById('bd-cover-editform');if(!form)return;
+  const open=form.style.display==='none'||!form.style.display;
+  form.style.display=open?'':'none';
+  if(open)document.getElementById('bd-cover-input').focus();
+}
+function updBdCoverPreview(){
+  const url=(document.getElementById('bd-cover-input').value||'').trim();
+  const box=document.getElementById('bd-cover-box');
+  box.innerHTML=url?`<img id="bd-cover-img" src="${url}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`:'';
+}
+function confirmBdCoverEdit(){
+  document.getElementById('bd-cover-editform').style.display='none';
+}
 
 function saveBookDetail(i){
   const d=pd();const book=(d.books||[])[i];if(!book)return;
   const beforeAch=fullyCompletedKeys(d);
-  const url=(document.getElementById('bd-cover-url').value||'').trim();
+  const url=(document.getElementById('bd-cover-input').value||'').trim();
   const genre=document.getElementById('bd-genre').value||'';
   book.coverUrl=url||null;
   if(genre)book.genre=genre;else delete book.genre;
@@ -2125,18 +2218,19 @@ function closeSidePanel(){
 
 async function parseGoodreadsLink(){
   const url=(document.getElementById('sp-goodreads').value||'').trim();
-  if(!url){showToast('Встав посилання на Goodreads');return;}
-  if(!SCRIPT_URL){showToast('Не налаштовано хмарне збереження — розпізнавання недоступне');return;}
+  if(!url){showGoodreadsError('Встав посилання на Goodreads');return;}
+  if(!SCRIPT_URL){showGoodreadsError('Не налаштовано хмарне збереження — розпізнавання недоступне');return;}
   const btn=document.getElementById('sp-parse-btn');
   btn.disabled=true;btn.textContent='Розпізнаю…';
   const data=await _jsonp(SCRIPT_URL+'?action=parseBook&url='+encodeURIComponent(url));
   btn.disabled=false;btn.textContent='Розпізнати';
-  if(!data||data.error){showToast('Не вдалося розпізнати сторінку — заповни вручну');return;}
+  if(!data||data.error){openSpSection('data');showGoodreadsError('Не вдалося розпізнати сторінку — заповни вручну');return;}
   if(data.title)document.getElementById('sp-book').value=data.title;
   if(data.author)document.getElementById('sp-author').value=data.author;
   if(data.pages)document.getElementById('sp-pages').value=data.pages;
   if(data.coverUrl)document.getElementById('sp-cover').value=data.coverUrl;
-  updSP();
+  openSpSection('data');
+  updSP();updSpCoverPreview();
   showToast('Розпізнано! Перевір поля і натисни «Зарахувати книгу»');
 }
 
@@ -2146,7 +2240,7 @@ function updSP(){
   if(v&&v>0){
     const coins=coinsForPages(v);
     el.style.display='block';
-    el.innerHTML=`<div class="ppill">+1📙 &nbsp; +${coins}🪙</div>`;
+    el.innerHTML=`<div class="ppill" style="display:inline-block">+1📙 &nbsp; +${coins}🪙</div>`;
   } else el.style.display='none';
 }
 
@@ -2156,9 +2250,9 @@ function submitPages(){
   const author=(document.getElementById('sp-author').value||'').trim();
   const coverUrl=(document.getElementById('sp-cover').value||'').trim();
   const genre=document.getElementById('sp-genre').value||'';
-  if(!title){showFormError('Введи назву книги');return;}
-  if(!author){showFormError('Введи автора');return;}
-  if(!pages||pages<1){showFormError('Введи кількість сторінок');return;}
+  if(!title){openSpSection('data');showFormError('Введи назву книги');return;}
+  if(!author){openSpSection('data');showFormError('Введи автора');return;}
+  if(!pages||pages<1){openSpSection('data');showFormError('Введи кількість сторінок');return;}
   const d=pd();
   const beforeAch=fullyCompletedKeys(d);
   const coins=coinsForPages(pages);
@@ -2181,12 +2275,14 @@ function showToast(msg){
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2200);
 }
-function showFormError(msg){
-  const el=document.getElementById('sp-error');if(!el)return;
+function showFieldError(elId,msg){
+  const el=document.getElementById(elId);if(!el)return;
   el.textContent=msg;el.style.display='block';
   clearTimeout(el._hideTimer);
   el._hideTimer=setTimeout(()=>{el.style.display='none';},3000);
 }
+function showFormError(msg){showFieldError('sp-error',msg);}
+function showGoodreadsError(msg){showFieldError('sp-goodreads-error',msg);}
 function showLocToast(name,desc){
   const t=document.getElementById('loc-toast');
   t.innerHTML=name+(desc?`<small>${desc}</small>`:'');
