@@ -32,6 +32,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .pw-eye{position:absolute;right:6px;top:6px;background:rgba(126,206,255,.12);border:1px solid rgba(126,206,255,.25);border-radius:7px;color:#7eceff;font-size:10px;font-weight:600;padding:5px 8px;cursor:pointer;font-family:inherit;}
 .disclaimer{font-size:9.5px;line-height:1.4;color:#5b6478;text-align:center;margin-top:12px;}
 
+/* FRIENDS */
+.bottom-tab{position:relative;}
+.tab-badge{position:absolute;top:3px;left:50%;margin-left:6px;min-width:15px;height:15px;border-radius:8px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;line-height:15px;text-align:center;padding:0 3px;}
+.fr-card{display:flex;gap:9px;align-items:flex-start;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:9px 10px;margin-bottom:8px;}
+.fr-av{width:44px;height:44px;border-radius:50%;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:19px;}
+.fr-main{flex:1;min-width:0;}
+.fr-nick{font-size:13px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.fr-loc{font-size:10px;color:#8a97ad;margin-top:1px;}
+.fr-last{display:flex;gap:6px;align-items:center;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.07);}
+.fr-last-cover{width:24px;height:34px;border-radius:3px;object-fit:cover;flex-shrink:0;}
+.fr-last-txt{flex:1;min-width:0;font-size:10.5px;color:#b8c2d4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.fr-btn{background:rgba(126,206,255,.12);border:1px solid rgba(126,206,255,.28);border-radius:14px;color:#7eceff;font-size:10.5px;font-weight:600;padding:6px 10px;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.fr-btn.danger{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:#fca5a5;}
+.fr-btn.ok{background:rgba(74,222,128,.13);border-color:rgba(74,222,128,.32);color:#4ade80;}
+.fr-empty{text-align:center;color:#666;font-size:12px;padding:18px 8px;line-height:1.5;}
+.fr-sub{font-size:10px;color:#7eceff;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin:14px 0 6px;}
+
 /* GUEST BAR — звичайний flex-елемент над нижнім меню, не fixed:
    так вона фізично не може перекрити ні контент, ні кнопки. */
 .guest-bar{display:none;flex-shrink:0;align-items:center;gap:8px;padding:7px 10px;background:rgba(251,191,36,.13);border-top:1px solid rgba(251,191,36,.3);}
@@ -290,7 +307,6 @@ select option{background:#1e2d4a;color:#fff;}
 <!-- MAIN -->
 <div id="screen-main" class="screen">
   <div class="hdr">
-    <button class="back-btn" onclick="confirmLogout()" title="Вийти з профілю">←</button>
     <div class="hdr-av" id="hdr-av" onclick="openProfileSettings()" style="cursor:pointer"></div>
     <div class="hdr-info">
       <div class="hdr-name" id="hdr-name"></div>
@@ -325,6 +341,10 @@ select option{background:#1e2d4a;color:#fff;}
     <div class="tab-page" id="tab-library" style="display:none">
       <div id="library-fullscreen"></div>
     </div>
+    <div class="tab-page" id="tab-friends" style="display:none">
+      <div class="sec-title"><span>Друзі</span></div>
+      <div id="friends-body"></div>
+    </div>
     <div class="tab-page" id="tab-stats" style="display:none">
       <div class="sec-title"><span>Статистика</span></div>
       <div class="stats-sub-hdr">Мета</div>
@@ -348,6 +368,7 @@ select option{background:#1e2d4a;color:#fff;}
     <button class="bottom-tab act" id="bt-map" onclick="setMainTab('map')"><span class="bt-icon">🗺️</span>Мапа</button>
     <button class="bottom-tab" id="bt-library" onclick="setMainTab('library')"><span class="bt-icon">📚</span>Бібліотека</button>
     <button class="bottom-tab" id="bt-stats" onclick="setMainTab('stats')"><span class="bt-icon">📊</span>Статистика</button>
+    <button class="bottom-tab" id="bt-friends" onclick="setMainTab('friends')"><span class="bt-icon">👥</span>Друзі<span class="tab-badge" id="fr-badge" style="display:none"></span></button>
   </div>
 </div>
 </div>
@@ -785,7 +806,18 @@ function checkGoalEvents(){
   // setting a target for the last ~10 days of the month is pointless. The yearly
   // goal is never auto-prompted; it's set manually via the "Задати ціль" button
   // in the stats widget instead.
-  if((!d.monthlyGoal||d.monthlyGoal.periodKey!==mKey)&&d.monthlyGoalDismissedFor!==mKey&&new Date().getDate()<=20){
+  //
+  // Питаємо ОДИН раз на місяць і тільки того, хто вже прочитав хоч одну книгу:
+  //  • новому гравцеві ціль в лоб при створенні акаунта нічого не означає —
+  //    він ще не бачив гри;
+  //  • позначка ставиться в момент ПОКАЗУ, а не по натисканню ✕, інакше
+  //    достатньо перезавантажити сторінку, щоб модалка вилізла знову.
+  // Хто захоче поставити ціль сам — це завжди доступно в Статистиці → Мета.
+  const goalPromptSeen=d.monthlyGoalPromptedFor===mKey||d.monthlyGoalDismissedFor===mKey;
+  if((!d.monthlyGoal||d.monthlyGoal.periodKey!==mKey)&&!goalPromptSeen
+     &&(d.booksRead||0)>0&&new Date().getDate()<=20){
+    d.monthlyGoalPromptedFor=mKey;
+    saveToCloud(cur);
     qM(()=>showSetGoalModal('month'));
   }
 }
@@ -822,12 +854,13 @@ function openGoalHistory(){setMainTab('library');}
 let _mainTab='map';
 function setMainTab(tab){
   _mainTab=tab;
-  ['map','library','stats'].forEach(t=>{
+  ['map','library','stats','friends'].forEach(t=>{
     document.getElementById('tab-'+t).style.display=t===tab?'':'none';
     document.getElementById('bt-'+t).classList.toggle('act',t===tab);
   });
   if(tab==='library')renderLibraryTab();
   else if(tab==='stats'){renderGoalWidget();renderGeneralStatsWidget();renderAchievementsWidget();renderYearWrapWidget();}
+  else if(tab==='friends'){_frMsg={text:'',bad:false};renderFriendsTab();loadFriends();}
 }
 function renderLibraryTab(){
   const el=document.getElementById('library-fullscreen');if(!el)return;
@@ -1656,6 +1689,8 @@ function enterGame(){
   setPlayers(me.userId,me.nick);
   initState(cur);
   renderGuestBar();
+  friendsData={friends:[],incoming:[],outgoing:[]};
+  if(!me.guest)loadFriends(true);   // тихо, у фоні — гру не затримує
   checkUnlocks();
   renderMain();
   show('screen-main');
@@ -1717,6 +1752,7 @@ async function doLogout(){
   localStorage.removeItem(LS_SESSION);
   if(s&&!s.guest&&s.token)_api({action:'logout',userId:s.userId,token:s.token});
   cur=null;me=null;PLAYERS=[];
+  friendsData={friends:[],incoming:[],outgoing:[]};
   _loginTab='in';
   showLogin();
 }
@@ -1778,6 +1814,297 @@ async function submitClaim(){
 // Сітки вибору гравця більше немає — лишаю заглушку, бо її кличуть
 // з налаштувань профілю.
 function renderSelGrid(){}
+
+// ═══════════ FRIENDS ═══════════
+// Дані друга приходять з ЧУЖОГО клієнта (він сам формує свій стовпчик public),
+// тому все, що з них рендериться, обов'язково екранується. Це єдине місце в
+// грі, де екранування робиться при рендері, а не на вході: своїм даним ми
+// довіряємо (їх чистить cleanBookText), чужим — ні.
+function esc(s){
+  return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function escUrl(u){
+  u=String(u||'');
+  return /^https:\/\/[^\s"'<>()\\]+$/i.test(u)?u:'';
+}
+
+let friendsData={friends:[],incoming:[],outgoing:[]};
+let _frLoading=false;
+let _frWrapYear={};   // userId → обраний рік у його підсумку
+// Текст під полем додавання мусить пережити перемальовування списку: інакше
+// відповідь «Запит надіслано» зникає в ту саму мить, коли з'являється.
+let _frMsg={text:'',bad:false};
+
+// Вузький зліпок для друзів. Кладеться в стовпчик public разом зі
+// збереженням; повний сейв друзям не віддається ніколи.
+function buildPublicSummary(d){
+  const p=pl();
+  const books=d.books||[];
+  const last=books.length?books[books.length-1]:null;
+  const wraps={};
+  const thisYear=new Date().getFullYear();
+  // Тільки поточний і минулий рік — щоб стовпчик не розростався.
+  [String(thisYear),String(thisYear-1)].forEach(y=>{
+    const w=computeYearWrap(books,y);
+    if(w)wraps[y]=slimWrap(w);
+  });
+  const mKey=curMonthKey();
+  const goal=(d.monthlyGoal&&d.monthlyGoal.periodKey===mKey)
+    ?{target:d.monthlyGoal.target,done:booksInMonth(d,mKey)}:null;
+  return{
+    av:d.avatarUrl||null,
+    clr:(d.customColor||(p&&p.color)||'#22c55e'),
+    em:(p&&p.emoji)||'📖',
+    loc:d.location,region:d.region||'kanto',
+    caught:Object.keys(d.progress||{}).length,
+    mega:countMega(d),
+    books:d.booksRead||0,
+    goal:goal,
+    last:last?{title:last.title,author:last.author,cover:last.coverUrl||null,
+               rating:last.rating||null,date:last.date||null}:null,
+    wraps:wraps,
+    ts:Date.now(),
+  };
+}
+function slimWrap(w){
+  const b=x=>x?{title:x.title,pages:x.pages||0,rating:x.rating||null,cover:x.coverUrl||null}:null;
+  return{
+    count:w.count,pages:w.pages,avgPages:w.avgPages,avgRating:w.avgRating,
+    shortest:b(w.shortestBook),longest:b(w.longestBook),top:b(w.topRatedBook),
+    favLang:w.favLang?{name:w.favLang.name||w.favLang.label||'',count:w.favLang.count||0}:null,
+    favGenre:w.favGenre?{name:w.favGenre.name||w.favGenre.label||'',count:w.favGenre.count||0}:null,
+    favAuthor:w.favAuthor?{name:w.favAuthor.name,count:w.favAuthor.count}:null,
+    bestMonth:w.bestMonth||null,
+  };
+}
+function countMega(d){
+  let n=0;
+  Object.entries(d.progress||{}).forEach(([cid,st])=>{
+    const ch=CHAINS.find(c=>c.id===cid);
+    if(ch&&ch.stages[st-1]&&ch.stages[st-1].mega)n++;
+  });
+  return n;
+}
+
+async function loadFriends(silent){
+  if(!me||me.guest||!me.token)return;
+  if(_frLoading)return;
+  _frLoading=true;
+  const r=await _api({action:'friendList',userId:me.userId,token:me.token});
+  _frLoading=false;
+  if(r&&r.ok){
+    friendsData={friends:r.friends||[],incoming:r.incoming||[],outgoing:r.outgoing||[]};
+    syncFriendPins();
+    updateFriendBadge();
+    if(!silent&&_mainTab==='friends')renderFriendsTab();
+    renderMap();
+  }
+}
+
+// Друзі як полегшені записи в PLAYERS — цикл малювання пінсів на мапі
+// вже вміє з ними працювати, окремого коду для карти не потрібно.
+function syncFriendPins(){
+  if(!me)return;
+  PLAYERS=PLAYERS.filter(p=>p.id===me.userId);
+  friendsData.friends.forEach(f=>{
+    if(!f.loc)return;
+    PLAYERS.push({id:f.userId,name:f.nick,emoji:f.em||'📖',color:f.clr||'#22c55e',border:f.clr||'#22c55e',friend:true});
+    state.players[f.userId]=Object.assign({},state.players[f.userId],{
+      location:f.loc,region:f.region||'kanto',
+      customColor:f.clr||'#22c55e',avatarUrl:f.av||null,customName:f.nick,
+      progress:{},books:[],
+    });
+  });
+}
+
+function updateFriendBadge(){
+  const el=document.getElementById('fr-badge');
+  if(!el)return;
+  const n=(friendsData.incoming||[]).length;
+  el.textContent=n>9?'9+':String(n);
+  el.style.display=n>0?'':'none';
+}
+
+function renderFriendsTab(){
+  const el=document.getElementById('friends-body');
+  if(!el)return;
+  if(me&&me.guest){
+    el.innerHTML=`<div class="fr-empty">Друзі доступні читачам.<br>Гість існує лише на цьому пристрої, тому його ніхто не може додати.</div>
+      <button class="fr-btn" style="width:100%;padding:11px" onclick="openClaim()">🔑 У мене є код запрошення</button>`;
+    return;
+  }
+  const add=`<div style="display:flex;gap:6px;margin-bottom:4px">
+      <input type="text" id="fr-nick" class="finput" placeholder="нікнейм друга" maxlength="20" style="margin-bottom:0"
+        onkeydown="if(event.key==='Enter')sendFriendRequest()">
+      <button class="fr-btn" id="fr-add-btn" style="padding:9px 14px" onclick="sendFriendRequest()">Додати</button>
+    </div>
+    <div id="fr-msg" style="font-size:10.5px;color:${_frMsg.bad?'#fca5a5':'#4ade80'};min-height:14px;margin-bottom:4px">${esc(_frMsg.text)}</div>`;
+
+  const inc=(friendsData.incoming||[]).map(r=>`<div class="fr-card">
+      <div class="fr-av" style="background:rgba(255,255,255,.08)">👋</div>
+      <div class="fr-main"><div class="fr-nick">${esc(r.nick)}</div>
+        <div class="fr-loc">хоче додати тебе в друзі</div></div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <button class="fr-btn ok" onclick="acceptFriend('${esc(r.userId)}')">Прийняти</button>
+        <button class="fr-btn danger" onclick="declineFriend('${esc(r.userId)}')">Відхилити</button>
+      </div>
+    </div>`).join('');
+
+  const out=(friendsData.outgoing||[]).map(r=>`<div class="fr-card">
+      <div class="fr-av" style="background:rgba(255,255,255,.05)">⏳</div>
+      <div class="fr-main"><div class="fr-nick">${esc(r.nick)}</div>
+        <div class="fr-loc">запит надіслано, чекаємо підтвердження</div></div>
+    </div>`).join('');
+
+  const list=(friendsData.friends||[]).map(f=>friendCardHTML(f)).join('');
+
+  el.innerHTML=add
+    +(inc?`<div class="fr-sub">Запити до тебе</div>${inc}`:'')
+    +(list?list
+          :`<div class="fr-empty">Друзів поки немає.<br>Впиши нікнейм — друг побачить запит і зможе його підтвердити.</div>`)
+    +(out?`<div class="fr-sub">Надіслані запити</div>${out}`:'');
+}
+
+function friendCardHTML(f){
+  const clr=escUrl(f.av)?'transparent':(esc(f.clr)||'#22c55e');
+  const avInner=escUrl(f.av)
+    ?`<img src="${escUrl(f.av)}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`
+    :esc(f.em||'📖');
+  const loc=_anyLoc(f.loc);
+  // Щойно зареєстрований друг ще не зберігав гру, тому зліпка в нього немає —
+  // краще сказати це словами, ніж малювати «📍 —» і три нулі.
+  const fresh=!f.loc&&f.caught===undefined&&f.books===undefined;
+  const goal=f.goal?` · 🎯 ${esc(f.goal.done)}/${esc(f.goal.target)}`:'';
+  const last=f.last?`<div class="fr-last">
+      ${escUrl(f.last.cover)?`<img class="fr-last-cover" src="${escUrl(f.last.cover)}" onerror="this.style.display='none'">`:''}
+      <div class="fr-last-txt">Остання: ${esc(f.last.title)}${f.last.rating?' · ★'+esc(f.last.rating):''}</div>
+    </div>`:'';
+  const hasWrap=f.wraps&&Object.keys(f.wraps).length>0;
+  return`<div class="fr-card">
+    <div class="fr-av" style="background:${clr};border:2px solid ${esc(f.clr)||'#22c55e'}">${avInner}</div>
+    <div class="fr-main">
+      <div class="fr-nick">${esc(f.nick)}</div>
+      ${fresh?`<div class="fr-loc">щойно приєднався — ще не грав</div>`:`
+      ${loc?`<div class="fr-loc">📍 ${esc(loc.name)}</div>`:''}
+      <div style="margin-top:4px">
+        <span class="spill">🐣${esc(f.caught||0)}</span>
+        <span class="spill">🐉${esc(f.mega||0)}</span>
+        <span class="spill">📚${esc(f.books||0)}</span>
+      </div>
+      ${goal?`<div class="fr-loc" style="margin-top:2px">${goal.replace(/^ · /,'')}</div>`:''}
+      ${last}`}
+      <div style="display:flex;gap:6px;margin-top:8px">
+        ${hasWrap?`<button class="fr-btn" onclick="openFriendWrap('${esc(f.userId)}')">📅 Рік у книгах</button>`:''}
+        <button class="fr-btn danger" onclick="confirmRemoveFriend('${esc(f.userId)}','${esc(f.nick)}')">Прибрати</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function frMsg(text,bad){
+  _frMsg={text:text||'',bad:!!bad};
+  const el=document.getElementById('fr-msg');
+  if(!el)return;
+  el.textContent=_frMsg.text;
+  el.style.color=_frMsg.bad?'#fca5a5':'#4ade80';
+}
+
+async function sendFriendRequest(){
+  const nick=_v('fr-nick');
+  if(!nick){frMsg('Впиши нікнейм',true);return;}
+  const btn=document.getElementById('fr-add-btn');
+  if(btn){btn.disabled=true;btn.textContent='…';}
+  const r=await _api({action:'friendAdd',userId:me.userId,token:me.token,nick:nick});
+  if(btn){btn.disabled=false;btn.textContent='Додати';}
+  if(!r||!r.ok){
+    frMsg(r&&r.error==='network'?"Немає зв'язку з сервером":(r&&r.error)||'Не вдалося',true);
+    return;
+  }
+  const el=document.getElementById('fr-nick');if(el)el.value='';
+  if(r.already)frMsg('Ви вже друзі');
+  else if(r.accepted)frMsg('Готово — ви тепер друзі!');
+  // Сервер відповідає однаково і коли нік існує, і коли ні: інакше кнопка
+  // "Додати" стала б інструментом для перебору ніків.
+  else frMsg('Запит надіслано. Друг побачить його в себе у грі.');
+  await loadFriends();
+  renderFriendsTab();
+}
+
+async function acceptFriend(id){
+  const r=await _api({action:'friendAccept',userId:me.userId,token:me.token,other:id});
+  if(!r||!r.ok){showToast((r&&r.error)||'Не вдалося');return;}
+  await loadFriends();
+  renderFriendsTab();
+  showToast('Тепер ви друзі!');
+}
+async function declineFriend(id){
+  const r=await _api({action:'friendDecline',userId:me.userId,token:me.token,other:id});
+  if(!r||!r.ok){showToast((r&&r.error)||'Не вдалося');return;}
+  await loadFriends();
+  renderFriendsTab();
+}
+function confirmRemoveFriend(id,nick){
+  mEmoji('👥','Прибрати з друзів?',`${nick} зникне з твоєї мапи й зі списку. Так само й ти в нього.`,
+    [{l:'Скасувати',cb:closeModal},{l:'Прибрати',ok:true,cb:()=>removeFriend(id)}]);
+}
+async function removeFriend(id){
+  closeModal();
+  const r=await _api({action:'friendRemove',userId:me.userId,token:me.token,other:id});
+  if(!r||!r.ok){showToast((r&&r.error)||'Не вдалося');return;}
+  await loadFriends();
+  renderFriendsTab();
+}
+
+// Підсумок року друга — рендериться з готового зліпка, книг у нас немає.
+function openFriendWrap(id){
+  const f=(friendsData.friends||[]).find(x=>x.userId===id);
+  if(!f||!f.wraps)return;
+  const years=Object.keys(f.wraps).sort().reverse();
+  if(!_frWrapYear[id]||!f.wraps[_frWrapYear[id]])_frWrapYear[id]=years[0];
+  const y=_frWrapYear[id];
+  const w=f.wraps[y];
+  const monthLbls=['Січень','Лютий','Березень','Квітень','Травень','Червень',
+                   'Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
+  const card=(b,label,stat)=>b?`<div class="wrap-book-card" style="cursor:default">
+      ${escUrl(b.cover)?`<img src="${escUrl(b.cover)}" style="width:44px;height:64px;object-fit:cover;border-radius:4px;flex-shrink:0">`
+        :`<div style="width:44px;height:64px;background:rgba(255,255,255,.08);border-radius:4px;flex-shrink:0"></div>`}
+      <div class="wrap-book-info">
+        <div class="wrap-book-lbl">${label}</div>
+        <div class="wrap-book-title">${esc(b.title)}</div>
+        <div class="wrap-book-pages">${esc(stat)}</div>
+      </div></div>`:'';
+  const fav=(o,label)=>o&&o.name?`<div style="font-size:11.5px;color:#b8c2d4;margin-bottom:3px">${label}: <b style="color:#fff">${esc(o.name)}</b></div>`:'';
+  const yearTabs=years.length>1
+    ?`<div class="stats-metric-tabs" style="justify-content:center;margin-bottom:10px">${years.map(yy=>
+        `<button class="stats-metric-tab ${yy===y?'act':''}" onclick="setFriendWrapYear('${esc(id)}','${esc(yy)}')">${esc(yy)}</button>`).join('')}</div>`
+    :'';
+  mHTML(`${M_CLOSE_BTN}<div class="m-title">📅 ${esc(f.nick)} — ${esc(y)}</div>
+    ${yearTabs}
+    <div class="stat-tiles">
+      <div class="stat-tile"><div class="stat-tile-val">${esc(w.count)}</div><div class="stat-tile-lbl">${bookWord(w.count)}</div></div>
+      <div class="stat-tile"><div class="stat-tile-val">${esc(w.pages)}</div><div class="stat-tile-lbl">сторінок</div></div>
+    </div>
+    <div style="margin:10px 0 8px">
+      ${w.avgPages?`<div style="font-size:11.5px;color:#b8c2d4;margin-bottom:3px">У середньому: <b style="color:#fff">${esc(w.avgPages)}</b> стор. на книгу</div>`:''}
+      ${w.avgRating?`<div style="font-size:11.5px;color:#b8c2d4;margin-bottom:3px">Середня оцінка: <b style="color:#fff">★ ${esc(w.avgRating)}</b></div>`:''}
+      ${fav(w.favGenre,'Улюблений жанр')}
+      ${fav(w.favAuthor,'Найчастіший автор')}
+      ${fav(w.favLang,'Мова')}
+      ${w.bestMonth?`<div style="font-size:11.5px;color:#b8c2d4">Найкращий місяць: <b style="color:#fff">${esc(monthLbls[w.bestMonth.idx])}</b> — ${esc(w.bestMonth.count)} ${bookWord(w.bestMonth.count)}</div>`:''}
+    </div>
+    <div class="wrap-book-row">
+      ${card(w.shortest,'Найкоротша',w.shortest?w.shortest.pages+' стор.':'')}
+      ${card(w.longest,'Найдовша',w.longest?w.longest.pages+' стор.':'')}
+      ${card(w.top,'Найвища оцінка',w.top&&w.top.rating?'★ '+w.top.rating:'')}
+    </div>`,true);
+}
+function setFriendWrapYear(id,y){
+  _frWrapYear[id]=y;
+  closeModal();
+  openFriendWrap(id);
+}
 
 // ═══════════ MAIN ═══════════
 function renderMain(){
@@ -2135,25 +2462,76 @@ function returnToKanto(){
 // ═══════════ PROFILE SETTINGS ═══════════
 const PROFILE_COLORS=['#f97316','#f43f5e','#3b82f6','#22c55e','#a855f7','#eab308'];
 function pClr(p,d){return(d&&d.customColor)||p.color;}
+// Намальована заглушка замість фото — щоб профіль без аватарки не виглядав
+// зламаним і щоб було очевидно, куди тапати.
+function avatarPlaceholderSVG(clr,size){
+  return`<svg viewBox="0 0 48 48" width="${size}" height="${size}" style="display:block">
+    <rect width="48" height="48" fill="${clr}" opacity=".16"/>
+    <circle cx="24" cy="17.5" r="7.5" fill="${clr}" opacity=".72"/>
+    <path d="M24 27.5c-8 0-14 5-15.5 13.5h31C38 32.5 32 27.5 24 27.5z" fill="${clr}" opacity=".72"/>
+  </svg>`;
+}
+function psAvatarBroken(img){
+  const box=img.parentElement;
+  if(box)box.innerHTML=avatarPlaceholderSVG(document.getElementById('ps-color')?.value||'#22c55e',86);
+}
+function togglePsAvatarForm(){
+  const f=document.getElementById('ps-av-form');
+  if(!f)return;
+  const open=f.style.display==='none';
+  f.style.display=open?'block':'none';
+  if(open)document.getElementById('ps-avatar')?.focus();
+}
+function savePsAvatar(remove){
+  const d=pd();
+  if(remove){
+    d.avatarUrl=null;
+  }else{
+    const raw=(document.getElementById('ps-avatar')?.value||'').trim();
+    if(raw){
+      const ok=cleanCoverUrl(raw);
+      if(!ok){showToast('Потрібне звичайне https-посилання на картинку');return;}
+      d.avatarUrl=ok;
+    }else{
+      d.avatarUrl=null;
+    }
+  }
+  saveToCloud(cur);
+  renderMain();
+  renderMap();
+  openProfileSettings();
+  showToast(d.avatarUrl?'Аватар оновлено':'Аватар прибрано');
+}
+
 function openProfileSettings(){
   const d=pd();const p=pl();
   const name=d.customName||p.name;
   const url=d.avatarUrl||'';
   const curClr=pClr(p,d);
   const swatches=PROFILE_COLORS.map(c=>`<div onclick="selectProfileColor('${c}')" id="pclr${c.replace('#','')}" style="width:36px;height:36px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${c===curClr?'#fff':'transparent'};box-sizing:border-box;flex-shrink:0"></div>`).join('');
-  mHTML(`${M_CLOSE_BTN}<div class="m-title">⚙️ Налаштування</div>
+  const avInner=url
+    ?`<img src="${url}" style="width:100%;height:100%;object-fit:cover;display:block" onerror="psAvatarBroken(this)">`
+    :avatarPlaceholderSVG(curClr,86);
+  const html=`${M_CLOSE_BTN}<div class="m-title">⚙️ Налаштування</div>
+    <div style="position:relative;width:86px;height:86px;margin:2px auto 12px">
+      <div id="ps-av-box" onclick="togglePsAvatarForm()" title="Змінити аватар"
+        style="width:100%;height:100%;border-radius:50%;overflow:hidden;cursor:pointer;border:3px solid ${curClr};box-sizing:border-box;background:rgba(255,255,255,.04)">${avInner}</div>
+      <div onclick="togglePsAvatarForm()" title="Змінити аватар"
+        style="position:absolute;right:-3px;bottom:-3px;width:28px;height:28px;border-radius:50%;background:${curClr};box-shadow:0 0 0 2px #1e2d4a;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer">✎</div>
+    </div>
+    <div id="ps-av-form" style="display:none;margin-bottom:14px" onclick="event.stopPropagation()">
+      <input type="url" id="ps-avatar" class="finput" value="${url}" placeholder="https://…" style="font-size:11px;margin-bottom:6px">
+      <div style="display:flex;gap:6px">
+        <button class="btn-ok" style="flex:1;padding:10px;font-size:13px" onclick="savePsAvatar()">Зберегти аватар</button>
+        ${url?`<button class="btn-cancel" style="padding:10px 12px;font-size:13px" onclick="savePsAvatar(true)">Прибрати</button>`:''}
+      </div>
+    </div>
     <div style="text-align:left;margin-bottom:16px">
-      <div class="flbl">Нік (він же логін)</div>
+      <div class="flbl">Нікнейм</div>
       <input type="text" id="ps-name" class="finput" value="${name}" maxlength="20" placeholder="${p.name}">
       <div class="flbl" style="margin-top:10px">Колір</div>
       <div style="display:flex;gap:8px;margin-bottom:4px">${swatches}</div>
       <input type="hidden" id="ps-color" value="${curClr}">
-      <div class="flbl" style="margin-top:10px">Аватар (посилання на фото)</div>
-      <input type="url" id="ps-avatar" class="finput" value="${url}" placeholder="https://…" style="font-size:11px"
-        oninput="const i=document.getElementById('ps-prev');i.src=this.value;i.style.display=this.value?'block':'none'">
-      <div style="text-align:center;margin-top:10px">
-        <img id="ps-prev" src="${url}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid ${curClr};display:${url?'block':'none'};margin:0 auto" onerror="this.style.display='none'">
-      </div>
     </div>
     <button class="btn-ok" id="ps-save" style="width:100%;padding:13px;font-size:14px;min-height:44px" onclick="saveProfileSettings()">Зберегти</button>
     <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:7px">
@@ -2164,12 +2542,17 @@ function openProfileSettings(){
       <button class="btn-cancel" style="width:100%" onclick="openChangePass()">Змінити пароль</button>
       <button class="btn-cancel" style="width:100%" onclick="openAbout()">Про проєкт</button>
       <button class="btn-cancel" style="width:100%" onclick="closeModal();confirmLogout()">Вийти з профілю</button>
-    </div>`);
+    </div>`;
+  // Якщо модалка вже відкрита (нас покликали після зміни аватара) —
+  // перемальовуємо її вміст, а не кладемо другий оверлей поверх першого.
+  const box=document.querySelector('#mOv .modal-box');
+  if(box){box.innerHTML=html;return;}
+  mHTML(html);
 }
 
 function openAbout(){
   const html=`${M_CLOSE_BTN}<div class="m-title">Про проєкт</div>
-    <div style="font-size:12px;line-height:1.55;color:#b8c2d4;margin-top:10px">
+    <div style="font-size:12px;line-height:1.55;color:#b8c2d4;margin-top:10px;text-align:justify;hyphens:auto">
       <p style="margin-bottom:10px"><b style="color:#fff">Читальний Світ</b> — безкоштовний некомерційний фанатський проєкт, зроблений для власних дітей, щоб більше читали. Не продається, не містить реклами і не приймає донатів.</p>
       <p style="margin-bottom:10px">Pokémon, назви та зображення персонажів — торгові марки й об'єкти авторського права Nintendo, Creatures Inc. та GAME FREAK inc. Проєкт з ними не пов'язаний, ними не схвалений і не претендує на жодні права. Зображення персонажів завантажуються з відкритого проєкту PokeAPI.</p>
     </div>`;
@@ -2213,7 +2596,6 @@ async function renameMe(nick){
 async function saveProfileSettings(){
   const d=pd();
   const name=(document.getElementById('ps-name')?.value||'').trim();
-  const url=(document.getElementById('ps-avatar')?.value||'').trim();
   const color=document.getElementById('ps-color')?.value;
   if(name&&me&&name!==me.nick){
     const btn=document.getElementById('ps-save');
@@ -2223,7 +2605,7 @@ async function saveProfileSettings(){
     if(err){showToast(err);return;}   // нік не змінився — решту теж не зберігаємо
   }
   if(name) d.customName=name; else delete d.customName;
-  d.avatarUrl=url||null;
+  // Аватар зберігається окремо своєю формою (savePsAvatar) — тут не чіпаємо.
   if(color) d.customColor=color; else delete d.customColor;
   closeModal();
   renderMain();
@@ -2759,7 +3141,8 @@ async function saveToCloud(pid){
   showSaveStatus('saving');
   // POST (not GET+JSONP) — a big library of books would otherwise blow past the
   // URL-length limit on a GET request and silently fail to save anything at all.
-  const r=await _api({action:'save',userId:me.userId,token:me.token,state:stateJson});
+  const r=await _api({action:'save',userId:me.userId,token:me.token,state:stateJson,
+                      pub:JSON.stringify(buildPublicSummary(state.players[pid]))});
   if(r&&r.ok){showSaveStatus('saved');return;}
   showSaveStatus('error');
   if(r&&r.error==='auth')showToast('Сесія закінчилась — увійди знову');
