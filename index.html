@@ -45,6 +45,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .fr-last-txt{flex:1;min-width:0;font-size:10.5px;color:#b8c2d4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fr-btn{background:rgba(126,206,255,.12);border:1px solid rgba(126,206,255,.28);border-radius:14px;color:#7eceff;font-size:10.5px;font-weight:600;padding:6px 10px;cursor:pointer;font-family:inherit;white-space:nowrap;}
 .fr-btn.danger{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:#fca5a5;}
+.fr-menu-wrap{position:relative;flex-shrink:0;}
+.fr-dots{background:none;border:none;color:#7b8798;font-size:17px;line-height:1;padding:2px 4px;cursor:pointer;font-family:inherit;}
+.fr-dots:hover{color:#cfd8e6;}
+.fr-menu{display:none;position:absolute;top:24px;right:0;z-index:5;background:#243554;border:1px solid rgba(255,255,255,.14);border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,.45);overflow:hidden;min-width:150px;}
+.fr-menu.on{display:block;}
+.fr-menu button{display:block;width:100%;text-align:left;background:none;border:none;color:#fca5a5;font-size:12px;font-weight:600;padding:10px 12px;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.fr-menu button:hover{background:rgba(239,68,68,.12);}
+.fr-wrap-scroll{flex:1;overflow-y:auto;margin:0 -6px;padding:0 6px 4px;}
 .fr-btn.ok{background:rgba(74,222,128,.13);border-color:rgba(74,222,128,.32);color:#4ade80;}
 .fr-empty{text-align:center;color:#666;font-size:12px;padding:18px 8px;line-height:1.5;}
 .fr-sub{font-size:10px;color:#7eceff;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin:14px 0 6px;}
@@ -1837,7 +1845,7 @@ function escUrl(u){
 }
 
 let friendsData={friends:[],incoming:[],outgoing:[]};
-let _frLoading=false;
+
 let _frWrapYear={};   // userId → обраний рік у його підсумку
 // Текст під полем додавання мусить пережити перемальовування списку: інакше
 // відповідь «Запит надіслано» зникає в ту саму мить, коли з'являється.
@@ -1868,6 +1876,8 @@ function buildPublicSummary(d){
     mega:countMega(d),
     books:d.booksRead||0,
     goal:goal,
+    streak:d.currentGoalStreak||0,
+    ach:achievementsTotals(d).unlocked,
     last:last?{title:last.title,author:last.author,cover:last.coverUrl||null,
                rating:last.rating||null,date:last.date||null}:null,
     wraps:wraps,
@@ -1903,19 +1913,41 @@ async function pushPublic(){
   }catch(e){console.warn('[pub] не вдалося оновити зліпок',e);}
 }
 
+// Стан завантаження тримаємо явно, бо раніше і «ще вантажиться», і «не
+// вдалося», і «друзів справді немає» виглядали для користувача однаково —
+// як порожній список.
+let _frState='idle';     // idle | loading | ok | error
+let _frErr='';
+let _frPromise=null;
+
 async function loadFriends(silent){
   if(!me||me.guest||!me.token)return;
-  if(_frLoading)return;
-  _frLoading=true;
-  const r=await _api({action:'friendList',userId:me.userId,token:me.token});
-  _frLoading=false;
-  if(r&&r.ok){
-    friendsData={friends:r.friends||[],incoming:r.incoming||[],outgoing:r.outgoing||[]};
-    syncFriendPins();
-    updateFriendBadge();
-    if(!silent&&_mainTab==='friends')renderFriendsTab();
-    renderMap();
-  }
+  // Якщо запит уже в дорозі — приєднуємось до нього, а не виходимо мовчки.
+  // Саме через «вийти мовчки» таб лишався порожнім, коли його відкривали
+  // одночасно з фоновим завантаженням при вході в гру.
+  if(_frPromise)return _frPromise;
+  _frState='loading';_frErr='';
+  if(!silent&&_mainTab==='friends')renderFriendsTab();
+  _frPromise=(async()=>{
+    const r=await _api({action:'friendList',userId:me.userId,token:me.token});
+    if(r&&r.ok){
+      friendsData={friends:r.friends||[],incoming:r.incoming||[],outgoing:r.outgoing||[]};
+      _frState='ok';
+      syncFriendPins();
+      updateFriendBadge();
+      renderMap();
+    }else{
+      _frState='error';
+      _frErr=(r&&r.error==='auth')?'Сесія закінчилась — увійди знову'
+            :(r&&r.error==='network')?"Немає зв'язку з сервером"
+            :((r&&r.error)||'Не вдалося завантажити список');
+    }
+    _frPromise=null;
+    // Перемальовуємо ЗАВЖДИ, якщо таб відкритий — незалежно від того, тихим
+    // був запит чи ні. Раніше тихий запит приносив дані й нічого не показував.
+    if(_mainTab==='friends')renderFriendsTab();
+  })();
+  return _frPromise;
 }
 
 // Друзі як полегшені записи в PLAYERS — цикл малювання пінсів на мапі
@@ -1975,14 +2007,49 @@ function renderFriendsTab(){
 
   const list=(friendsData.friends||[]).map(f=>friendCardHTML(f)).join('');
 
-  el.innerHTML=add
-    +(inc?`<div class="fr-sub">Запити до тебе</div>${inc}`:'')
-    +(list?list
-          :`<div class="fr-empty">Друзів поки немає.<br>Впиши нікнейм — друг побачить запит і зможе його підтвердити.</div>`)
-    +(out?`<div class="fr-sub">Надіслані запити</div>${out}`:'');
+  // Порожній список, помилка мережі й «ще вантажиться» — три різні речі,
+  // і виглядати вони мусять по-різному.
+  const nothing=!inc&&!out&&!list;
+  let middle;
+  if(_frState==='loading'&&nothing)
+    middle=`<div class="fr-empty">Завантаження…</div>`;
+  else if(_frState==='error'&&nothing)
+    middle=`<div class="fr-empty" style="color:#fca5a5">${esc(_frErr)}</div>
+      <button class="fr-btn" style="width:100%;padding:11px" onclick="loadFriends()">Спробувати ще раз</button>`;
+  else if(nothing)
+    middle=`<div class="fr-empty">Друзів поки немає.<br>Впиши нікнейм — друг побачить запит і зможе його підтвердити.</div>`;
+  else
+    middle=(inc?`<div class="fr-sub">Запити до тебе</div>${inc}`:'')
+          +list
+          +(out?`<div class="fr-sub">Надіслані запити</div>${out}`:'');
+
+  const refresh=`<div style="display:flex;justify-content:flex-end;margin-bottom:6px">
+      <button class="fr-btn" onclick="loadFriends()" ${_frState==='loading'?'disabled':''}>
+        ${_frState==='loading'?'Оновлюю…':'↻ Оновити'}</button>
+    </div>`;
+  const errLine=(_frState==='error'&&!nothing)
+    ?`<div class="fr-empty" style="color:#fca5a5;padding:6px 0">${esc(_frErr)}</div>`:'';
+
+  el.innerHTML=add+refresh+errLine+middle;
 }
 
-function friendCardHTML(f){
+// Грубо, а не з точністю до хвилини: «сьогодні / вчора / 3 дні тому» читається
+// краще й менше схоже на слідкування, ніж «був 14:32».
+function agoLabel(ts){
+  ts=+ts||0;
+  if(!ts)return'';
+  const days=Math.floor((Date.now()-ts)/86400000);
+  if(days<=0)return'сьогодні';
+  if(days===1)return'вчора';
+  if(days<7)return days+' '+pluralUA(days,'день','дні','днів')+' тому';
+  if(days<14)return'тиждень тому';
+  if(days<31){const w=Math.floor(days/7);return w+' '+pluralUA(w,'тиждень','тижні','тижнів')+' тому';}
+  if(days<365){const m=Math.floor(days/30);return m+' '+pluralUA(m,'місяць','місяці','місяців')+' тому';}
+  return'давно';
+}
+
+function friendCardHTML(f,opts){
+  opts=opts||{};
   const clr=escUrl(f.av)?'transparent':(esc(f.clr)||'#22c55e');
   const avInner=escUrl(f.av)
     ?`<img src="${escUrl(f.av)}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`
@@ -2003,20 +2070,48 @@ function friendCardHTML(f){
       <div class="fr-nick">${esc(f.nick)}</div>
       ${fresh?`<div class="fr-loc">щойно приєднався — ще не грав</div>`:`
       ${loc?`<div class="fr-loc">📍 ${esc(loc.name)}</div>`:''}
+      ${f.ts?`<div class="fr-loc">🕒 у грі ${esc(agoLabel(f.ts))}</div>`:''}
       <div style="margin-top:4px">
         <span class="spill">🐣${esc(f.caught||0)}</span>
         <span class="spill">🐉${esc(f.mega||0)}</span>
         <span class="spill">📚${esc(f.books||0)}</span>
+        ${f.ach?`<span class="spill">🏆${esc(f.ach)}</span>`:''}
       </div>
+      ${f.streak?`<div class="fr-loc" style="margin-top:2px">🔥 ${esc(f.streak)} ${pluralUA(f.streak,'місяць','місяці','місяців')} підряд виконує ціль</div>`:''}
       ${goal?`<div class="fr-loc" style="margin-top:2px">${goal.replace(/^ · /,'')}</div>`:''}
       ${last}`}
-      <div style="display:flex;gap:6px;margin-top:8px">
-        ${hasWrap?`<button class="fr-btn" onclick="openFriendWrap('${esc(f.userId)}')">📅 Рік у книгах</button>`:''}
-        <button class="fr-btn danger" onclick="confirmRemoveFriend('${esc(f.userId)}','${esc(f.nick)}')">Прибрати</button>
-      </div>
+      ${hasWrap?`<div style="margin-top:8px">
+        <button class="fr-btn" onclick="openFriendWrap('${esc(f.userId)}')">📅 Рік у книгах</button>
+      </div>`:''}
     </div>
+    ${opts.noMenu?'':`<div class="fr-menu-wrap">
+      <button class="fr-dots" onclick="toggleFrMenu(event,'${esc(f.userId)}')" title="Ще">⋮</button>
+      <div class="fr-menu" id="frm-${esc(f.userId)}">
+        <button onclick="confirmRemoveFriend('${esc(f.userId)}','${esc(f.nick)}')">Видалити з друзів</button>
+      </div>
+    </div>`}
   </div>`;
 }
+
+// Тап по пінсу друга на мапі — картка без меню видалення.
+function openFriendCard(id){
+  const f=(friendsData.friends||[]).find(x=>x.userId===id);
+  if(!f)return;
+  mHTML(`${M_CLOSE_BTN}<div class="m-title" style="margin-bottom:10px">👥 Друг</div>
+    ${friendCardHTML(f,{noMenu:true})}`);
+}
+
+// Меню в кутку картки: червона кнопка «Прибрати» надто кричала.
+function toggleFrMenu(ev,id){
+  ev.stopPropagation();
+  const el=document.getElementById('frm-'+id);
+  const open=el&&el.classList.contains('on');
+  document.querySelectorAll('.fr-menu.on').forEach(m=>m.classList.remove('on'));
+  if(el&&!open)el.classList.add('on');
+}
+document.addEventListener('click',()=>{
+  document.querySelectorAll('.fr-menu.on').forEach(m=>m.classList.remove('on'));
+});
 
 function frMsg(text,bad){
   _frMsg={text:text||'',bad:!!bad};
@@ -2082,6 +2177,9 @@ function openFriendWrap(id){
   const w=f.wraps[y];
   const monthLbls=['Січень','Лютий','Березень','Квітень','Травень','Червень',
                    'Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
+  // Верстка навмисно та сама, що у власному «Рік у книгах»: ті самі класи
+  // .stat-tiles / .wrap-book-row / .wrap-facts / .wrap-month-card, тому
+  // розміри, шрифти й секції збігаються з рештою статистики.
   const card=(b,label,stat)=>b?`<div class="wrap-book-card" style="cursor:default">
       ${escUrl(b.cover)?`<img src="${escUrl(b.cover)}" style="width:44px;height:64px;object-fit:cover;border-radius:4px;flex-shrink:0">`
         :`<div style="width:44px;height:64px;background:rgba(255,255,255,.08);border-radius:4px;flex-shrink:0"></div>`}
@@ -2090,30 +2188,47 @@ function openFriendWrap(id){
         <div class="wrap-book-title">${esc(b.title)}</div>
         <div class="wrap-book-pages">${esc(stat)}</div>
       </div></div>`:'';
-  const fav=(o,label)=>o&&o.name?`<div style="font-size:11.5px;color:#b8c2d4;margin-bottom:3px">${label}: <b style="color:#fff">${esc(o.name)}</b></div>`:'';
+  const facts=[
+    ['📄','Середня довжина',w.avgPages?w.avgPages+' стор.':'—'],
+    ['⭐','Середня оцінка',w.avgRating!=null?w.avgRating:'—'],
+    ['🌐','Улюблена мова',w.favLang&&w.favLang.name?w.favLang.name:'—'],
+    ['🎭','Улюблений жанр',w.favGenre&&w.favGenre.name?w.favGenre.name:'—'],
+    ['✍️','Улюблений автор',w.favAuthor&&w.favAuthor.name?w.favAuthor.name:'—'],
+  ].map(([icon,lbl,val])=>`<div class="wrap-fact-row"><span class="wrap-fact-icon">${icon}</span><span class="wrap-fact-lbl">${lbl}</span><span class="wrap-fact-val">${esc(val)}</span></div>`).join('');
+  const bestMonthCard=w.bestMonth?`<div class="wrap-month-card">
+    <div class="wrap-month-lbl">📅 Найпродуктивніший місяць</div>
+    <div class="wrap-month-name">${esc(monthLbls[w.bestMonth.idx])}</div>
+    <div class="wrap-month-count">${esc(w.bestMonth.count)} ${bookWord(w.bestMonth.count)}</div>
+  </div>`:'';
   const yearTabs=years.length>1
-    ?`<div class="stats-metric-tabs" style="justify-content:center;margin-bottom:10px">${years.map(yy=>
+    ?`<div class="stats-metric-tabs" style="justify-content:center;margin:8px 0 0">${years.map(yy=>
         `<button class="stats-metric-tab ${yy===y?'act':''}" onclick="setFriendWrapYear('${esc(id)}','${esc(yy)}')">${esc(yy)}</button>`).join('')}</div>`
     :'';
-  mHTML(`${M_CLOSE_BTN}<div class="m-title">📅 ${esc(f.nick)} — ${esc(y)}</div>
-    ${yearTabs}
-    <div class="stat-tiles">
-      <div class="stat-tile"><div class="stat-tile-val">${esc(w.count)}</div><div class="stat-tile-lbl">${bookWord(w.count)}</div></div>
-      <div class="stat-tile"><div class="stat-tile-val">${esc(w.pages)}</div><div class="stat-tile-lbl">сторінок</div></div>
+  // Шапка фіксована, тіло скролиться — як у модалці досягнень.
+  mHTML(`${M_CLOSE_BTN}
+    <div class="ach-modal-hdr">
+      <div class="m-title" style="margin-bottom:2px">📅 Рік у книгах</div>
+      <div style="font-size:12px;color:#888;text-align:center">${esc(f.nick)} · ${esc(y)}</div>
+      ${yearTabs}
     </div>
-    <div style="margin:10px 0 8px">
-      ${w.avgPages?`<div style="font-size:11.5px;color:#b8c2d4;margin-bottom:3px">У середньому: <b style="color:#fff">${esc(w.avgPages)}</b> стор. на книгу</div>`:''}
-      ${w.avgRating?`<div style="font-size:11.5px;color:#b8c2d4;margin-bottom:3px">Середня оцінка: <b style="color:#fff">★ ${esc(w.avgRating)}</b></div>`:''}
-      ${fav(w.favGenre,'Улюблений жанр')}
-      ${fav(w.favAuthor,'Найчастіший автор')}
-      ${fav(w.favLang,'Мова')}
-      ${w.bestMonth?`<div style="font-size:11.5px;color:#b8c2d4">Найкращий місяць: <b style="color:#fff">${esc(monthLbls[w.bestMonth.idx])}</b> — ${esc(w.bestMonth.count)} ${bookWord(w.bestMonth.count)}</div>`:''}
-    </div>
-    <div class="wrap-book-row">
-      ${card(w.shortest,'Найкоротша',w.shortest?w.shortest.pages+' стор.':'')}
-      ${card(w.longest,'Найдовша',w.longest?w.longest.pages+' стор.':'')}
-      ${card(w.top,'Найвища оцінка',w.top&&w.top.rating?'★ '+w.top.rating:'')}
-    </div>`,true);
+    <div class="fr-wrap-scroll">
+      <div class="stats-sub-hdr" style="margin-top:12px">Разом за рік</div>
+      <div class="stat-tiles">
+        <div class="stat-tile"><div class="stat-tile-val">${esc(w.count)}</div><div class="stat-tile-lbl">${bookWord(w.count)}</div></div>
+        <div class="stat-tile"><div class="stat-tile-val">${esc(w.pages)}</div><div class="stat-tile-lbl">сторінок</div></div>
+      </div>
+      <div class="stats-divider"></div>
+      <div class="stats-sub-hdr">Книги року</div>
+      <div class="wrap-book-row">
+        ${card(w.shortest,'Найкоротша',w.shortest?w.shortest.pages+' стор.':'')}
+        ${card(w.longest,'Найдовша',w.longest?w.longest.pages+' стор.':'')}
+        ${card(w.top,'Найвища оцінка',w.top&&w.top.rating?'★ '+w.top.rating:'')}
+      </div>
+      <div class="stats-divider"></div>
+      <div class="stats-sub-hdr">Улюблене</div>
+      <div class="wrap-facts">${facts}</div>
+      ${bestMonthCard}
+    </div>`,true,'ach-modal');
 }
 function setFriendWrapYear(id,y){
   _frWrapYear[id]=y;
@@ -2246,7 +2361,7 @@ function renderMap(){
     Object.entries(byLoc).forEach(([lid,list])=>{
       const loc=LOCS_JOHTO[lid];if(!loc)return;
       const nr=22;const offs=list.map((_,i)=>(i-(list.length-1)/2)*16);
-      list.forEach((p,i)=>{mh+=`<circle cx="${loc.cx+offs[i]}" cy="${loc.cy-nr-9}" r="5" fill="${pClr(p,state.players[p.id])}" stroke="#fff" stroke-width="1.5"/>`;});
+      list.forEach((p,i)=>{mh+=`<circle cx="${loc.cx+offs[i]}" cy="${loc.cy-nr-9}" r="5" fill="${pClr(p,state.players[p.id])}" stroke="#fff" stroke-width="1.5"${p.friend?` style="cursor:pointer" onclick="openFriendCard('${p.id}')"`:``}/>`;});
     });
     document.getElementById('map-markers').innerHTML=mh;
     return;
@@ -2288,7 +2403,7 @@ function renderMap(){
   Object.entries(byLoc).forEach(([lid,list])=>{
     const loc=LOCS[lid];if(!loc)return;
     const offs=list.map((_,i)=>(i-(list.length-1)/2)*16);
-    list.forEach((p,i)=>{mh+=`<circle cx="${loc.cx+offs[i]}" cy="${loc.cy-r-7}" r="6" fill="${pClr(p,state.players[p.id])}" stroke="#fff" stroke-width="2"/>`;});
+    list.forEach((p,i)=>{mh+=`<circle cx="${loc.cx+offs[i]}" cy="${loc.cy-r-7}" r="6" fill="${pClr(p,state.players[p.id])}" stroke="#fff" stroke-width="2"${p.friend?` style="cursor:pointer" onclick="openFriendCard('${p.id}')"`:``}/>`;});
   });
   document.getElementById('map-markers').innerHTML=mh;
 }
