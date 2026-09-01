@@ -15,13 +15,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* SELECT */
 .sel-bg{background:url('start.png') center top/cover no-repeat;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 1rem calc(6rem + env(safe-area-inset-bottom, 0px));overflow-y:auto;}
-.sel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-.sel-card{background:rgba(10,15,35,.72);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(6px);border-radius:16px;padding:1.25rem .75rem;cursor:pointer;text-align:center;transition:all .2s;}
-.sel-card:hover{background:rgba(255,255,255,.14);transform:translateY(-2px);}
-.sel-av{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 8px;overflow:hidden;}
-.sel-name{font-size:14px;font-weight:600;color:#fff;margin-bottom:3px;}
-.sel-sub{font-size:10px;color:#7eceff;margin-bottom:5px;}
 .spill{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;background:rgba(126,206,255,.15);color:#7eceff;display:inline-block;margin:2px 1px;}
+
+/* LOGIN */
+.login-box{background:rgba(10,15,35,.82);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(8px);border-radius:18px;padding:1.1rem 1rem;}
+.login-tabs{display:flex;gap:4px;background:rgba(0,0,0,.35);border-radius:14px;padding:3px;margin-bottom:14px;}
+.login-tab{flex:1;padding:8px 0;font-size:12px;font-weight:600;border-radius:11px;border:none;background:transparent;color:#8a97ad;cursor:pointer;font-family:inherit;}
+.login-tab.act{background:rgba(126,206,255,.16);color:#7eceff;}
+.login-btn{width:100%;padding:13px;font-size:14px;font-weight:600;border:none;border-radius:12px;background:#2563eb;color:#fff;cursor:pointer;font-family:inherit;min-height:46px;}
+.login-btn:hover{background:#1d4ed8;}
+.login-btn[disabled]{opacity:.55;cursor:default;}
+.login-err{font-size:11.5px;color:#fca5a5;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:9px;padding:7px 9px;margin-bottom:10px;display:none;}
+.login-warn{font-size:10.5px;line-height:1.45;color:#fbbf24;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.28);border-radius:9px;padding:8px 9px;margin-bottom:10px;}
+.pw-wrap{position:relative;}
+.pw-wrap .finput{padding-right:74px;}
+.pw-eye{position:absolute;right:6px;top:6px;background:rgba(126,206,255,.12);border:1px solid rgba(126,206,255,.25);border-radius:7px;color:#7eceff;font-size:10px;font-weight:600;padding:5px 8px;cursor:pointer;font-family:inherit;}
+.disclaimer{font-size:9.5px;line-height:1.4;color:#5b6478;text-align:center;margin-top:12px;}
+
+/* GUEST BAR — звичайний flex-елемент над нижнім меню, не fixed:
+   так вона фізично не може перекрити ні контент, ні кнопки. */
+.guest-bar{display:none;flex-shrink:0;align-items:center;gap:8px;padding:7px 10px;background:rgba(251,191,36,.13);border-top:1px solid rgba(251,191,36,.3);}
+.guest-bar.on{display:flex;}
+.guest-bar-txt{flex:1;font-size:10.5px;line-height:1.35;color:#fbbf24;font-weight:600;}
+.guest-bar-btn{flex-shrink:0;background:rgba(251,191,36,.2);border:1px solid rgba(251,191,36,.45);border-radius:16px;color:#fde68a;font-size:10.5px;font-weight:700;padding:6px 11px;cursor:pointer;font-family:inherit;white-space:nowrap;}
 
 /* HEADER */
 .hdr{background:rgba(0,0,0,.45);padding:9px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;}
@@ -263,17 +279,18 @@ select option{background:#1e2d4a;color:#fff;}
 <body>
 <div class="app">
 
-<!-- SELECT -->
+<!-- LOGIN -->
 <div id="screen-select" class="screen active">
   <div class="sel-bg">
-    <div class="sel-grid" id="sel-grid"></div>
+    <div class="login-box" id="login-box"></div>
+    <div class="disclaimer">Некомерційний фанатський проєкт. Pokémon © Nintendo / Creatures Inc. / GAME FREAK inc.</div>
   </div>
 </div>
 
 <!-- MAIN -->
 <div id="screen-main" class="screen">
   <div class="hdr">
-    <button class="back-btn" onclick="showSelect()">←</button>
+    <button class="back-btn" onclick="confirmLogout()" title="Вийти з профілю">←</button>
     <div class="hdr-av" id="hdr-av" onclick="openProfileSettings()" style="cursor:pointer"></div>
     <div class="hdr-info">
       <div class="hdr-name" id="hdr-name"></div>
@@ -323,6 +340,10 @@ select option{background:#1e2d4a;color:#fff;}
       <div id="year-wrap-widget"></div>
     </div>
   </div>
+  <div class="guest-bar" id="guest-bar">
+    <div class="guest-bar-txt">⚠️ Гість — прогрес лише на цьому пристрої</div>
+    <button class="guest-bar-btn" onclick="openClaim()">Стати читачем →</button>
+  </div>
   <div class="bottom-tabs">
     <button class="bottom-tab act" id="bt-map" onclick="setMainTab('map')"><span class="bt-icon">🗺️</span>Мапа</button>
     <button class="bottom-tab" id="bt-library" onclick="setMainTab('library')"><span class="bt-icon">📚</span>Бібліотека</button>
@@ -348,11 +369,21 @@ select option{background:#1e2d4a;color:#fff;}
 
 <script>
 // ═══════════ PLAYERS ═══════════
-const PLAYERS=[
-  {id:'lionhard',  name:'Lionhard',  emoji:'🦁', color:'#f97316', border:'#f97316'},
-  {id:'esperanza', name:'Esperanza', emoji:'🌸', color:'#f43f5e', border:'#f43f5e'},
-  {id:'demetrius', name:'Demetrius', emoji:'⚡', color:'#3b82f6', border:'#3b82f6'},
-];
+// Раніше тут був хардкод трьох дітей. Тепер гравець — той, хто увійшов:
+// PLAYERS містить рівно один елемент (я). Друзі додадуться на етапі 4,
+// і код, який ходить по PLAYERS (пінси на мапі, спільна статистика),
+// почне показувати їх без переписування.
+let PLAYERS=[];
+const LEGACY_LOOK={
+  lionhard:{emoji:'🦁',color:'#f97316'},
+  esperanza:{emoji:'🌸',color:'#f43f5e'},
+  demetrius:{emoji:'⚡',color:'#3b82f6'},
+};
+const DEFAULT_LOOK={emoji:'📖',color:'#22c55e'};
+function setPlayers(userId,nick){
+  const look=LEGACY_LOOK[userId]||DEFAULT_LOOK;
+  PLAYERS=[{id:userId,name:nick,emoji:look.emoji,color:look.color,border:look.color}];
+}
 
 // ═══════════ EVOLUTION CHAINS ═══════════
 // Each chain is one linear evolution line. Player holds exactly ONE stage per chain.
@@ -563,21 +594,24 @@ function unlockHintText(loc){
 // ═══════════ STATE ═══════════
 let state={players:{}};
 let cur=null;
+// Хто увійшов: {userId, nick, role, token, guest}. userId незмінний і саме
+// він ідентифікує людину — нік можна змінити, id ні.
+let me=null;
 let mQueue=[];
 let mOpen=false;
 let SCRIPT_URL=localStorage.getItem('rpg_script_url')||'https://script.google.com/macros/s/AKfycbxlDUH2RwVXnyKNy1NCss3D90d4y_7ajtjYJGD7XIgrrZvAvS-_MdDaH0_7strvkdjc/exec';
 let _saveTimer=null;
 
-function initState(){
-  PLAYERS.forEach(p=>{
-    if(!state.players[p.id]) state.players[p.id]={
-      coins:0, bookPoints:0, booksRead:0,
-      location:'oak', region:'kanto', unlockedLocs:['oak'],
-      progress:{}, progressOrder:[], books:[],
-      monthlyGoal:null, yearlyGoal:null,
-      totalBought:0, totalCoinsSpent:0,
-    };
-  });
+function initState(id){
+  id=id||cur;
+  if(!id)return;
+  if(!state.players[id]) state.players[id]={
+    coins:0, bookPoints:0, booksRead:0,
+    location:'oak', region:'kanto', unlockedLocs:['oak'],
+    progress:{}, progressOrder:[], books:[],
+    monthlyGoal:null, yearlyGoal:null,
+    totalBought:0, totalCoinsSpent:0,
+  };
 }
 
 function pd(){return state.players[cur];}
@@ -599,6 +633,22 @@ function pluralUA(n,one,few,many){
   if(n10>=2&&n10<=4)return few;
   return many;
 }
+// Назва й автор книги йдуть у HTML через шаблонні рядки в десятку місць
+// (полиця, деталі, "рік у книгах"). Дані приходять з Goodreads, а їх там
+// правлять сторонні люди — тобто назва книги це чужий текст. Чистимо його
+// ОДИН раз при потраплянні в стан, а не в кожному місці рендеру: символи,
+// якими відкривається тег або вихід із атрибута, у назвах книг не бувають.
+function cleanBookText(s){
+  return String(s||'').replace(/[<>"'`\\]/g,'').trim().slice(0,300);
+}
+// Обкладинка підставляється в src=""/url() — приймаємо лише звичайні https-адреси.
+function cleanCoverUrl(u){
+  u=String(u||'').trim();
+  if(!u)return null;
+  if(!/^https:\/\/[^\s"'<>()\\]+$/i.test(u))return null;
+  return u;
+}
+
 function bookWord(n){return pluralUA(n,'книга','книги','книг');}
 function bookPeriodKeys(book){
   let dt;
@@ -1022,11 +1072,10 @@ function renderYearWrapWidget(){
     <select class="stats-year-sel" onchange="setWrapYear(this.value)">
       ${years.map(y=>`<option value="${y}" ${y===_wrapYear?'selected':''}>${y}</option>`).join('')}
     </select>
-    <div class="stats-metric-tabs">
-      <button class="stats-metric-tab ${_wrapScope==='own'?'act':''}" onclick="setWrapScope('own')">Моє</button>
-      <button class="stats-metric-tab ${_wrapScope==='family'?'act':''}" onclick="setWrapScope('family')">Родина разом</button>
-    </div>
   </div>`;
+  // Перемикач "Моє / Родина разом" прибраний: після переходу на логіни
+  // у PLAYERS лише той, хто увійшов. Повернеться на етапі "Друзі" —
+  // код гілки _wrapScope==='family' лишається робочим.
 
   if(!wrap){
     el.innerHTML=`<div class="stats-chart-card">${controls}<div style="text-align:center;color:#666;font-size:12px;padding:20px 0">Ще нічого не прочитано у ${_wrapYear}${_wrapScope==='family'?' родиною':''}</div></div>`;
@@ -1400,50 +1449,335 @@ function mHTML(html,wide=false,extraClass=''){
 // ═══════════ SCREENS ═══════════
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 
-function renderSelGrid(){
-  document.getElementById('sel-grid').innerHTML=PLAYERS.map(p=>{
-    const d=state.players[p.id];
-    const clr=pClr(p,d);
-    const avContent=d.avatarUrl?`<img src="${d.avatarUrl}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`:p.emoji;
-    const avBg=d.avatarUrl?'transparent':clr;
-    const caught=Object.keys(d.progress||{}).length;
-    return`<div class="sel-card" onclick="openPlayer('${p.id}')">
-      <div class="sel-av" style="background:${avBg};border:2px solid ${clr}">${avContent}</div>
-      <div class="sel-name">${d.customName||p.name}</div>
-      <div>
-        <span class="spill">🐣${caught}</span>
-        <span class="spill">📚${d.booksRead||0}</span>
-      </div>
-    </div>`;
-  }).join('');
-}
+// ═══════════ AUTH / SESSION ═══════════
+// Читач = рядок у таблиці Users на сервері, сейв у хмару, працює з будь-якого
+// девайса. Гість = тільки localStorage цього браузера, на сервері його немає
+// взагалі. Підвищення гостя до читача — інвайт-код у openClaim().
+const LS_SESSION='rw_session';
+const LS_GUESTS='rw_guests';
 
-async function showSelect(){
-  cur=null;
-  if(SCRIPT_URL){
-    document.getElementById('sel-grid').innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:2rem 0;color:#7eceff;font-size:13px">Завантаження…</div>`;
-    show('screen-select');
-    await Promise.all(PLAYERS.map(async p=>{
-      const cloud=await loadFromCloud(p.id);
-      if(cloud&&Object.keys(cloud).length>0){
-        state.players[p.id]=Object.assign({},state.players[p.id],cloud);
-        localStorage.setItem('rpg_state_'+p.id,JSON.stringify(state.players[p.id]));
-      } else {
-        const local=localStorage.getItem('rpg_state_'+p.id);
-        if(local){try{state.players[p.id]=Object.assign({},state.players[p.id],JSON.parse(local));}catch(e){}}
-      }
-    }));
+function lsGet(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def;}catch(e){return def;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+
+// Усе, що містить пароль або токен, ходить через POST — у GET параметри
+// потрапили б в історію браузера і в логи виконання Apps Script.
+async function _api(payload){
+  if(!SCRIPT_URL)return{error:'no-backend'};
+  try{
+    const res=await fetch(SCRIPT_URL,{
+      method:'POST',
+      body:JSON.stringify(payload),
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+    });
+    return await res.json();
+  }catch(e){
+    console.error('[API]',payload.action,e);
+    return{error:'network'};
   }
-  renderSelGrid();
-  show('screen-select');
 }
 
-function openPlayer(id){
-  initState();
-  cur=id;checkUnlocks();renderMain();show('screen-main');
+// crypto.subtle існує лише в захищеному контексті (https або localhost).
+// Якщо сторінку відкрили як file:// — гостьові паролі порахувати нічим,
+// і краще сказати це прямо, ніж залишити кнопку висіти.
+function cryptoOk(){return !!(window.crypto&&window.crypto.subtle);}
+async function _sha256(s){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// ── гості (локально) ──────────────────────────────────────────
+function guestKey(nick){return 'rw_guest_'+String(nick).trim().toLowerCase();}
+function guestRec(nick){return lsGet(guestKey(nick),null);}
+async function guestCreate(nick,password){
+  const salt=Math.random().toString(36).slice(2)+Date.now().toString(36);
+  const rec={userId:'g_'+salt.slice(0,10),nick:String(nick).trim(),salt,
+             hash:await _sha256(salt+'|'+password)};
+  lsSet(guestKey(nick),rec);
+  const idx=lsGet(LS_GUESTS,[]);
+  if(idx.indexOf(rec.userId)<0){idx.push(rec.userId);lsSet(LS_GUESTS,idx);}
+  return rec;
+}
+async function guestCheck(nick,password){
+  const rec=guestRec(nick);
+  if(!rec)return null;
+  return(await _sha256(rec.salt+'|'+password))===rec.hash?rec:null;
+}
+
+// ── валідація (дзеркало серверної, щоб не ганяти запит даремно) ──
+function badNickC(n){
+  n=String(n||'').trim();
+  if(n.length<2)return'Нік занадто короткий';
+  if(n.length>20)return'Нік занадто довгий (до 20 символів)';
+  if(!/^[A-Za-zА-Яа-яЁёЇїІіЄєҐґ0-9 _.-]+$/.test(n))return'У ніку є недопустимі символи';
+  return null;
+}
+function badPassC(p){
+  if(String(p||'').length<4)return'Пароль занадто короткий (мінімум 4 символи)';
+  return null;
+}
+
+// Поле пароля з кнопкою "показати" — вводити наосліп на телефоні незручно,
+// а помилку в паролі інакше не видно.
+function pwField(id,autocomplete,extra){
+  return`<div class="pw-wrap">
+    <input type="password" id="${id}" class="finput" autocomplete="${autocomplete}" ${extra||''}>
+    <button type="button" class="pw-eye" onclick="pwFlip('${id}',this)">показати</button>
+  </div>`;
+}
+function pwFlip(id,btn){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const hidden=el.type==='password';
+  el.type=hidden?'text':'password';
+  btn.textContent=hidden?'сховати':'показати';
+}
+
+// ── екран входу ───────────────────────────────────────────────
+let _loginTab='in';
+function showLogin(){cur=null;me=null;renderLogin();show('screen-select');}
+function setLoginTab(t){_loginTab=t;renderLogin();}
+function _v(id){const el=document.getElementById(id);return el?el.value.trim():'';}
+function loginErr(msg){
+  const el=document.getElementById('login-err');
+  if(!el)return;
+  el.textContent=msg||'';
+  el.style.display=msg?'block':'none';
+}
+function loginBusy(on,label){
+  const b=document.getElementById('login-submit');
+  if(!b)return;
+  b.disabled=!!on;
+  b.textContent=on?(label||'Хвилинку…'):b.dataset.label;
+}
+function renderLoginLoading(){
+  document.getElementById('login-box').innerHTML=
+    `<div style="text-align:center;padding:1.5rem 0;color:#7eceff;font-size:13px">Завантаження…</div>`;
+}
+
+function renderLogin(){
+  const tabs=`<div class="login-tabs">
+    <button class="login-tab ${_loginTab==='in'?'act':''}" onclick="setLoginTab('in')">Вхід</button>
+    <button class="login-tab ${_loginTab==='new'?'act':''}" onclick="setLoginTab('new')">Новий гравець</button>
+  </div><div class="login-err" id="login-err"></div>`;
+  const enter=`onkeydown="if(event.key==='Enter')document.getElementById('login-submit').click()"`;
+  const body=_loginTab==='in'
+    ?`<div class="flbl">Нік</div>
+      <input type="text" id="li-nick" class="finput" autocomplete="username" maxlength="20" ${enter}>
+      <div class="flbl">Пароль</div>
+      ${pwField('li-pass','current-password',enter)}
+      <button class="login-btn" id="login-submit" data-label="Увійти" onclick="submitLogin()">Увійти</button>`
+    :`<div class="flbl">Нік</div>
+      <input type="text" id="rg-nick" class="finput" autocomplete="username" maxlength="20" ${enter}>
+      <div class="flbl">Пароль</div>
+      ${pwField('rg-pass','new-password',enter)}
+      <div class="flbl">Код запрошення (якщо є)</div>
+      <input type="text" id="rg-inv" class="finput" placeholder="XXXX-XXXX" maxlength="12" ${enter}>
+      <div class="login-warn">⚠️ Без коду запрошення ти граєш як гість: прогрес зберігається лише в цьому браузері на цьому пристрої. Якщо очистити дані браузера — все зникне. Код можна ввести й пізніше.</div>
+      <button class="login-btn" id="login-submit" data-label="Створити профіль" onclick="submitRegister()">Створити профіль</button>`;
+  document.getElementById('login-box').innerHTML=tabs+body;
+}
+
+async function submitLogin(){
+  const nick=_v('li-nick'),pass=_v('li-pass');
+  if(!nick||!pass){loginErr('Введи нік і пароль');return;}
+  loginErr('');
+  loginBusy(true,'Вхід…');
+  // Локальний гість перевіряється першим — це працює навіть без мережі.
+  const g=cryptoOk()?await guestCheck(nick,pass):null;
+  if(g){finishGuest(g);return;}
+  const r=await _api({action:'login',nick:nick,password:pass});
+  if(r&&r.ok){await finishReader(r);return;}
+  loginBusy(false);
+  loginErr(r&&r.error==='network'
+    ?"Немає зв'язку з сервером"
+    :(r&&r.error)||'Не вдалося увійти');
+}
+
+async function submitRegister(){
+  const nick=_v('rg-nick'),pass=_v('rg-pass'),inv=_v('rg-inv');
+  const err=badNickC(nick)||badPassC(pass);
+  if(err){loginErr(err);return;}
+  loginErr('');
+  if(inv){
+    loginBusy(true,'Створення…');
+    const r=await _api({action:'register',nick:nick,password:pass,invite:inv});
+    if(r&&r.ok){await finishReader(r);return;}
+    loginBusy(false);
+    loginErr(r&&r.error==='network'
+      ?"Немає зв'язку з сервером"
+      :(r&&r.error)||'Не вдалося створити профіль');
+    return;
+  }
+  if(!cryptoOk()){loginErr('Профіль гостя тут створити не вийде — відкрий гру за посиланням (https). З кодом запрошення працює.');return;}
+  if(guestRec(nick)){loginErr('Профіль з таким ніком уже є на цьому пристрої');return;}
+  const g=await guestCreate(nick,pass);
+  finishGuest(g);
+}
+
+async function finishReader(r){
+  me={userId:r.userId,nick:r.nick,role:r.role||'reader',token:r.token,guest:false};
+  lsSet(LS_SESSION,me);
+  await loadStateFor(me.userId,true);
+  enterGame();
+}
+
+function finishGuest(g){
+  me={userId:g.userId,nick:g.nick,role:'guest',token:null,guest:true};
+  lsSet(LS_SESSION,me);
+  loadStateFor(me.userId,false);
+  enterGame();
+}
+
+// Хмара НЕ затирає локальне беззастережно: якщо гравець грав офлайн, його
+// сейв новіший за хмарний, і сліпе накладання з'їло б увесь той прогрес.
+// Порівнюємо мітку _ts, яку ставить saveToCloud. Якщо мітки немає хоча б з
+// одного боку (сейв створений до цієї зміни) — поводимось як раніше й
+// віримо хмарі: вона там точно не старіша за міграцію.
+async function loadStateFor(userId,tryCloud){
+  initState(userId);
+  const local=lsGet('rpg_state_'+userId,null);
+  if(local)state.players[userId]=Object.assign({},state.players[userId],local);
+  if(!(tryCloud&&me&&me.token))return;
+  const r=await _api({action:'load',userId:userId,token:me.token});
+  if(!(r&&r.ok&&r.state&&Object.keys(r.state).length>0))return;
+  const cloudTs=+r.state._ts||0, localTs=(local&&+local._ts)||0;
+  if(localTs&&cloudTs&&localTs>cloudTs){
+    // Локальне новіше — лишаємо його й одразу лікуємо розбіжність у хмарі.
+    console.log('[Load] локальний сейв новіший за хмарний, заливаю нагору',localTs,'>',cloudTs);
+    await saveToCloud(userId);
+    return;
+  }
+  state.players[userId]=Object.assign({},state.players[userId],r.state);
+  localStorage.setItem('rpg_state_'+userId,JSON.stringify(state.players[userId]));
+}
+
+function enterGame(){
+  cur=me.userId;
+  setPlayers(me.userId,me.nick);
+  initState(cur);
+  renderGuestBar();
+  checkUnlocks();
+  renderMain();
+  show('screen-main');
   setMainTab('map');
   checkGoalEvents();
 }
+
+// Автовхід: сесія лежить у localStorage, тому на своєму пристрої
+// логінитись доводиться один раз.
+async function boot(){
+  const s=lsGet(LS_SESSION,null);
+  if(!s||!s.userId){showLogin();return;}
+  if(s.guest){
+    const rec=guestRec(s.nick);
+    if(!rec){showLogin();return;}   // дані браузера почистили — гість зник
+    finishGuest(rec);
+    return;
+  }
+  renderLoginLoading();
+  show('screen-select');
+  me={userId:s.userId,nick:s.nick,role:s.role,token:s.token,guest:false};
+  const r=await _api({action:'session',userId:s.userId,token:s.token});
+  if(r&&r.ok){
+    me.nick=r.nick;me.role=r.role;
+    lsSet(LS_SESSION,me);
+    await loadStateFor(me.userId,true);
+    enterGame();
+    return;
+  }
+  if(r&&r.error==='auth'){
+    localStorage.removeItem(LS_SESSION);
+    me=null;showLogin();
+    showToast('Сесія закінчилась — увійди знову');
+    return;
+  }
+  // Сервер недоступний: якщо локальна копія є — граємо офлайн, синхронізуємось потім.
+  if(lsGet('rpg_state_'+s.userId,null)){
+    await loadStateFor(me.userId,false);
+    enterGame();
+    showToast('Офлайн — прогрес зберігається на пристрої');
+    return;
+  }
+  me=null;showLogin();
+  loginErr("Немає зв'язку з сервером");
+}
+
+function confirmLogout(){
+  const guest=me&&me.guest;
+  mEmoji('🚪','Вийти з профілю?',
+    guest
+      ?'Ти граєш як гість. Прогрес залишиться в цьому браузері, але щоб зайти знову, потрібні нік і пароль — не забудь їх.'
+      :'Прогрес збережено в хмарі. Наступного разу знадобляться нік і пароль.',
+    [{l:'Скасувати',cb:closeModal},{l:'Вийти',ok:true,cb:doLogout}]);
+}
+
+async function doLogout(){
+  closeModal();
+  const s=me;
+  localStorage.removeItem(LS_SESSION);
+  if(s&&!s.guest&&s.token)_api({action:'logout',userId:s.userId,token:s.token});
+  cur=null;me=null;PLAYERS=[];
+  _loginTab='in';
+  showLogin();
+}
+
+// ── плашка гостя ──────────────────────────────────────────────
+function renderGuestBar(){
+  const el=document.getElementById('guest-bar');
+  if(!el)return;
+  el.classList.toggle('on',!!(me&&me.guest));
+}
+
+function openClaim(){
+  mHTML(`${M_CLOSE_BTN}<div class="m-title">Стати читачем</div>
+    <div class="m-desc" style="margin-bottom:12px">Введи код запрошення — профіль переїде в хмару разом з усім прогресом і працюватиме з будь-якого пристрою.</div>
+    <div class="login-err" id="cl-err"></div>
+    <div class="flbl">Нік</div>
+    <input type="text" id="cl-nick" class="finput" maxlength="20" value="${(me&&me.nick||'').replace(/"/g,'&quot;')}">
+    <div class="flbl">Пароль</div>
+    ${pwField('cl-pass','current-password')}
+    <div class="flbl">Код запрошення</div>
+    <input type="text" id="cl-inv" class="finput" placeholder="XXXX-XXXX" maxlength="12">
+    <button class="btn-ok" id="cl-submit" data-label="Підтвердити" style="width:100%;padding:13px;font-size:14px;min-height:44px" onclick="submitClaim()">Підтвердити</button>`);
+}
+
+async function submitClaim(){
+  const nick=_v('cl-nick'),pass=_v('cl-pass'),inv=_v('cl-inv');
+  const errEl=document.getElementById('cl-err');
+  const btn=document.getElementById('cl-submit');
+  function fail(m){if(errEl){errEl.textContent=m;errEl.style.display='block';}if(btn){btn.disabled=false;btn.textContent='Підтвердити';}}
+  const bad=badNickC(nick)||badPassC(pass);
+  if(bad){fail(bad);return;}
+  if(!inv){fail('Потрібен код запрошення');return;}
+  if(btn){btn.disabled=true;btn.textContent='Переносимо…';}
+  const r=await _api({action:'register',nick:nick,password:pass,invite:inv});
+  if(!r||!r.ok){
+    fail(r&&r.error==='network'?"Немає зв'язку з сервером":(r&&r.error)||'Не вдалося');
+    return;
+  }
+  // Переносимо стан з гостьового id на новий серверний.
+  const oldId=me.userId,oldNick=me.nick;
+  const data=state.players[oldId]||{};
+  state.players[r.userId]=data;
+  me={userId:r.userId,nick:r.nick,role:r.role||'reader',token:r.token,guest:false};
+  lsSet(LS_SESSION,me);
+  cur=r.userId;
+  setPlayers(cur,me.nick);
+  await saveToCloud(cur);
+  localStorage.removeItem(guestKey(oldNick));
+  localStorage.removeItem('rpg_state_'+oldId);
+  delete state.players[oldId];
+  const idx=lsGet(LS_GUESTS,[]).filter(x=>x!==oldId);
+  lsSet(LS_GUESTS,idx);
+  closeModal();
+  renderGuestBar();
+  renderMain();
+  showToast('Готово! Тепер прогрес зберігається в хмарі');
+}
+
+// Сітки вибору гравця більше немає — лишаю заглушку, бо її кличуть
+// з налаштувань профілю.
+function renderSelGrid(){}
 
 // ═══════════ MAIN ═══════════
 function renderMain(){
@@ -1809,7 +2143,7 @@ function openProfileSettings(){
   const swatches=PROFILE_COLORS.map(c=>`<div onclick="selectProfileColor('${c}')" id="pclr${c.replace('#','')}" style="width:36px;height:36px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${c===curClr?'#fff':'transparent'};box-sizing:border-box;flex-shrink:0"></div>`).join('');
   mHTML(`${M_CLOSE_BTN}<div class="m-title">⚙️ Налаштування</div>
     <div style="text-align:left;margin-bottom:16px">
-      <div class="flbl">Нік</div>
+      <div class="flbl">Нік (він же логін)</div>
       <input type="text" id="ps-name" class="finput" value="${name}" maxlength="20" placeholder="${p.name}">
       <div class="flbl" style="margin-top:10px">Колір</div>
       <div style="display:flex;gap:8px;margin-bottom:4px">${swatches}</div>
@@ -1821,18 +2155,73 @@ function openProfileSettings(){
         <img id="ps-prev" src="${url}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid ${curClr};display:${url?'block':'none'};margin:0 auto" onerror="this.style.display='none'">
       </div>
     </div>
-    <button class="btn-ok" style="width:100%;padding:13px;font-size:14px;min-height:44px" onclick="saveProfileSettings()">Зберегти</button>`);
+    <button class="btn-ok" id="ps-save" style="width:100%;padding:13px;font-size:14px;min-height:44px" onclick="saveProfileSettings()">Зберегти</button>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:7px">
+      <div style="font-size:10.5px;color:#8a97ad;text-align:center">
+        ${me&&me.guest?'Гість — прогрес лише на цьому пристрої':'Читач · вхід: '+(me&&me.nick||'')}
+      </div>
+      ${me&&me.guest?`<button class="btn-cancel" style="width:100%" onclick="closeModal();openClaim()">🔑 У мене є код запрошення</button>`:''}
+      <button class="btn-cancel" style="width:100%" onclick="openChangePass()">Змінити пароль</button>
+      <button class="btn-cancel" style="width:100%" onclick="openAbout()">Про проєкт</button>
+      <button class="btn-cancel" style="width:100%" onclick="closeModal();confirmLogout()">Вийти з профілю</button>
+    </div>`);
+}
+
+function openAbout(){
+  const html=`${M_CLOSE_BTN}<div class="m-title">Про проєкт</div>
+    <div style="font-size:12px;line-height:1.55;color:#b8c2d4;margin-top:10px">
+      <p style="margin-bottom:10px"><b style="color:#fff">Читальний Світ</b> — безкоштовний некомерційний фанатський проєкт, зроблений для власних дітей, щоб більше читали. Не продається, не містить реклами і не приймає донатів.</p>
+      <p style="margin-bottom:10px">Pokémon, назви та зображення персонажів — торгові марки й об'єкти авторського права Nintendo, Creatures Inc. та GAME FREAK inc. Проєкт з ними не пов'язаний, ними не схвалений і не претендує на жодні права. Зображення персонажів завантажуються з відкритого проєкту PokeAPI.</p>
+    </div>`;
+  // Якщо модалка вже відкрита (нас викликали з налаштувань) — перемальовуємо
+  // її вміст, а не кладемо другий оверлей поверх першого.
+  const box=document.querySelector('#mOv .modal-box');
+  if(box){box.innerHTML=html;return;}
+  mHTML(html);
 }
 function selectProfileColor(c){
   document.getElementById('ps-color').value=c;
   PROFILE_COLORS.forEach(h=>{const el=document.getElementById('pclr'+h.replace('#',''));if(el)el.style.borderColor=h===c?'#fff':'transparent';});
   const prev=document.getElementById('ps-prev');if(prev)prev.style.borderColor=c;
 }
-function saveProfileSettings(){
+// Нік один і той самий і для входу, і для показу — щоб не було двох різних
+// "ніків". Змінюється тут; userId при цьому не змінюється ніколи.
+async function renameMe(nick){
+  const err=badNickC(nick);
+  if(err)return err;
+  if(!me)return'Немає активного профілю';
+  if(nick===me.nick)return null;
+  if(me.guest){
+    if(guestRec(nick))return'Профіль з таким ніком уже є на цьому пристрої';
+    const rec=guestRec(me.nick);
+    if(!rec)return'Не знайдено профіль гостя';
+    localStorage.removeItem(guestKey(me.nick));
+    rec.nick=nick;
+    lsSet(guestKey(nick),rec);
+  }else{
+    const r=await _api({action:'setNick',userId:me.userId,token:me.token,nick:nick});
+    if(!r||!r.ok)return r&&r.error==='network'
+      ?"Немає зв'язку з сервером"
+      :(r&&r.error)||'Не вдалося змінити нік';
+  }
+  me.nick=nick;
+  lsSet(LS_SESSION,me);
+  setPlayers(me.userId,nick);
+  return null;
+}
+
+async function saveProfileSettings(){
   const d=pd();
   const name=(document.getElementById('ps-name')?.value||'').trim();
   const url=(document.getElementById('ps-avatar')?.value||'').trim();
   const color=document.getElementById('ps-color')?.value;
+  if(name&&me&&name!==me.nick){
+    const btn=document.getElementById('ps-save');
+    if(btn){btn.disabled=true;btn.textContent='Зберігаємо…';}
+    const err=await renameMe(name);
+    if(btn){btn.disabled=false;btn.textContent='Зберегти';}
+    if(err){showToast(err);return;}   // нік не змінився — решту теж не зберігаємо
+  }
   if(name) d.customName=name; else delete d.customName;
   d.avatarUrl=url||null;
   if(color) d.customColor=color; else delete d.customColor;
@@ -1842,6 +2231,56 @@ function saveProfileSettings(){
   renderMap();
   saveToCloud(cur);
   showToast('Профіль оновлено!');
+}
+
+function openChangePass(){
+  const html=`${M_CLOSE_BTN}<div class="m-title">Змінити пароль</div>
+    <div class="m-desc" style="margin-bottom:12px">${me&&me.guest
+      ?'Пароль гостя зберігається тільки в цьому браузері.'
+      :'Після зміни на інших пристроях доведеться зайти заново.'}</div>
+    <div class="login-err" id="cp-err"></div>
+    <div class="flbl">Поточний пароль</div>
+    ${pwField('cp-old','current-password')}
+    <div class="flbl">Новий пароль</div>
+    ${pwField('cp-new','new-password')}
+    <div class="flbl">Новий ще раз</div>
+    ${pwField('cp-new2','new-password')}
+    <button class="btn-ok" id="cp-submit" style="width:100%;padding:13px;font-size:14px;min-height:44px" onclick="submitChangePass()">Зберегти</button>`;
+  const box=document.querySelector('#mOv .modal-box');
+  if(box){box.innerHTML=html;return;}
+  mHTML(html);
+}
+
+async function submitChangePass(){
+  const oldP=_v('cp-old'),n1=_v('cp-new'),n2=_v('cp-new2');
+  const errEl=document.getElementById('cp-err');
+  const btn=document.getElementById('cp-submit');
+  function fail(m){
+    if(errEl){errEl.textContent=m;errEl.style.display='block';}
+    if(btn){btn.disabled=false;btn.textContent='Зберегти';}
+  }
+  if(n1!==n2){fail('Нові паролі не збігаються');return;}
+  const bad=badPassC(n1);
+  if(bad){fail(bad);return;}
+  if(btn){btn.disabled=true;btn.textContent='Зберігаємо…';}
+  if(me.guest){
+    if(!cryptoOk()){fail('Недоступно в цьому режимі');return;}
+    if(!(await guestCheck(me.nick,oldP))){fail('Невірний поточний пароль');return;}
+    const rec=guestRec(me.nick);
+    rec.salt=Math.random().toString(36).slice(2)+Date.now().toString(36);
+    rec.hash=await _sha256(rec.salt+'|'+n1);
+    lsSet(guestKey(me.nick),rec);
+  }else{
+    const r=await _api({action:'changePass',userId:me.userId,token:me.token,password:oldP,newPassword:n1});
+    if(!r||!r.ok){
+      fail(r&&r.error==='network'?"Немає зв'язку з сервером":(r&&r.error)||'Не вдалося змінити пароль');
+      return;
+    }
+    me.token=r.token;   // сервер видав новий токен, старі сесії злетіли
+    lsSet(LS_SESSION,me);
+  }
+  closeModal();
+  showToast('Пароль змінено');
 }
 
 // ═══════════ STAR RATING (shared, supports half-stars) ═══════════
@@ -2179,7 +2618,8 @@ function saveBookDetail(i){
   const beforeAch=fullyCompletedKeys(d);
   const url=(document.getElementById('bd-cover-input').value||'').trim();
   const genre=document.getElementById('bd-genre').value||'';
-  book.coverUrl=url||null;
+  book.coverUrl=cleanCoverUrl(url);
+  if(url&&!book.coverUrl){showToast('Обкладинка: потрібне звичайне https-посилання');return;}
   if(genre)book.genre=genre;else delete book.genre;
   if(_bdRating)book.rating=_bdRating;else delete book.rating;
   saveToCloud(cur);closeModal();renderLibraryTab();renderAchievementsWidget();renderGeneralStatsWidget();
@@ -2253,7 +2693,7 @@ function submitPages(){
   d.booksRead=(d.booksRead||0)+1;
   d.coins=(d.coins||0)+coins;
   if(!d.books)d.books=[];
-  const book={title,author,pages,date:new Date().toLocaleDateString('uk-UA'),ts:Date.now(),coverUrl:coverUrl||null,coinsEarned:coins};
+  const book={title:cleanBookText(title),author:cleanBookText(author),pages,date:new Date().toLocaleDateString('uk-UA'),ts:Date.now(),coverUrl:cleanCoverUrl(coverUrl),coinsEarned:coins};
   if(_addBookRating)book.rating=_addBookRating;
   if(genre)book.genre=genre;
   d.books.push(book);
@@ -2310,32 +2750,19 @@ function _jsonp(url){
 
 async function saveToCloud(pid){
   if(!pid)return;
+  // Мітка часу збереження — по ній loadStateFor вирішує, чия копія новіша.
+  if(state.players[pid])state.players[pid]._ts=Date.now();
   const stateJson=JSON.stringify(state.players[pid]);
   localStorage.setItem('rpg_state_'+pid,stateJson);
-  if(!SCRIPT_URL)return;
+  // Гість у хмару не пишеться взагалі — його на сервері не існує.
+  if(!me||me.guest||!me.token||!SCRIPT_URL)return;
   showSaveStatus('saving');
   // POST (not GET+JSONP) — a big library of books would otherwise blow past the
   // URL-length limit on a GET request and silently fail to save anything at all.
-  try{
-    const res=await fetch(SCRIPT_URL,{
-      method:'POST',
-      body:JSON.stringify({playerId:pid,state:state.players[pid]}),
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-    });
-    const r=await res.json();
-    showSaveStatus(r&&r.ok?'saved':'error');
-  }catch(e){
-    console.error('[Save] failed:',e);
-    showSaveStatus('error');
-  }
-}
-
-async function loadFromCloud(pid){
-  if(!SCRIPT_URL)return null;
-  console.log('[Load] player:',pid);
-  const d=await _jsonp(SCRIPT_URL+'?action=load&playerId='+encodeURIComponent(pid));
-  console.log('[Load] result:',d);
-  return(d&&!d.error&&Object.keys(d).length>0)?d:null;
+  const r=await _api({action:'save',userId:me.userId,token:me.token,state:stateJson});
+  if(r&&r.ok){showSaveStatus('saved');return;}
+  showSaveStatus('error');
+  if(r&&r.error==='auth')showToast('Сесія закінчилась — увійди знову');
 }
 
 // ═══════════ LOC ICONS — individual files ═══════════
@@ -2350,7 +2777,7 @@ function locIconEl(locId,size=64){
   return`<div style="width:${size}px;height:${size}px;border-radius:50%;overflow:hidden;margin:0 auto;flex-shrink:0"><img src="${src}" style="width:100%;height:100%;object-fit:cover;object-position:center center;display:block" onerror="this.parentElement.style.cssText+='display:flex;align-items:center;justify-content:center;font-size:${Math.round(size*.55)}px';this.parentElement.textContent='${em}'"></div>`;
 }
 
-initState();showSelect();
+boot();
 window.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='hidden'&&cur)
     localStorage.setItem('rpg_state_'+cur,JSON.stringify(state.players[cur]));
