@@ -41,6 +41,7 @@
   --shelf:#111009; --shelf-lbl:#a08a5c;
   --plank-1:#7a5a32; --plank-2:#5a3e1e; --plank-3:#3e2a10; --plank-edge:#9a7a4a;
   --tip-bg:#fff; --tip-txt:#1e2d4a;
+  --jn-road-op:.62;
 }
 html[data-theme="day"]{
   color-scheme:light;
@@ -62,6 +63,7 @@ html[data-theme="day"]{
   --shelf:#e6dccb; --shelf-lbl:#7c6242;
   --plank-1:#b08a55; --plank-2:#8d6a3c; --plank-3:#6b4c26; --plank-edge:#c9a878;
   --tip-bg:#0f172a; --tip-txt:#fff;
+  --jn-road-op:.3;
 }
 html[data-theme="ocean"]{
   color-scheme:light;
@@ -83,6 +85,7 @@ html[data-theme="ocean"]{
   --shelf:#cfe3f1; --shelf-lbl:#5b7f96;
   --plank-1:#8fb6cf; --plank-2:#6b96b2; --plank-3:#4b7590; --plank-edge:#a9cde2;
   --tip-bg:#062b45; --tip-txt:#fff;
+  --jn-road-op:.3;
 }
 html[data-theme="paper"]{
   color-scheme:light;
@@ -104,6 +107,7 @@ html[data-theme="paper"]{
   --shelf:#ddc9ab; --shelf-lbl:#7d6440;
   --plank-1:#b08a55; --plank-2:#8d6a3c; --plank-3:#6b4c26; --plank-edge:#c9a878;
   --tip-bg:#2e2318; --tip-txt:#fdf6ea;
+  --jn-road-op:.3;
 }
 html[data-theme="forest"]{
   color-scheme:dark;
@@ -404,6 +408,55 @@ select option{background:var(--panel);color:var(--txt-hi);}
 .bd-delete-btn:hover{background:rgba(var(--bad-rgb),.15);color:var(--bad);border-color:rgba(var(--bad-rgb),.3);}
 .shelf-wrap{width:100%;display:flex;flex-direction:column;gap:16px;background:var(--shelf);border-radius:10px;padding:14px 0;}
 .wall-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px;}
+
+/* ПОДОРОЖ — бібліотека доріжкою.
+   Геометрія рахується в JS одним кроком (PITCH), а доріжка малюється SVG
+   з viewBox "0 0 100 H": x у ньому — це відсотки ширини, y — пікселі 1:1.
+   Тому CSS-координати карточок і вузлів збігаються з кривою без жодного
+   перерахунку. Обводка не тягнеться разом з розтягуванням по x завдяки
+   vector-effect="non-scaling-stroke", а кружечки — це HTML, а не SVG, щоб
+   не перетворились в еліпси. */
+.jn-wrap{position:relative;}
+.jn-road{position:absolute;left:0;top:0;width:100%;pointer-events:none;}
+.jn-node{position:absolute;width:19px;height:19px;border-radius:50%;transform:translate(-50%,-50%);border:3px solid var(--app);box-shadow:0 0 0 1px rgba(var(--ink),.22);}
+.jn-link{position:absolute;height:0;border-top:2px dotted rgba(var(--ink),.28);transform:translateY(-1px);}
+.jn-card{position:absolute;transform:translateY(-50%);display:flex;gap:9px;align-items:center;padding:9px 10px;border-radius:13px;cursor:pointer;overflow:hidden;}
+.jn-cover{width:37px;height:53px;border-radius:4px;object-fit:cover;flex-shrink:0;}
+.jn-cover-ph{width:37px;height:53px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.jn-info{min-width:0;flex:1;}
+.jn-title{font-size:12.5px;font-weight:700;color:var(--txt-hi);line-height:1.28;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.jn-author{font-size:11px;color:var(--txt-3);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.jn-date{font-size:11px;color:var(--txt-2);margin-top:2px;white-space:nowrap;}
+/* Зірки виносимо під текст окремим рядком — той самий компонент, що в картці
+   книги (з половинками), тільки дрібніший і вирівняний по лівому краю. */
+.jn-stars{margin-top:4px;}
+.jn-stars .star-rating{justify-content:flex-start;gap:1px;}
+.jn-stars .star-slot{font-size:13px;}
+.jn-pill{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:11px;font-weight:700;padding:6px 14px;border-radius:20px;}
+.jn-flag{position:absolute;left:50%;transform:translate(-50%,-50%);font-size:19px;line-height:1;}
+/* ЖАНРИ — вертикальний стовп, від кожного жанру своя кольорова доріжка.
+   Доріжка не тікає за екран: після п'ятої книги вона розвертається вниз і
+   йде назад, тому жанр з дванадцятьма книгами — це просто вищий блок, а не
+   нескінченна смуга вбік. Скрол лишається один, вертикальний. */
+.gn-wrap{position:relative;padding-left:30px;}
+.gn-trunk{position:absolute;left:13px;top:6px;bottom:6px;width:3px;border-radius:2px;background:rgba(var(--ink),.16);}
+.gn-block{position:relative;}
+.gn-hdr{display:flex;align-items:center;gap:7px;margin-bottom:2px;}
+.gn-dot{position:absolute;left:-21px;top:1px;width:11px;height:11px;border-radius:50%;border:2px solid var(--app);}
+/* ніжка від смуги до обкладинки — вертикальний пунктир */
+.gn-stem{position:absolute;width:0;height:16px;border-left:2px dotted rgba(var(--ink),.28);}
+.gn-name{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 9px;border-radius:11px;color:#14141c;white-space:nowrap;}
+.gn-count{font-size:10px;font-weight:700;color:var(--txt-3);}
+.gn-empty{font-size:10px;color:var(--txt-4);font-style:italic;}
+.gn-road{position:absolute;left:0;top:0;width:100%;pointer-events:none;}
+.gn-book{position:absolute;transform:translateX(-50%);cursor:pointer;}
+.gn-cover{display:block;width:42px;height:60px;border-radius:4px;object-fit:cover;box-shadow:0 3px 9px rgba(var(--shadow),.35);}
+.gn-cover-ph{display:flex;align-items:center;justify-content:center;width:42px;height:60px;border-radius:4px;font-size:8.5px;font-weight:700;line-height:1.15;text-align:center;padding:3px;overflow:hidden;overflow-wrap:anywhere;hyphens:auto;color:rgba(255,255,255,.82);box-shadow:0 3px 9px rgba(var(--shadow),.35);}
+.gn-star{font-size:9px;font-weight:700;color:var(--gold);text-align:center;margin-top:2px;}
+.jn-years{display:flex;gap:4px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none;}
+.jn-years::-webkit-scrollbar{display:none;}
+.jn-year{flex:0 0 auto;font-size:11px;font-weight:700;padding:5px 12px;border-radius:14px;border:1px solid rgba(var(--ink),.14);background:rgba(var(--ink),.04);color:var(--txt-3);cursor:pointer;font-family:inherit;}
+.jn-year.act{background:rgba(var(--gold-rgb),.16);border-color:rgba(var(--gold-rgb),.45);color:var(--gold);}
 .wall-tile{aspect-ratio:2/3;border-radius:6px;overflow:hidden;cursor:pointer;box-shadow:0 2px 6px rgba(var(--shadow),.4);}
 .shelf-row{display:flex;flex-direction:column;}
 .shelf-label{font-size:9px;color:var(--shelf-lbl);padding:0 10px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;}
@@ -949,7 +1002,7 @@ function checkGoalEvents(){
     d.bestGoalStreak=Math.max(d.bestGoalStreak||0,d.currentGoalStreak);
     celebrateNewAchievements(d,beforeAch);
     if(reward>0){
-      qM(()=>mHTML(`${M_CLOSE_BTN}<div class="m-emoji">🎉</div><div class="m-title">Ціль на місяць виконано!</div><div class="m-desc">Ти поставив ціль <b>${g.target}</b> ${bookWord(g.target)} і прочитав <b>${achieved}</b> — отримуєш <b>+${reward}🪙</b>!</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Ура!</button></div>`));
+      qM(()=>mHTML(`${M_CLOSE_BTN}<div class="m-emoji">🎉</div><div class="m-title">Ціль на місяць виконано!</div><div class="m-desc">Ціль була <b>${g.target}</b> ${bookWord(g.target)}, а вийшло <b>${achieved}</b> — тобі <b>+${reward}🪙</b>!</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Ура!</button></div>`));
     } else {
       qM(()=>mEmoji('📖','Ціль на місяць не досягнута',`Прогрес: ${achieved}/${g.target} ${bookWord(g.target)}.\nСпробуй ще наступного разу!`,[{l:'Ок',ok:true,cb:closeModal}]));
     }
@@ -963,7 +1016,7 @@ function checkGoalEvents(){
     d.coins=(d.coins||0)+reward;
     g.resolved=true;
     if(achieved>=g.target){
-      qM(()=>mHTML(`${M_CLOSE_BTN}<div class="m-emoji">🏆</div><div class="m-title">Річну ціль виконано!</div><div class="m-desc">Ти поставив ціль <b>${g.target}</b> ${bookWord(g.target)} на рік і прочитав <b>${achieved}</b> — отримуєш <b>+${reward}🪙</b>!</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Ура!</button></div>`));
+      qM(()=>mHTML(`${M_CLOSE_BTN}<div class="m-emoji">🏆</div><div class="m-title">Річну ціль виконано!</div><div class="m-desc">Ціль була <b>${g.target}</b> ${bookWord(g.target)} на рік, а вийшло <b>${achieved}</b> — тобі <b>+${reward}🪙</b>!</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Ура!</button></div>`));
     } else if(reward>0){
       qM(()=>mHTML(`${M_CLOSE_BTN}<div class="m-emoji">🥈</div><div class="m-title">Майже вийшло!</div><div class="m-desc">Ціль була <b>${g.target}</b> ${bookWord(g.target)} на рік, прочитано <b>${achieved}</b>. За результат — <b>+${reward}🪙</b>!</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Дякую!</button></div>`));
     } else {
@@ -1039,6 +1092,9 @@ function setMainTab(tab){
 function renderLibraryTab(){
   const el=document.getElementById('library-fullscreen');if(!el)return;
   el.innerHTML=_buildLibraryHTML();
+  // Висота дороги задана явно, тому міряти нічого не треба — але даємо
+  // браузеру домалювати, інакше scrollTop приліплюється до старої висоти.
+  if(_libViewMode==='journey')requestAnimationFrame(_jnScrollToLatest);
 }
 function renderGoalWidget(){
   const el=document.getElementById('goal-widget');if(!el)return;
@@ -1930,6 +1986,9 @@ function enterGame(){
   setPlayers(me.userId,me.nick);
   initState(cur);
   applyTheme(curTheme());   // гама профілю, а не та, що лишилась на пристрої
+  const _d=state.players[cur]||{};
+  if(['shelves','wall','journey','genre'].includes(_d.libView))_libViewMode=_d.libView;
+  if(['size','genre','author'].includes(_d.libSort))_libSortBy=_d.libSort;
   renderGuestBar();
   friendsData={friends:[],incoming:[],outgoing:[],reax:[]};
   if(!me.guest){
@@ -2059,9 +2118,6 @@ async function submitClaim(){
   showToast('Готово! Тепер прогрес зберігається в хмарі');
 }
 
-// Сітки вибору гравця більше немає — лишаю заглушку, бо її кличуть
-// з налаштувань профілю.
-function renderSelGrid(){}
 
 // ═══════════ FRIENDS ═══════════
 // Дані друга приходять з ЧУЖОГО клієнта (він сам формує свій стовпчик public),
@@ -2469,7 +2525,7 @@ function friendCardHTML(f,opts){
     <div class="fr-av" style="background:${clr};border:2px solid ${esc(f.clr)||'#22c55e'}">${avInner}</div>
     <div class="fr-main">
       <div class="fr-nick">${esc(f.nick)}</div>
-      ${fresh?`<div class="fr-loc">щойно приєднався — ще не грав</div>`:`
+      ${fresh?`<div class="fr-loc">щойно в грі — прогресу ще немає</div>`:`
       ${loc?`<div class="fr-loc">📍 ${esc(loc.name)}</div>`:''}
       ${f.ts?`<div class="fr-loc">🕒 у грі ${esc(agoLabel(f.ts))}</div>`:''}
       <div style="margin-top:4px">
@@ -3154,7 +3210,6 @@ async function saveProfileSettings(){
   if(color) d.customColor=color; else delete d.customColor;
   closeModal();
   renderMain();
-  renderSelGrid();
   renderMap();
   saveToCloud(cur);
   showToast('Профіль оновлено!');
@@ -3439,6 +3494,261 @@ function _buildWallHTML(books){
   }).join('');
   return`<div class="wall-grid">${tiles}</div>`;
 }
+// ═══════════ ПОДОРОЖ ═══════════
+// Бібліотека як дорога: книги в порядку прочитання, кожна — вузол на кривій,
+// відрізок між двома книгами перетікає з кольору однієї в колір іншої.
+// Кольори не вигадуються: _colorFor() уже дає кожній книзі свою трійку з
+// _BPALETTE — та сама, якою малюються корінець і обкладинка-заглушка.
+const JN_PITCH=144;      // крок по вертикалі між книгами
+// Зверху й знизу лишаємо місце під «в'їзд» і «виїзд» дороги з прапорцями —
+// інакше пігулка «Початок року» налазить на першу карточку.
+const JN_TOP=146, JN_BOT=176;
+const JN_STUB=96;        // шматок дороги до першої книги й після останньої
+const JN_XL=34, JN_XR=66;   // відсотки: де стоять вузли зліва й справа
+let _jnYear=null;
+
+function _jnGroups(books){
+  // Рік беремо з дати; книги без дати не вигадуємо куди подіти — окрема група.
+  const by={};
+  books.forEach((b,i)=>{
+    const y=String(b.date||'').slice(0,4);
+    const key=/^\d{4}$/.test(y)?y:'—';
+    (by[key]||(by[key]=[])).push({b,i});
+  });
+  Object.values(by).forEach(list=>list.sort((x,y)=>String(x.b.date||'').localeCompare(String(y.b.date||''))));
+  // Роки за зростанням, «без дати» — останньою пігулкою.
+  const keys=Object.keys(by).filter(k=>k!=='—').sort();
+  if(by['—'])keys.push('—');
+  return{keys,by};
+}
+function setJnYear(y){_jnYear=y;renderLibraryTab();}
+
+function _buildJourneyHTML(books){
+  const{keys,by}=_jnGroups(books);
+  if(!keys.length)return'';
+  // За замовчуванням — рік останньої прочитаної книги.
+  if(!keys.includes(_jnYear))_jnYear=keys.filter(k=>k!=='—').pop()||keys[0];
+  const list=by[_jnYear];
+  const n=list.length;
+  const H=JN_TOP+(n-1)*JN_PITCH+JN_BOT;
+  const xOf=i=>i%2===0?JN_XL:JN_XR;
+  const yOf=i=>JN_TOP+i*JN_PITCH;
+
+  // ── доріжка: по відрізку на кожну пару сусідніх книг ──
+  const seg=(d,stroke)=>
+    `<path d="${d}" fill="none" stroke="${stroke}" stroke-width="22" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`;
+  const segDash=d=>
+    `<path d="${d}" fill="none" style="stroke:rgba(var(--ink),.18)" stroke-width="2" stroke-dasharray="6 10" vector-effect="non-scaling-stroke"/>`;
+  const c0=_colorFor(list[0].b.title)[0],cN=_colorFor(list[n-1].b.title)[0];
+  // «В'їзд» і «виїзд» — щоб прапорці стояли на дорозі, а не в повітрі.
+  const dIn=`M ${xOf(0)} ${yOf(0)-JN_STUB} L ${xOf(0)} ${yOf(0)}`;
+  const dOut=`M ${xOf(n-1)} ${yOf(n-1)} L ${xOf(n-1)} ${yOf(n-1)+JN_STUB}`;
+  let defs='',road=seg(dIn,c0)+seg(dOut,cN),dash=segDash(dIn)+segDash(dOut);
+  for(let i=0;i<n-1;i++){
+    const[c1]=_colorFor(list[i].b.title),[c2]=_colorFor(list[i+1].b.title);
+    const x1=xOf(i),y1=yOf(i),x2=xOf(i+1),y2=yOf(i+1),ym=(y1+y2)/2;
+    const d=`M ${x1} ${y1} C ${x1} ${ym}, ${x2} ${ym}, ${x2} ${y2}`;
+    defs+=`<linearGradient id="jng${i}" gradientUnits="userSpaceOnUse" x1="0" y1="${y1}" x2="0" y2="${y2}">
+      <stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient>`;
+    road+=seg(d,`url(#jng${i})`);
+    dash+=segDash(d);
+  }
+  const svg=`<svg class="jn-road" height="${H}" viewBox="0 0 100 ${H}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>${defs}</defs>
+    <g style="opacity:var(--jn-road-op)">${road}</g>${dash}
+  </svg>`;
+
+  // ── вузли, пунктири й карточки ──
+  let items='';
+  list.forEach(({b,i},k)=>{
+    const[top,bot]=_colorFor(b.title);
+    const x=xOf(k),y=yOf(k);
+    const left=x===JN_XR;                   // вузол справа → карточка злива
+    const cw=52;                            // ширина карточки, % контейнера
+    const cx=left?2:100-2-cw;
+    const gap=left?[cx+cw,x-3]:[x+3,cx];    // пунктир між карточкою і вузлом
+    const cover=escUrl(b.coverUrl)
+      ?`<img class="jn-cover" src="${escUrl(b.coverUrl)}" loading="lazy" alt="" onerror="this.style.display='none'">`
+      :`<div class="jn-cover-ph" style="background:linear-gradient(150deg,${top},${bot})">📖</div>`;
+    items+=`<div class="jn-link" style="top:${y}px;left:${gap[0]}%;width:${Math.max(0,gap[1]-gap[0])}%"></div>
+      <div class="jn-node" style="left:${x}%;top:${y}px;background:${top}"></div>
+      <div class="jn-card" onclick="openBookDetail(${i})" title="${esc(b.title)}"
+        style="left:${cx}%;width:${cw}%;top:${y}px;background:linear-gradient(180deg,${top}26,${bot}19),rgba(var(--ink),.05);border:1px solid ${top}66">
+        ${cover}
+        <div class="jn-info">
+          <div class="jn-title">${esc(b.title)}</div>
+          <div class="jn-author">${esc(b.author||'')}</div>
+          <div class="jn-date">${esc(uaDate(b.date))}</div>
+          ${b.rating?`<div class="jn-stars">${starRatingHTML(b.rating,false)}</div>`:''}
+        </div>
+      </div>`;
+  });
+
+  // ── прапорці на початку й у кінці ──
+  const pages=list.reduce((s,{b})=>s+(+b.pages||0),0);
+  const yearLbl=_jnYear==='—'?'Без дати':_jnYear;
+  const startPill=`<div class="jn-flag" style="left:${xOf(0)}%;top:${yOf(0)-JN_STUB-16}px">🚩</div>
+    <div class="jn-pill" style="top:${yOf(0)-JN_STUB+6}px;background:rgba(var(--gold-rgb),.18);border:1px solid rgba(var(--gold-rgb),.45);color:var(--gold)">🚀 Початок ${esc(yearLbl)}</div>`;
+  const endPill=`<div class="jn-flag" style="left:${xOf(n-1)}%;top:${yOf(n-1)+JN_STUB+16}px">🏁</div>
+    <div class="jn-pill" style="top:${yOf(n-1)+JN_STUB+52}px;background:rgba(var(--acc),.16);border:1px solid rgba(var(--acc),.4);color:var(--accent)">🏆 ${n} ${pluralUA(n,'книга','книги','книг')} · ${pages} ${pluralUA(pages,'сторінка','сторінки','сторінок')}</div>`;
+
+  const years=keys.length>1
+    ? `<div class="jn-years">${keys.map(k=>`<button class="jn-year ${k===_jnYear?'act':''}" onclick="setJnYear('${k}')">${k==='—'?'без дати':k}</button>`).join('')}</div>`
+    : '';
+  return years+`<div class="jn-wrap" id="jn-wrap" style="height:${H}px">${svg}${startPill}${items}${endPill}</div>`;
+}
+// Дата в підписі — по-людськи: «30 червня 2026», а не 2026-06-30.
+const UA_MONTHS=['січня','лютого','березня','квітня','травня','червня',
+                 'липня','серпня','вересня','жовтня','листопада','грудня'];
+function uaDate(s){
+  const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s||''));
+  if(!m)return String(s||'');
+  return +m[3]+' '+UA_MONTHS[+m[2]-1]+' '+m[1];
+}
+// «Відкривається на поточній книзі» — тобто на останній прочитаній: вона в
+// кінці дороги, тому докручуємо вниз так, щоб вона стала по центру екрана.
+function _jnScrollToLatest(){
+  const wrap=document.getElementById('jn-wrap');
+  const sc=document.querySelector('.main-content');
+  if(!wrap||!sc)return;
+  const nodes=wrap.querySelectorAll('.jn-node');
+  if(!nodes.length)return;
+  const last=nodes[nodes.length-1];
+  const y=wrap.offsetTop+parseFloat(last.style.top||'0');
+  sc.scrollTop=Math.max(0,y-sc.clientHeight/2);
+}
+
+// ═══════════ ЖАНРИ ═══════════
+// Вертикальний стовп, від кожного жанру — своя кольорова доріжка з книгами.
+// Жанр, у якому ще нічого не прочитано, теж малюється: доріжка йде й
+// закінчується нічим. Це і є та сама «дорога в нікуди» — видно, куди ще не
+// ходив, а не просто відсутній рядок.
+const GN_PER_ROW=5;      // скільки обкладинок у рядок, далі доріжка завертає
+const GN_ROW_H=100;      // висота рядка: смуга + ніжка + обкладинка + просвіт
+const GN_BAND=8;         // де в рядку проходить сама смуга
+const GN_X1=6, GN_X2=94; // відсотки: межі смуги (лишаємо місце на розворот)
+function _gnColor(g){return GENRE_COLORS[g]||GENRE_COLORS['Інше'];}
+
+function _buildGenreHTML(books){
+  // Порядок: спершу жанри з книгами (більші вище), потім порожні — щоб
+  // «дороги в нікуди» не розсовували те, що вже прочитано.
+  const withIdx=books.map((b,i)=>({b,i}));
+  const byGenre={};
+  withIdx.forEach(({b,i})=>{
+    const g=GENRES.includes(b.genre)?b.genre:(b.genre?'Інше':'__none__');
+    (byGenre[g]||(byGenre[g]=[])).push({b,i});
+  });
+  Object.values(byGenre).forEach(l=>l.sort((x,y)=>String(x.b.date||'').localeCompare(String(y.b.date||''))));
+  const filled=GENRES.filter(g=>byGenre[g]&&byGenre[g].length);
+  const empty=GENRES.filter(g=>!byGenre[g]||!byGenre[g].length);
+  const order=filled.slice().sort((a,b)=>byGenre[b].length-byGenre[a].length);
+  if(byGenre.__none__)order.push('__none__');
+
+  let seq=0;
+  const block=g=>{
+    const gid=++seq;                 // id градієнтів унікальні на всю сторінку
+    const list=byGenre[g]||[];
+    const n=list.length;
+    const isNone=g==='__none__';
+    const name=isNone?'Без жанру':g;
+    const clr=isNone?GENRE_COLORS['Інше']:_gnColor(g);
+    const rows=Math.max(1,Math.ceil(n/GN_PER_ROW));
+    // Порожньому жанру місце під обкладинки не потрібне: лишається сама
+    // смуга, інакше десяток «доріг у нікуди» роздув би вигляд утричі.
+    const H=n?rows*GN_ROW_H:GN_BAND+18;
+    const slot=(GN_X2-GN_X1)/GN_PER_ROW;
+
+    // ── доріжка ──
+    // Суцільний контур (для «обочини» кольору жанру й пунктирної розділової)
+    // і окремо покриття, розбите на відрізки між сусідніми книгами: кожен
+    // відрізок перетікає з кольору однієї книги в колір наступної, як у
+    // «Подорожі». Колір жанру нікуди не зникає — він лишається в чіпі,
+    // крапці на стовпі та обочині під покриттям.
+    const rowY=r=>r*GN_ROW_H+GN_BAND;
+    const ltrOf=r=>r%2===0;
+    const rowStart=r=>ltrOf(r)?GN_X1:GN_X2;
+    const rowEnd=r=>ltrOf(r)?GN_X2:GN_X1;
+    const bookX=k=>{
+      const r=Math.floor(k/GN_PER_ROW);
+      let col=k%GN_PER_ROW;
+      if(!ltrOf(r))col=GN_PER_ROW-1-col;
+      return GN_X1+(col+0.5)*slot;
+    };
+    let d='';
+    for(let r=0;r<rows;r++){
+      const y=rowY(r);
+      d+=`M ${rowStart(r)} ${y} L ${rowEnd(r)} ${y} `;
+      if(r<rows-1){
+        const y2=rowY(r+1);
+        const cx=ltrOf(r)?99:1;               // випуклість розвороту
+        d+=`C ${cx} ${y}, ${cx} ${y2}, ${rowEnd(r)} ${y2} `;
+      }
+    }
+    // покриття: в'їзд, відрізки між книгами, виїзд
+    let defs='',surface='';
+    if(n){
+      const cOf=k=>_colorFor(list[k].b.title)[0];
+      const piece=(dd,stroke)=>{surface+=`<path d="${dd}" fill="none" stroke="${stroke}" stroke-width="4" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`;};
+      const grad=(id,x1,y1,x2,y2,c1,c2)=>{
+        defs+=`<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">
+          <stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient>`;
+        return`url(#${id})`;
+      };
+      piece(`M ${rowStart(0)} ${rowY(0)} L ${bookX(0)} ${rowY(0)}`,cOf(0));
+      for(let k=0;k<n-1;k++){
+        const r=Math.floor(k/GN_PER_ROW),r2=Math.floor((k+1)/GN_PER_ROW);
+        const y=rowY(r),y2=rowY(r2);
+        const id=`gng${gid}_${k}`;
+        const stroke=grad(id,bookX(k),y,bookX(k+1),y2,cOf(k),cOf(k+1));
+        if(r===r2)piece(`M ${bookX(k)} ${y} L ${bookX(k+1)} ${y}`,stroke);
+        else{
+          const cx=ltrOf(r)?99:1;
+          piece(`M ${bookX(k)} ${y} L ${rowEnd(r)} ${y} C ${cx} ${y}, ${cx} ${y2}, ${rowEnd(r)} ${y2} L ${bookX(k+1)} ${y2}`,stroke);
+        }
+      }
+      const lr=Math.floor((n-1)/GN_PER_ROW);
+      piece(`M ${bookX(n-1)} ${rowY(lr)} L ${rowEnd(lr)} ${rowY(lr)}`,cOf(n-1));
+    }
+    const dashed=n===0;
+    const road=`<svg class="gn-road" height="${H}" viewBox="0 0 100 ${H}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>${defs}</defs>
+      <path d="${d}" fill="none" stroke="${clr}" stroke-width="${n?10:9}" stroke-linecap="round"
+        ${dashed?'stroke-dasharray="3 9"':''} vector-effect="non-scaling-stroke"
+        style="opacity:${dashed?'.34':'var(--jn-road-op)'}"/>
+      <g style="opacity:.85">${surface}</g>
+    </svg>`;
+
+    // ── обкладинки на ніжках під смугою ──
+    const items=list.map(({b,i},k)=>{
+      const r=Math.floor(k/GN_PER_ROW);
+      let col=k%GN_PER_ROW;
+      if(r%2===1)col=GN_PER_ROW-1-col;        // зворотний хід у зворотному рядку
+      const x=GN_X1+(col+0.5)*slot;
+      const y=r*GN_ROW_H+GN_BAND;
+      const[top,bot]=_colorFor(b.title);
+      const cover=escUrl(b.coverUrl)
+        ?`<img class="gn-cover" src="${escUrl(b.coverUrl)}" loading="lazy" alt="" onerror="this.style.display='none'">`
+        :`<div class="gn-cover-ph" style="background:linear-gradient(150deg,${top},${bot})">${esc(b.title)}</div>`;
+      return`<div class="gn-stem" style="top:${y}px;left:${x}%"></div>
+        <div class="gn-book" style="left:${x}%;top:${y+16}px" onclick="openBookDetail(${i})" title="${esc(b.title)}${b.author?' · '+esc(b.author):''}">
+          ${cover}${b.rating?`<div class="gn-star">★${esc(b.rating)}</div>`:''}
+        </div>`;
+    }).join('');
+
+    return`<div class="gn-block" style="height:${H+(n?40:28)}px">
+      <div class="gn-hdr">
+        <span class="gn-dot" style="background:${clr}"></span>
+        <span class="gn-name" style="background:${clr}">${esc(name)}</span>
+        ${n?`<span class="gn-count">${n}</span>`:`<span class="gn-empty">ще не пройдено</span>`}
+      </div>
+      <div style="position:relative;height:${H}px">${road}${items}</div>
+    </div>`;
+  };
+
+  return`<div class="gn-wrap"><div class="gn-trunk"></div>
+    ${order.map(block).join('')}${empty.map(block).join('')}</div>`;
+}
+
 function _buildLibrarySettingsHTML(){
   return`${M_CLOSE_BTN}<div class="m-title">⚙️ Вигляд бібліотеки</div>
     <div class="flbl">Вигляд</div>
@@ -3446,8 +3756,12 @@ function _buildLibrarySettingsHTML(){
       <button class="goal-tab ${_libViewMode==='shelves'?'act':''}" onclick="setLibViewMode('shelves')">📚 Полиці</button>
       <button class="goal-tab ${_libViewMode==='wall'?'act':''}" onclick="setLibViewMode('wall')">🖼️ Стіна</button>
     </div>
-    <div class="flbl" style="${_libViewMode==='wall'?'opacity:.4':''}">Сортування полиць</div>
-    <div class="goal-tabs" style="${_libViewMode==='wall'?'opacity:.4;pointer-events:none':''}">
+    <div class="goal-tabs" style="margin-bottom:14px">
+      <button class="goal-tab ${_libViewMode==='journey'?'act':''}" onclick="setLibViewMode('journey')">🛣️ Подорож</button>
+      <button class="goal-tab ${_libViewMode==='genre'?'act':''}" onclick="setLibViewMode('genre')">🎨 Жанри</button>
+    </div>
+    <div class="flbl" style="${_libViewMode==='shelves'?'':'opacity:.4'}">Сортування полиць</div>
+    <div class="goal-tabs" style="${_libViewMode==='shelves'?'':'opacity:.4;pointer-events:none'}">
       <button class="goal-tab ${_libSortBy==='size'?'act':''}" onclick="setLibSortBy('size')">Розмір</button>
       <button class="goal-tab ${_libSortBy==='genre'?'act':''}" onclick="setLibSortBy('genre')">Жанр</button>
       <button class="goal-tab ${_libSortBy==='author'?'act':''}" onclick="setLibSortBy('author')">Автор</button>
@@ -3458,8 +3772,11 @@ function openLibrarySettings(){
   if(box){box.innerHTML=_buildLibrarySettingsHTML();return;}
   mHTML(_buildLibrarySettingsHTML());
 }
-function setLibViewMode(m){_libViewMode=m;openLibrarySettings();renderLibraryTab();}
-function setLibSortBy(s){_libSortBy=s;openLibrarySettings();renderLibraryTab();}
+// Вигляд бібліотеки запам'ятовується в профілі, як і гама: вибрати
+// «Подорож» і побачити після перезаходу знову полиці — це дратує.
+function _libViewSave(){const d=pd();if(!d)return;d.libView=_libViewMode;d.libSort=_libSortBy;saveToCloud(cur);}
+function setLibViewMode(m){_libViewMode=m;_libViewSave();openLibrarySettings();renderLibraryTab();}
+function setLibSortBy(s){_libSortBy=s;_libViewSave();openLibrarySettings();renderLibraryTab();}
 function _buildLibraryHTML(){
   const d=pd();
   const books=d.books||[];
@@ -3471,6 +3788,8 @@ function _buildLibraryHTML(){
     return header+`<div style="text-align:center;padding:40px 0;color:var(--txt-3);font-size:13px;line-height:2">📚<br>Ще немає книжок.<br>Додай першу книгу!</div>`;
   }
   if(_libViewMode==='wall')return header+_buildWallHTML(books);
+  if(_libViewMode==='journey')return header+_buildJourneyHTML(books);
+  if(_libViewMode==='genre')return header+_buildGenreHTML(books);
   const withIdx=[...books].map((b,i)=>({b,i})).reverse(); // newest first within each shelf
   const groups=_computeShelfGroups(withIdx,_libSortBy);
   let shelves='';
