@@ -7,261 +7,410 @@
 <title>Читальний Світ</title>
 <meta name="apple-mobile-web-app-title" content="Читальний Світ">
 <style>
+/* ═══════════ ТЕМИ ═══════════
+   Кольори живуть ТІЛЬКИ тут. Решта CSS і всі inline-стилі в JS беруть їх
+   через var(--…). Додати тему = дописати блок html[data-theme="…"] нижче
+   і рядок у THEMES у скрипті — більше нічого чіпати не треба.
+
+   --ink, --acc, --gold-rgb… — це трійки каналів, а не кольори: підкладки
+   й обідки будуються як rgba(var(--ink),.08). У світлих темах --ink
+   темніє, і всі напівпрозорі підкладки самі стають темними на світлому
+   замість того, щоб вибілювати його.
+
+   Пари токенів: --gold / --gold-solid, --ok / --ok-solid, --bad /
+   --bad-solid. Перший — колір ТЕКСТУ (у світлих темах темний, щоб
+   читався), другий — колір ФАРБИ (заливка бейджа, шкали, зірки), він
+   лишається яскравим у будь-якій темі. */
+:root{
+  color-scheme:dark;
+  --ink:255,255,255; --shadow:0,0,0;
+  --acc:126,206,255; --gold-rgb:251,191,36; --ok-rgb:74,222,128;
+  --bad-rgb:239,68,68; --pri-rgb:37,99,235; --tl-rgb:45,212,191;
+  --bg:#1a1a2e; --app:#16213e; --panel:#1e2d4a; --panel-rgb:30,45,74;
+  --pop:#243554; --seg-act:#2a3550;
+  --chrome:rgba(0,0,0,.45); --chrome-2:rgba(0,0,0,.5);
+  --sunken:rgba(0,0,0,.3); --sunken-2:rgba(0,0,0,.2); --sunken-3:rgba(0,0,0,.25);
+  --glass:rgba(10,15,35,.82); --scrim:rgba(0,0,0,.72); --scrim-2:rgba(0,0,0,.4);
+  --txt-hi:#fff; --txt:#e2e8f0; --txt-2:#b8c2d4; --txt-3:#8a97ad;
+  --txt-4:#667487; --txt-5:#3d4757;
+  --accent:#7eceff; --accent-2:#3d7ab8;
+  --pri:#2563eb; --pri-hi:#1d4ed8; --pri-txt:#fff;
+  --gold:#fbbf24; --gold-solid:#facc15; --gold-hi:#fde68a;
+  --ok:#4ade80; --ok-solid:#22c55e;
+  --bad:#f87171; --bad-2:#fca5a5; --bad-solid:#ef4444;
+  --shelf:#111009; --shelf-lbl:#a08a5c;
+  --plank-1:#7a5a32; --plank-2:#5a3e1e; --plank-3:#3e2a10; --plank-edge:#9a7a4a;
+  --tip-bg:#fff; --tip-txt:#1e2d4a;
+}
+html[data-theme="day"]{
+  color-scheme:light;
+  --ink:23,37,66; --shadow:100,116,139;
+  --acc:3,105,161; --gold-rgb:217,119,6; --ok-rgb:22,163,74;
+  --bad-rgb:220,38,38; --pri-rgb:37,99,235; --tl-rgb:13,148,136;
+  --bg:#e8ecf3; --app:#f6f8fc; --panel:#fff; --panel-rgb:255,255,255;
+  --pop:#fff; --seg-act:#fff;
+  --chrome:rgba(23,37,66,.05); --chrome-2:rgba(23,37,66,.04);
+  --sunken:rgba(23,37,66,.035); --sunken-2:rgba(23,37,66,.025); --sunken-3:rgba(23,37,66,.06);
+  --glass:rgba(255,255,255,.9); --scrim:rgba(15,23,42,.55); --scrim-2:rgba(15,23,42,.3);
+  --txt-hi:#0f172a; --txt:#1e293b; --txt-2:#475569; --txt-3:#5c6a80;
+  --txt-4:#7b8794; --txt-5:#9dabbb;
+  --accent:#0369a1; --accent-2:#7dd3fc;
+  --pri:#2563eb; --pri-hi:#1d4ed8; --pri-txt:#fff;
+  --gold:#8f4309; --gold-solid:#f59e0b; --gold-hi:#7c3a08;
+  --ok:#146530; --ok-solid:#22c55e;
+  --bad:#b91c1c; --bad-2:#dc2626; --bad-solid:#ef4444;
+  --shelf:#e6dccb; --shelf-lbl:#7c6242;
+  --plank-1:#b08a55; --plank-2:#8d6a3c; --plank-3:#6b4c26; --plank-edge:#c9a878;
+  --tip-bg:#0f172a; --tip-txt:#fff;
+}
+html[data-theme="ocean"]{
+  color-scheme:light;
+  --ink:8,47,73; --shadow:56,110,145;
+  --acc:2,132,199; --gold-rgb:202,138,4; --ok-rgb:13,148,136;
+  --bad-rgb:225,29,72; --pri-rgb:3,105,161; --tl-rgb:6,148,162;
+  --bg:#d7e9f7; --app:#eaf5fd; --panel:#fff; --panel-rgb:255,255,255;
+  --pop:#f4fbff; --seg-act:#fff;
+  --chrome:rgba(2,132,199,.09); --chrome-2:rgba(2,132,199,.08);
+  --sunken:rgba(8,47,73,.045); --sunken-2:rgba(8,47,73,.03); --sunken-3:rgba(8,47,73,.07);
+  --glass:rgba(240,250,255,.9); --scrim:rgba(6,43,69,.55); --scrim-2:rgba(6,43,69,.3);
+  --txt-hi:#062b45; --txt:#0c3b5c; --txt-2:#2b6382; --txt-3:#41738f;
+  --txt-4:#65879d; --txt-5:#8fb0c6;
+  --accent:#0369a1; --accent-2:#67c6f0;
+  --pri:#0369a1; --pri-hi:#075985; --pri-txt:#fff;
+  --gold:#85510a; --gold-solid:#eab308; --gold-hi:#6b400a;
+  --ok:#0c5f59; --ok-solid:#14b8a6;
+  --bad:#be123c; --bad-2:#e11d48; --bad-solid:#e11d48;
+  --shelf:#cfe3f1; --shelf-lbl:#5b7f96;
+  --plank-1:#8fb6cf; --plank-2:#6b96b2; --plank-3:#4b7590; --plank-edge:#a9cde2;
+  --tip-bg:#062b45; --tip-txt:#fff;
+}
+html[data-theme="paper"]{
+  color-scheme:light;
+  --ink:62,44,26; --shadow:120,94,62;
+  --acc:146,94,42; --gold-rgb:161,98,7; --ok-rgb:101,163,13;
+  --bad-rgb:159,18,57; --pri-rgb:138,90,36; --tl-rgb:15,118,110;
+  --bg:#e9dcc6; --app:#f7efe0; --panel:#fffaf1; --panel-rgb:255,250,241;
+  --pop:#fdf6ea; --seg-act:#fffaf1;
+  --chrome:rgba(62,44,26,.07); --chrome-2:rgba(62,44,26,.06);
+  --sunken:rgba(62,44,26,.05); --sunken-2:rgba(62,44,26,.035); --sunken-3:rgba(62,44,26,.08);
+  --glass:rgba(255,250,241,.9); --scrim:rgba(46,35,24,.55); --scrim-2:rgba(46,35,24,.3);
+  --txt-hi:#2e2318; --txt:#43331f; --txt-2:#6b5539; --txt-3:#7d6749;
+  --txt-4:#8d7a5f; --txt-5:#ad9a7c;
+  --accent:#8a5a24; --accent-2:#d9b78a;
+  --pri:#8a5a24; --pri-hi:#6f4718; --pri-txt:#fff8ec;
+  --gold:#8a5306; --gold-solid:#d99a1e; --gold-hi:#6f400a;
+  --ok:#3f6212; --ok-solid:#65a30d;
+  --bad:#9f1239; --bad-2:#be123c; --bad-solid:#be123c;
+  --shelf:#ddc9ab; --shelf-lbl:#7d6440;
+  --plank-1:#b08a55; --plank-2:#8d6a3c; --plank-3:#6b4c26; --plank-edge:#c9a878;
+  --tip-bg:#2e2318; --tip-txt:#fdf6ea;
+}
+html[data-theme="forest"]{
+  color-scheme:dark;
+  --acc:110,231,183; --ok-rgb:134,239,172; --pri-rgb:21,128,61;
+  --bg:#08150f; --app:#0c2118; --panel:#143425; --panel-rgb:20,52,37;
+  --pop:#1b4530; --seg-act:#1f5138;
+  --chrome:rgba(0,0,0,.4); --sunken:rgba(0,0,0,.28);
+  --glass:rgba(8,24,17,.82);
+  --txt:#e3f0e7; --txt-2:#b6d4c2; --txt-3:#8bab98;
+  --txt-4:#628070; --txt-5:#3a4f44;
+  --accent:#6ee7b7; --accent-2:#2f8f6a;
+  --pri:#15803d; --pri-hi:#166534;
+  --ok:#86efac;
+  --shelf:#0d0f08; --shelf-lbl:#9a9a5c;
+  --tip-txt:#143425;
+}
+html[data-theme="plum"]{
+  color-scheme:dark;
+  --acc:216,180,254; --bad-rgb:251,113,133; --pri-rgb:124,58,237;
+  --bg:#130a1e; --app:#1c1030; --panel:#2a1740; --panel-rgb:42,23,64;
+  --pop:#372050; --seg-act:#3f2860;
+  --chrome:rgba(0,0,0,.4); --sunken:rgba(0,0,0,.28);
+  --glass:rgba(20,10,32,.82);
+  --txt:#ede4f7; --txt-2:#cdb8e0; --txt-3:#a68cc0;
+  --txt-4:#7b649a; --txt-5:#4a3a63;
+  --accent:#d8b4fe; --accent-2:#8b5cf6;
+  --pri:#7c3aed; --pri-hi:#6d28d9;
+  --ok:#6ee7b7;
+  --bad:#fb7185; --bad-2:#fda4af; --bad-solid:#f43f5e;
+  --shelf:#140d0a;
+  --tip-txt:#2a1740;
+}
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1a1a2e;color:#eee;}
-.app{max-width:480px;margin:0 auto;height:100vh;height:100dvh;background:#16213e;position:relative;overflow:hidden;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);}
+.app{max-width:480px;margin:0 auto;height:100vh;height:100dvh;background:var(--app);position:relative;overflow:hidden;}
 .screen{display:none;height:100%;flex-direction:column;}.screen.active{display:flex;}
 
 /* SELECT */
 .sel-bg{background:url('start.png') center top/cover no-repeat;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 1rem calc(6rem + env(safe-area-inset-bottom, 0px));overflow-y:auto;}
-.spill{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;background:rgba(126,206,255,.15);color:#7eceff;display:inline-block;margin:2px 1px;}
+.spill{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;background:rgba(var(--acc),.15);color:var(--accent);display:inline-block;margin:2px 1px;}
 
 /* LOGIN */
-.login-box{background:rgba(10,15,35,.82);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(8px);border-radius:18px;padding:1.1rem 1rem;}
-.login-tabs{display:flex;gap:4px;background:rgba(0,0,0,.35);border-radius:14px;padding:3px;margin-bottom:14px;}
-.login-tab{flex:1;padding:8px 0;font-size:12px;font-weight:600;border-radius:11px;border:none;background:transparent;color:#8a97ad;cursor:pointer;font-family:inherit;}
-.login-tab.act{background:rgba(126,206,255,.16);color:#7eceff;}
-.login-btn{width:100%;padding:13px;font-size:14px;font-weight:600;border:none;border-radius:12px;background:#2563eb;color:#fff;cursor:pointer;font-family:inherit;min-height:46px;}
-.login-btn:hover{background:#1d4ed8;}
+.login-box{background:var(--glass);border:1px solid rgba(var(--ink),.15);backdrop-filter:blur(8px);border-radius:18px;padding:1.1rem 1rem;}
+.login-tabs{display:flex;gap:4px;background:var(--sunken-3);border-radius:14px;padding:3px;margin-bottom:14px;}
+.login-tab{flex:1;padding:8px 0;font-size:12px;font-weight:600;border-radius:11px;border:none;background:transparent;color:var(--txt-3);cursor:pointer;font-family:inherit;}
+.login-tab.act{background:rgba(var(--acc),.16);color:var(--accent);}
+.login-btn{width:100%;padding:13px;font-size:14px;font-weight:600;border:none;border-radius:12px;background:var(--pri);color:var(--pri-txt);cursor:pointer;font-family:inherit;min-height:46px;}
+.login-btn:hover{background:var(--pri-hi);}
 .login-btn[disabled]{opacity:.55;cursor:default;}
-.login-err{font-size:11.5px;color:#fca5a5;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:9px;padding:7px 9px;margin-bottom:10px;display:none;}
-.login-warn{font-size:10.5px;line-height:1.45;color:#fbbf24;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.28);border-radius:9px;padding:8px 9px;margin-bottom:10px;}
+.login-err{font-size:11.5px;color:var(--bad-2);background:rgba(var(--bad-rgb),.12);border:1px solid rgba(var(--bad-rgb),.3);border-radius:9px;padding:7px 9px;margin-bottom:10px;display:none;}
+.login-warn{font-size:10.5px;line-height:1.45;color:var(--gold);background:rgba(var(--gold-rgb),.1);border:1px solid rgba(var(--gold-rgb),.28);border-radius:9px;padding:8px 9px;margin-bottom:10px;}
 .pw-wrap{position:relative;}
 .pw-wrap .finput{padding-right:74px;}
-.pw-eye{position:absolute;right:6px;top:6px;background:rgba(126,206,255,.12);border:1px solid rgba(126,206,255,.25);border-radius:7px;color:#7eceff;font-size:10px;font-weight:600;padding:5px 8px;cursor:pointer;font-family:inherit;}
-.disclaimer{font-size:9.5px;line-height:1.4;color:#5b6478;text-align:center;margin-top:12px;}
+.pw-eye{position:absolute;right:6px;top:6px;background:rgba(var(--acc),.12);border:1px solid rgba(var(--acc),.25);border-radius:7px;color:var(--accent);font-size:10px;font-weight:600;padding:5px 8px;cursor:pointer;font-family:inherit;}
+.disclaimer{font-size:9.5px;line-height:1.4;color:var(--txt-3);text-align:center;margin-top:14px;padding-top:10px;border-top:1px solid rgba(var(--ink),.08);}
 
 /* FRIENDS */
 .bottom-tab{position:relative;}
-.tab-badge{position:absolute;top:3px;left:50%;margin-left:6px;min-width:15px;height:15px;border-radius:8px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;line-height:15px;text-align:center;padding:0 3px;}
-.fr-card{display:flex;gap:9px;align-items:flex-start;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:9px 10px;margin-bottom:8px;}
+.tab-badge{position:absolute;top:3px;left:50%;margin-left:6px;min-width:15px;height:15px;border-radius:8px;background:var(--bad-solid);color:#fff;font-size:9px;font-weight:700;line-height:15px;text-align:center;padding:0 3px;}
+.fr-card{display:flex;gap:9px;align-items:flex-start;background:rgba(var(--ink),.05);border:1px solid rgba(var(--ink),.09);border-radius:14px;padding:9px 10px;margin-bottom:8px;}
 .fr-av{width:44px;height:44px;border-radius:50%;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:19px;}
 .fr-main{flex:1;min-width:0;}
-.fr-nick{font-size:13px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.fr-loc{font-size:10px;color:#8a97ad;margin-top:1px;}
-.fr-last{display:flex;gap:6px;align-items:center;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.07);}
+.fr-nick{font-size:13px;font-weight:700;color:var(--txt-hi);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.fr-loc{font-size:10px;color:var(--txt-3);margin-top:1px;}
+.fr-last{display:flex;gap:6px;align-items:center;margin-top:6px;padding-top:6px;border-top:1px solid rgba(var(--ink),.07);}
 .fr-last-cover{width:24px;height:34px;border-radius:3px;object-fit:cover;flex-shrink:0;}
-.fr-last-txt{flex:1;min-width:0;font-size:10.5px;color:#b8c2d4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.fr-btn{background:rgba(126,206,255,.12);border:1px solid rgba(126,206,255,.28);border-radius:14px;color:#7eceff;font-size:10.5px;font-weight:600;padding:6px 10px;cursor:pointer;font-family:inherit;white-space:nowrap;}
-.fr-btn.danger{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:#fca5a5;}
+.fr-last-txt{flex:1;min-width:0;font-size:10.5px;color:var(--txt-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.fr-btn{background:rgba(var(--acc),.12);border:1px solid rgba(var(--acc),.28);border-radius:14px;color:var(--accent);font-size:10.5px;font-weight:600;padding:6px 10px;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.fr-btn.danger{background:rgba(var(--bad-rgb),.1);border-color:rgba(var(--bad-rgb),.3);color:var(--bad-2);}
 .fr-menu-wrap{position:relative;flex-shrink:0;}
-.fr-dots{background:none;border:none;color:#7b8798;font-size:17px;line-height:1;padding:2px 4px;cursor:pointer;font-family:inherit;}
-.fr-dots:hover{color:#cfd8e6;}
-.fr-menu{display:none;position:absolute;top:24px;right:0;z-index:5;background:#243554;border:1px solid rgba(255,255,255,.14);border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,.45);overflow:hidden;min-width:150px;}
+.fr-dots{background:none;border:none;color:var(--txt-3);font-size:17px;line-height:1;padding:2px 4px;cursor:pointer;font-family:inherit;}
+.fr-dots:hover{color:var(--txt);}
+.fr-menu{display:none;position:absolute;top:24px;right:0;z-index:5;background:var(--pop);border:1px solid rgba(var(--ink),.14);border-radius:10px;box-shadow:0 8px 20px rgba(var(--shadow),.45);overflow:hidden;min-width:150px;}
 .fr-menu.on{display:block;}
-.fr-menu button{display:block;width:100%;text-align:left;background:none;border:none;color:#fca5a5;font-size:12px;font-weight:600;padding:10px 12px;cursor:pointer;font-family:inherit;white-space:nowrap;}
-.fr-menu button:hover{background:rgba(239,68,68,.12);}
+.fr-menu button{display:block;width:100%;text-align:left;background:none;border:none;color:var(--bad-2);font-size:12px;font-weight:600;padding:10px 12px;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.fr-menu button:hover{background:rgba(var(--bad-rgb),.12);}
 .fr-wrap-scroll{flex:1;overflow-y:auto;margin:0 -6px;padding:0 6px 4px;}
-.fr-btn.ok{background:rgba(74,222,128,.13);border-color:rgba(74,222,128,.32);color:#4ade80;}
-.fr-empty{text-align:center;color:#666;font-size:12px;padding:18px 8px;line-height:1.5;}
-.fr-sub{font-size:10px;color:#7eceff;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin:14px 0 6px;}
+.fr-btn.ok{background:rgba(var(--ok-rgb),.13);border-color:rgba(var(--ok-rgb),.32);color:var(--ok);}
+.fr-empty{text-align:center;color:var(--txt-4);font-size:12px;padding:18px 8px;line-height:1.5;}
+.fr-sub{font-size:10px;color:var(--accent);font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin:14px 0 6px;}
+
+/* РЕАКЦІЇ ❤️ */
+/* Серце — символьний глиф (♡/♥), а не емодзі: емодзі 🤍 має власний білий
+   колір і на світлих гамах просто зникало. Глиф фарбується токеном теми. */
+.rx-btn{flex-shrink:0;background:rgba(var(--ink),.06);border:1px solid rgba(var(--ink),.14);border-radius:14px;font-size:16px;line-height:1;padding:0 9px;min-height:30px;min-width:36px;cursor:pointer;font-family:inherit;color:var(--txt-3);}
+.rx-btn.on{background:rgba(var(--bad-rgb),.14);border-color:rgba(var(--bad-rgb),.45);color:var(--bad);}
+.rx-btn[disabled]{opacity:.5;cursor:default;}
+.rx-card{display:flex;gap:9px;align-items:flex-start;background:rgba(var(--bad-rgb),.07);border:1px solid rgba(var(--bad-rgb),.22);border-radius:14px;padding:9px 10px;margin-bottom:8px;}
+.rx-cover{width:26px;height:37px;border-radius:3px;object-fit:cover;flex-shrink:0;}
+.rx-main{flex:1;min-width:0;}
+.rx-title{font-size:12px;font-weight:700;color:var(--txt-hi);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+/* Реакцій на одну книгу може бути багато й від різних друзів. flex-wrap і gap
+   тут не косметика: чіпи стають у рядок і переносяться на новий, тому фізично
+   не можуть накластись один на одного, скільки б їх не прийшло. */
+.rx-who{display:flex;flex-wrap:wrap;align-items:center;gap:4px 5px;margin-top:5px;}
+.rx-chip{display:inline-flex;align-items:center;gap:4px;max-width:100%;background:rgba(var(--ink),.06);border:1px solid rgba(var(--ink),.1);border-radius:12px;padding:2px 8px 2px 3px;font-size:10.5px;font-weight:600;color:var(--txt-2);}
+.rx-chip-av{width:16px;height:16px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;overflow:hidden;}
+.rx-chip-av img{width:100%;height:100%;object-fit:cover;}
+.rx-chip-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rx-new{flex-shrink:0;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--bad);background:rgba(var(--bad-rgb),.14);border-radius:10px;padding:2px 6px;}
 
 /* GUEST BAR — звичайний flex-елемент над нижнім меню, не fixed:
    так вона фізично не може перекрити ні контент, ні кнопки. */
-.guest-bar{display:none;flex-shrink:0;align-items:center;gap:8px;padding:7px 10px;background:rgba(251,191,36,.13);border-top:1px solid rgba(251,191,36,.3);}
+.guest-bar{display:none;flex-shrink:0;align-items:center;gap:8px;padding:7px 10px;background:rgba(var(--gold-rgb),.13);border-top:1px solid rgba(var(--gold-rgb),.3);}
 .guest-bar.on{display:flex;}
-.guest-bar-txt{flex:1;font-size:10.5px;line-height:1.35;color:#fbbf24;font-weight:600;}
-.guest-bar-btn{flex-shrink:0;background:rgba(251,191,36,.2);border:1px solid rgba(251,191,36,.45);border-radius:16px;color:#fde68a;font-size:10.5px;font-weight:700;padding:6px 11px;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.guest-bar-txt{flex:1;font-size:10.5px;line-height:1.35;color:var(--gold);font-weight:600;}
+.guest-bar-btn{flex-shrink:0;background:rgba(var(--gold-rgb),.2);border:1px solid rgba(var(--gold-rgb),.45);border-radius:16px;color:var(--gold-hi);font-size:10.5px;font-weight:700;padding:6px 11px;cursor:pointer;font-family:inherit;white-space:nowrap;}
 
 /* HEADER */
-.hdr{background:rgba(0,0,0,.45);padding:9px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;}
-.back-btn{background:none;border:none;cursor:pointer;font-size:18px;color:#7eceff;padding:2px 6px;}
+.hdr{background:var(--chrome);padding:9px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(var(--ink),.08);flex-shrink:0;}
+.back-btn{background:none;border:none;cursor:pointer;font-size:18px;color:var(--accent);padding:2px 6px;}
 .hdr-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;overflow:hidden;}
 .hdr-info{display:none;}
-.hdr-name{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.hdr-loc{font-size:10px;color:#7eceff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.hdr-name{font-size:13px;font-weight:600;color:var(--txt-hi);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hdr-loc{font-size:10px;color:var(--accent);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .hdr-res{display:flex;gap:4px;flex-shrink:0;flex-wrap:nowrap;justify-content:flex-end;margin-left:auto;}
-.rpill{background:rgba(255,255,255,.1);border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600;color:#fff;white-space:nowrap;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-align:center;}
-.rpill-menu{padding:7px 13px;font-size:16px;line-height:1;background:rgba(45,212,191,.22);border:1px solid rgba(45,212,191,.45);}
-.rpill:hover{background:rgba(255,255,255,.2);}
+.rpill{background:rgba(var(--ink),.1);border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--txt-hi);white-space:nowrap;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-align:center;}
+.rpill-menu{padding:7px 13px;font-size:16px;line-height:1;background:rgba(var(--tl-rgb),.22);border:1px solid rgba(var(--tl-rgb),.45);}
+.rpill:hover{background:rgba(var(--ink),.2);}
 
 /* MAIN CONTENT */
 .main-content{flex:1;overflow-y:auto;padding:10px;min-height:0;}
 .tab-page{height:100%;}
 
 /* BOTTOM TABS */
-.bottom-tabs{display:flex;flex-shrink:0;background:rgba(0,0,0,.5);border-top:1px solid rgba(255,255,255,.08);}
-.bottom-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 calc(6px + env(safe-area-inset-bottom,0px));background:none;border:none;color:#777;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;}
+.bottom-tabs{display:flex;flex-shrink:0;background:var(--chrome-2);border-top:1px solid rgba(var(--ink),.08);}
+.bottom-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 calc(6px + env(safe-area-inset-bottom,0px));background:none;border:none;color:var(--txt-3);font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;}
 .bottom-tab .bt-icon{font-size:19px;line-height:1;}
-.bottom-tab.act{color:#7eceff;}
+.bottom-tab.act{color:var(--accent);}
 
 /* DEX */
-.sec-title{font-size:10px;font-weight:600;color:#7eceff;letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
-.dex-grid{display:flex;flex-direction:row;overflow-x:auto;gap:6px;margin-bottom:10px;padding-bottom:4px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;}
-.dex-grid::-webkit-scrollbar{height:3px;}.dex-grid::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px;}
-.dex-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:0 3px 5px;text-align:center;cursor:pointer;transition:all .15s;overflow:hidden;width:68px;flex-shrink:0;position:relative;}
-.dex-card:hover{background:rgba(255,255,255,.1);}
+.sec-title{font-size:10px;font-weight:600;color:var(--accent);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+.dex-grid{display:flex;flex-direction:row;overflow-x:auto;gap:6px;margin-bottom:10px;padding-bottom:4px;scrollbar-width:thin;scrollbar-color:rgba(var(--ink),.1) transparent;}
+.dex-grid::-webkit-scrollbar{height:3px;}.dex-grid::-webkit-scrollbar-thumb{background:rgba(var(--ink),.15);border-radius:2px;}
+.dex-card{background:rgba(var(--ink),.05);border:1px solid rgba(var(--ink),.07);border-radius:10px;padding:0 3px 5px;text-align:center;cursor:pointer;transition:all .15s;overflow:hidden;width:68px;flex-shrink:0;position:relative;}
+.dex-card:hover{background:rgba(var(--ink),.1);}
 .dex-img{width:calc(100% + 6px);height:68px;object-fit:contain;object-position:bottom center;image-rendering:pixelated;margin:0 -3px;display:block;}
-.dex-name{font-size:8px;color:#ccc;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2;}
-.dex-sub{font-size:8px;color:#7eceff;line-height:1.2;}
-.dex-empty{flex:1;text-align:center;padding:.6rem;color:rgba(255,255,255,.25);font-size:12px;}
-.chain-row{display:flex;flex-direction:row;overflow-x:auto;gap:6px;margin-bottom:10px;padding-bottom:4px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;}
-.chain-row::-webkit-scrollbar{height:3px;}.chain-row::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px;}
-.chain-block{background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.35);border-radius:10px;padding:5px 8px 5px 6px;display:flex;align-items:center;gap:2px;position:relative;flex-shrink:0;overflow:hidden;}
-.chain-block-badge{position:absolute;top:0;right:0;background:#fbbf24;color:#000;font-size:6px;font-weight:700;padding:1px 5px;border-radius:0 8px 0 5px;letter-spacing:.04em;}
+.dex-name{font-size:8px;color:var(--txt);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2;}
+.dex-sub{font-size:8px;color:var(--accent);line-height:1.2;}
+.dex-empty{flex:1;text-align:center;padding:.6rem;color:var(--txt-4);font-size:12px;}
+.chain-row{display:flex;flex-direction:row;overflow-x:auto;gap:6px;margin-bottom:10px;padding-bottom:4px;scrollbar-width:thin;scrollbar-color:rgba(var(--ink),.1) transparent;}
+.chain-row::-webkit-scrollbar{height:3px;}.chain-row::-webkit-scrollbar-thumb{background:rgba(var(--ink),.15);border-radius:2px;}
+.chain-block{background:rgba(var(--gold-rgb),.07);border:1px solid rgba(var(--gold-rgb),.35);border-radius:10px;padding:5px 8px 5px 6px;display:flex;align-items:center;gap:2px;position:relative;flex-shrink:0;overflow:hidden;}
+.chain-block-badge{position:absolute;top:0;right:0;background:var(--gold-solid);color:#000;font-size:6px;font-weight:700;padding:1px 5px;border-radius:0 8px 0 5px;letter-spacing:.04em;}
 .chain-sprite{cursor:pointer;text-align:center;flex-shrink:0;opacity:.9;transition:opacity .15s;}
 .chain-sprite:hover{opacity:1;}
-.chain-arrow{color:rgba(251,191,36,.5);font-size:11px;flex-shrink:0;line-height:1;margin-top:-6px;}
+.chain-arrow{color:rgba(var(--gold-rgb),.5);font-size:11px;flex-shrink:0;line-height:1;margin-top:-6px;}
 
 /* MAP */
-.map-card{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden;margin-bottom:8px;}
-#map-region-tabs{background:rgba(0,0,0,.2);}
+.map-card{background:var(--sunken);border:1px solid rgba(var(--ink),.07);border-radius:14px;overflow:hidden;margin-bottom:8px;}
+#map-region-tabs{background:var(--sunken-2);}
 .map-svg{display:block;width:100%;}
 
 /* ACTIONS */
-.act-card{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden;margin-bottom:8px;}
-.act-hdr{display:flex;flex-direction:row;align-items:center;text-align:left;gap:10px;padding:8px 12px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05);}
+.act-card{background:var(--sunken);border:1px solid rgba(var(--ink),.07);border-radius:14px;overflow:hidden;margin-bottom:8px;}
+.act-hdr{display:flex;flex-direction:row;align-items:center;text-align:left;gap:10px;padding:8px 12px;background:rgba(var(--ink),.03);border-bottom:1px solid rgba(var(--ink),.05);}
 .act-hdr-emoji{font-size:18px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}.act-hdr-emoji img{width:38px;height:38px;border-radius:50%;object-fit:cover;}
 .act-hdr-info{flex:1;min-width:0;}
-.act-hdr-name{font-size:13px;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.act-hdr-desc{font-size:10px;color:#7eceff;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.act-hdr-name{font-size:13px;font-weight:600;color:var(--txt-hi);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.act-hdr-desc{font-size:10px;color:var(--accent);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .act-hdr-badge{font-size:9px;font-weight:600;padding:3px 9px;border-radius:20px;flex-shrink:0;white-space:nowrap;}
 .act-list{padding:10px;}
-.act-row{display:flex;align-items:center;gap:8px;padding:9px 10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);border-radius:10px;cursor:pointer;transition:all .15s;}
-.act-row:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.12);}
+.act-row{display:flex;align-items:center;gap:8px;padding:9px 10px;background:rgba(var(--ink),.04);border:1px solid rgba(var(--ink),.05);border-radius:10px;cursor:pointer;transition:all .15s;}
+.act-row:hover{background:rgba(var(--ink),.09);border-color:rgba(var(--ink),.12);}
 .act-icon{font-size:18px;flex-shrink:0;}
 .act-body{flex:1;}
-.act-title{font-size:12px;font-weight:600;color:#fff;}
-.act-desc{font-size:10px;color:#888;margin-top:1px;}
+.act-title{font-size:12px;font-weight:600;color:var(--txt-hi);}
+.act-desc{font-size:10px;color:var(--txt-3);margin-top:1px;}
 .act-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
 
 /* CATCH BUTTON */
-.catch-btn{width:100%;padding:16px;font-size:15px;font-weight:700;border-radius:14px;border:none;cursor:pointer;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;}
+.catch-btn{width:100%;padding:16px;font-size:15px;font-weight:700;border-radius:14px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--pri),var(--pri-hi));color:var(--pri-txt);display:flex;align-items:center;justify-content:center;gap:8px;}
 .catch-btn:hover{filter:brightness(1.1);}
-.catch-btn.done{background:rgba(74,222,128,.13);color:#4ade80;cursor:default;border:1px solid rgba(74,222,128,.3);}
+.catch-btn.done{background:rgba(var(--ok-rgb),.13);color:var(--ok);cursor:default;border:1px solid rgba(var(--ok-rgb),.3);}
 .catch-btn.done:hover{filter:none;}
-.catch-cost{font-size:12px;opacity:.9;background:rgba(255,255,255,.18);padding:2px 8px;border-radius:10px;}
+.catch-cost{font-size:12px;opacity:.9;background:rgba(var(--ink),.18);padding:2px 8px;border-radius:10px;}
 
 /* GOAL WIDGET */
 .goal-widget-inner{padding:10px 12px 12px;text-align:center;}
-.goal-tabs{display:flex;gap:6px;margin-bottom:8px;background:rgba(0,0,0,.25);border-radius:20px;padding:3px;}
-.goal-tab{flex:1;padding:5px 0;font-size:11px;font-weight:600;border-radius:16px;border:none;background:transparent;color:#888;cursor:pointer;font-family:inherit;}
-.goal-tab.act{background:#2a3550;color:#fff;}
+.goal-tabs{display:flex;gap:6px;margin-bottom:8px;background:var(--sunken-3);border-radius:20px;padding:3px;}
+.goal-tab{flex:1;padding:5px 0;font-size:11px;font-weight:600;border-radius:16px;border:none;background:transparent;color:var(--txt-3);cursor:pointer;font-family:inherit;}
+.goal-tab.act{background:var(--seg-act);color:var(--txt-hi);}
 .goal-gauge-wrap{position:relative;width:100%;max-width:190px;margin:0 auto;}
 .goal-gauge-svg{display:block;width:100%;}
 .goal-gauge-center{position:absolute;left:0;right:0;top:38%;text-align:center;}
-.goal-gauge-label{font-size:9px;font-weight:700;letter-spacing:.06em;color:#999;}
-.goal-gauge-value{font-size:22px;font-weight:800;color:#fff;line-height:1.1;}
-.goal-action-btn{margin-top:4px;padding:8px 20px;font-size:12px;font-weight:600;background:rgba(251,191,36,.14);border:1px solid rgba(251,191,36,.35);border-radius:20px;color:#fbbf24;cursor:pointer;font-family:inherit;}
+.goal-gauge-label{font-size:9px;font-weight:700;letter-spacing:.06em;color:var(--txt-3);}
+.goal-gauge-value{font-size:22px;font-weight:800;color:var(--txt-hi);line-height:1.1;}
+.goal-action-btn{margin-top:4px;padding:8px 20px;font-size:12px;font-weight:600;background:rgba(var(--gold-rgb),.14);border:1px solid rgba(var(--gold-rgb),.35);border-radius:20px;color:var(--gold);cursor:pointer;font-family:inherit;}
 
 /* STATS TAB */
-.stats-sub-hdr{font-size:15px;font-weight:700;color:#fff;margin-bottom:8px;}
-.stats-divider{height:1px;background:rgba(255,255,255,.08);margin:16px 0;}
+.stats-sub-hdr{font-size:15px;font-weight:700;color:var(--txt-hi);margin-bottom:8px;}
+.stats-divider{height:1px;background:rgba(var(--ink),.08);margin:16px 0;}
 .stat-tiles{display:flex;gap:8px;margin:10px 0;}
-.stat-tile{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px 6px;text-align:center;}
-.stat-tile-val{font-size:20px;font-weight:800;color:#fff;line-height:1.1;}
-.stat-tile-lbl{font-size:10px;color:#888;margin-top:2px;}
-.stats-chart-card{position:relative;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:10px;margin-top:4px;}
-.stats-chart-tooltip{position:absolute;transform:translate(-50%,calc(-100% - 8px));background:#fff;color:#1e2d4a;font-size:12px;font-weight:800;padding:3px 9px;border-radius:7px;pointer-events:none;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.35);z-index:5;}
-.stats-chart-tooltip::after{content:'';position:absolute;left:50%;top:100%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#fff;}
+.stat-tile{flex:1;background:rgba(var(--ink),.05);border:1px solid rgba(var(--ink),.07);border-radius:12px;padding:10px 6px;text-align:center;}
+.stat-tile-val{font-size:20px;font-weight:800;color:var(--txt-hi);line-height:1.1;}
+.stat-tile-lbl{font-size:10px;color:var(--txt-3);margin-top:2px;}
+.stats-chart-card{position:relative;background:var(--sunken-2);border:1px solid rgba(var(--ink),.06);border-radius:12px;padding:10px;margin-top:4px;}
+.stats-chart-tooltip{position:absolute;transform:translate(-50%,calc(-100% - 8px));background:var(--tip-bg);color:var(--tip-txt);font-size:12px;font-weight:800;padding:3px 9px;border-radius:7px;pointer-events:none;white-space:nowrap;box-shadow:0 2px 8px rgba(var(--shadow),.35);z-index:5;}
+.stats-chart-tooltip::after{content:'';position:absolute;left:50%;top:100%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--tip-bg);}
 .stats-chart-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;}
-.stats-year-sel{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;font-size:12px;padding:4px 8px;font-family:inherit;}
-.stats-metric-tabs{display:flex;gap:4px;background:rgba(0,0,0,.25);border-radius:14px;padding:3px;}
-.stats-metric-tab{padding:4px 7px;font-size:10px;font-weight:600;border-radius:10px;border:none;background:transparent;color:#888;cursor:pointer;font-family:inherit;white-space:nowrap;}
-.stats-metric-tab.act{background:#2a3550;color:#fff;}
+.stats-year-sel{background:rgba(var(--ink),.07);border:1px solid rgba(var(--ink),.15);border-radius:8px;color:var(--txt-hi);font-size:12px;padding:4px 8px;font-family:inherit;}
+.stats-metric-tabs{display:flex;gap:4px;background:var(--sunken-3);border-radius:14px;padding:3px;}
+.stats-metric-tab{padding:4px 7px;font-size:10px;font-weight:600;border-radius:10px;border:none;background:transparent;color:var(--txt-3);cursor:pointer;font-family:inherit;white-space:nowrap;}
+.stats-metric-tab.act{background:var(--seg-act);color:var(--txt-hi);}
 .stats-chart-svg{display:block;width:100%;height:110px;}
 .wrap-book-row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
-.wrap-book-card{flex:1 1 140px;display:flex;gap:8px;background:rgba(255,255,255,.04);border-radius:10px;padding:8px;min-width:0;cursor:pointer;}
+.wrap-book-card{flex:1 1 140px;display:flex;gap:8px;background:rgba(var(--ink),.04);border-radius:10px;padding:8px;min-width:0;cursor:pointer;}
 .wrap-book-info{min-width:0;}
-.wrap-book-lbl{font-size:9px;color:#7eceff;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
-.wrap-book-title{font-size:11px;color:#fff;font-weight:600;margin:2px 0;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
-.wrap-book-pages{font-size:14px;color:#facc15;font-weight:800;}
+.wrap-book-lbl{font-size:9px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.wrap-book-title{font-size:11px;color:var(--txt-hi);font-weight:600;margin:2px 0;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.wrap-book-pages{font-size:14px;color:var(--gold-solid);font-weight:800;}
 .wrap-facts{display:flex;flex-direction:column;gap:8px;margin:10px 0;}
 .wrap-fact-row{display:flex;align-items:center;gap:8px;font-size:12px;}
 .wrap-fact-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
-.wrap-fact-lbl{flex:1;color:#999;}
-.wrap-fact-val{color:#fff;font-weight:700;text-align:right;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.wrap-month-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px;text-align:center;margin-top:4px;}
-.wrap-month-lbl{font-size:10px;color:#c9a54d;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
-.wrap-month-name{font-size:15px;color:#fff;font-weight:700;}
-.wrap-month-count{font-size:19px;color:#e0b84d;font-weight:800;margin-top:2px;}
-.stats-chart-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:10px;}
+.wrap-fact-lbl{flex:1;color:var(--txt-3);}
+.wrap-fact-val{color:var(--txt-hi);font-weight:700;text-align:right;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.wrap-month-card{background:rgba(var(--ink),.04);border:1px solid rgba(var(--ink),.07);border-radius:12px;padding:12px;text-align:center;margin-top:4px;}
+.wrap-month-lbl{font-size:10px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
+.wrap-month-name{font-size:15px;color:var(--txt-hi);font-weight:700;}
+.wrap-month-count{font-size:19px;color:var(--gold-solid);font-weight:800;margin-top:2px;}
+.stats-chart-title{font-size:13px;font-weight:700;color:var(--txt-hi);margin-bottom:10px;}
 .lang-donut-row{display:flex;align-items:center;gap:14px;}
 .lang-donut-svg{width:110px;height:110px;flex-shrink:0;}
 .lang-legend{flex:1;display:flex;flex-direction:column;gap:7px;min-width:0;}
 .lang-legend-row{display:flex;align-items:center;gap:6px;font-size:11px;}
 .lang-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.lang-legend-lbl{color:#ccc;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.lang-legend-val{color:#fff;font-weight:700;flex-shrink:0;margin-left:2px;}
+.lang-legend-lbl{color:var(--txt);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lang-legend-val{color:var(--txt-hi);font-weight:700;flex-shrink:0;margin-left:2px;}
 .star-rating{display:flex;gap:2px;justify-content:center;}
-.star-slot{position:relative;font-size:24px;line-height:1;color:rgba(255,255,255,.15);}
+.star-slot{position:relative;font-size:24px;line-height:1;color:rgba(var(--ink),.15);}
 .star-rating.editable .star-slot{cursor:pointer;}
-.star-fg{position:absolute;left:0;top:0;overflow:hidden;white-space:nowrap;color:#fbbf24;}
-.ach-card{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(126,206,255,.12),rgba(37,99,235,.08));border:1px solid rgba(126,206,255,.25);border-radius:12px;padding:12px;cursor:pointer;transition:background .15s;}
-.ach-card:hover{background:linear-gradient(135deg,rgba(126,206,255,.18),rgba(37,99,235,.12));}
+.star-fg{position:absolute;left:0;top:0;overflow:hidden;white-space:nowrap;color:var(--gold-solid);}
+.ach-card{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(var(--acc),.12),rgba(var(--pri-rgb),.08));border:1px solid rgba(var(--acc),.25);border-radius:12px;padding:12px;cursor:pointer;transition:background .15s;}
+.ach-card:hover{background:linear-gradient(135deg,rgba(var(--acc),.18),rgba(var(--pri-rgb),.12));}
 .ach-info{flex:1;min-width:0;}
-.ach-title{font-size:13px;font-weight:700;color:#fff;}
-.ach-count{font-size:11px;color:#7eceff;font-weight:600;margin-top:1px;margin-bottom:6px;}
-.ach-bar-wrap{height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;}
-.ach-bar-fill{height:100%;background:linear-gradient(90deg,#facc15,#22c55e);border-radius:4px;}
-.ach-arrow{font-size:20px;color:#7eceff;flex-shrink:0;}
+.ach-title{font-size:13px;font-weight:700;color:var(--txt-hi);}
+.ach-count{font-size:11px;color:var(--accent);font-weight:600;margin-top:1px;margin-bottom:6px;}
+.ach-bar-wrap{height:8px;background:rgba(var(--ink),.08);border-radius:4px;overflow:hidden;}
+.ach-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold-solid),var(--ok-solid));border-radius:4px;}
+.ach-arrow{font-size:20px;color:var(--accent);flex-shrink:0;}
 .ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:10px 4px;}
 .ach-badge{display:flex;flex-direction:column;align-items:center;cursor:pointer;text-align:center;padding:4px 2px;border-radius:10px;transition:background .15s;}
-.ach-badge:hover{background:rgba(255,255,255,.06);}
-.ach-badge-lbl{font-size:9px;font-weight:600;color:#ccc;margin-top:4px;max-width:70px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.25;}
-.ach-badge-tier{font-size:8px;color:#666;margin-top:1px;}
-.tier-caption{text-align:center;font-size:11px;color:#7eceff;font-weight:600;margin-bottom:8px;}
+.ach-badge:hover{background:rgba(var(--ink),.06);}
+.ach-badge-lbl{font-size:9px;font-weight:600;color:var(--txt);margin-top:4px;max-width:70px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.25;}
+.ach-badge-tier{font-size:8px;color:var(--txt-4);margin-top:1px;}
+.tier-caption{text-align:center;font-size:11px;color:var(--accent);font-weight:600;margin-bottom:8px;}
 .tier-bar{display:flex;gap:3px;margin-bottom:6px;}
-.tier-seg{flex:1;height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;}
-.tier-seg-fill{height:100%;background:#22c55e;border-radius:4px;}
+.tier-seg{flex:1;height:8px;background:rgba(var(--ink),.08);border-radius:4px;overflow:hidden;}
+.tier-seg-fill{height:100%;background:var(--ok-solid);border-radius:4px;}
 .tier-marks{display:flex;gap:3px;}
-.ach-reward-box{display:flex;flex-direction:column;align-items:center;gap:4px;background:rgba(251,191,36,.06);border:1px dashed rgba(251,191,36,.3);border-radius:10px;padding:10px;margin-top:12px;}
-.ach-reward-box.unlocked{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.35);}
+.ach-reward-box{display:flex;flex-direction:column;align-items:center;gap:4px;background:rgba(var(--gold-rgb),.06);border:1px dashed rgba(var(--gold-rgb),.3);border-radius:10px;padding:10px;margin-top:12px;}
+.ach-reward-box.unlocked{background:rgba(var(--ok-rgb),.1);border:1px solid rgba(var(--ok-rgb),.35);}
 .ach-reward-lock{font-size:24px;opacity:.6;}
-.ach-reward-lbl{font-size:10px;color:#999;text-align:center;font-weight:600;}
-.ach-reward-box.unlocked .ach-reward-lbl{color:#4ade80;}
+.ach-reward-lbl{font-size:10px;color:var(--txt-3);text-align:center;font-weight:600;}
+.ach-reward-box.unlocked .ach-reward-lbl{color:var(--ok);}
 .tier-mark{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;}
 .tier-mark-icon{font-size:11px;}
-.tier-mark-val{font-size:10px;color:#888;font-weight:600;}
-.tier-mark.reached .tier-mark-val{color:#fff;}
-.ach-back-btn{background:rgba(126,206,255,.1);border:1px solid rgba(126,206,255,.25);border-radius:20px;color:#7eceff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;padding:7px 14px;margin-bottom:8px;}
+.tier-mark-val{font-size:10px;color:var(--txt-3);font-weight:600;}
+.tier-mark.reached .tier-mark-val{color:var(--txt-hi);}
+.ach-back-btn{background:rgba(var(--acc),.1);border:1px solid rgba(var(--acc),.25);border-radius:20px;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;padding:7px 14px;margin-bottom:8px;}
 .modal-box.ach-modal{max-height:76vh;display:flex;flex-direction:column;overflow:hidden;}
 .ach-modal-hdr{flex-shrink:0;padding-right:26px;}
 .ach-grid-scroll{flex:1;overflow-y:auto;margin:0 -6px;padding:0 6px 4px;}
 
 /* MODAL */
-.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;z-index:500;padding:1rem;}
-.modal-box{position:relative;background:#1e2d4a;border:1px solid rgba(126,206,255,.18);border-radius:20px;padding:1.5rem;max-width:340px;width:100%;max-height:88vh;overflow-y:auto;}
+.modal-ov{position:fixed;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;z-index:500;padding:1rem;}
+.modal-box{position:relative;background:var(--panel);border:1px solid rgba(var(--acc),.18);border-radius:20px;padding:1.5rem;max-width:340px;width:100%;max-height:88vh;overflow-y:auto;}
 .goal-num-input::-webkit-inner-spin-button,.goal-num-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
 .goal-num-input{-moz-appearance:textfield;}
 .modal-box.wide{max-width:400px;}
 .m-img{width:130px;height:130px;image-rendering:pixelated;display:block;margin:0 auto 10px;}
 .m-emoji{font-size:46px;text-align:center;margin-bottom:10px;}
-.m-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:6px;text-align:center;}
-.m-desc{font-size:12px;color:#aaa;margin-bottom:1.25rem;text-align:center;line-height:1.6;}
+.m-title{font-size:16px;font-weight:700;color:var(--txt-hi);margin-bottom:6px;text-align:center;}
+.m-desc{font-size:12px;color:var(--txt-2);margin-bottom:1.25rem;text-align:center;line-height:1.6;}
 .m-btns{display:flex;gap:8px;}
 .btn-ok,.btn-cancel{font-size:14px;padding:13px 10px;border-radius:12px;font-weight:600;cursor:pointer;min-height:44px;}
 .m-btns button{flex:1;}
-.btn-ok{background:#2563eb;color:#fff;border:none;}
-.btn-ok:hover{background:#1d4ed8;}
-.btn-cancel{background:rgba(255,255,255,.08);color:#ccc;border:1px solid rgba(255,255,255,.15);}
-.btn-cancel:hover{background:rgba(255,255,255,.14);}
-.flbl{font-size:10px;color:#7eceff;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;}
-.form-section{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px;margin-bottom:14px;}
-.form-section-title{font-size:12px;font-weight:700;color:#fff;margin-bottom:10px;}
-.cover-preview-box{width:52px;height:74px;border-radius:8px;background:rgba(255,255,255,.06);border:1px dashed rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden;}
-.cover-pencil-btn{background:rgba(126,206,255,.12);border:1px solid rgba(126,206,255,.3);border-radius:8px;color:#7eceff;font-size:14px;padding:8px 10px;cursor:pointer;font-family:inherit;}
-.finput{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:9px 12px;color:#fff;font-size:13px;outline:none;margin-bottom:10px;}
-.finput:focus{border-color:#7eceff;}
-select option{background:#1e2d4a;color:#fff;}
-.ppill{background:rgba(126,206,255,.15);color:#7eceff;font-size:12px;font-weight:600;padding:8px;border-radius:10px;text-align:center;margin-bottom:10px;}
-.sp-error{background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.35);color:#f87171;font-size:12px;font-weight:600;padding:9px 12px;border-radius:10px;text-align:center;margin-bottom:10px;}
+.btn-ok{background:var(--pri);color:var(--pri-txt);border:none;}
+.btn-ok:hover{background:var(--pri-hi);}
+.btn-cancel{background:rgba(var(--ink),.08);color:var(--txt);border:1px solid rgba(var(--ink),.15);}
+.btn-cancel:hover{background:rgba(var(--ink),.14);}
+.flbl{font-size:10px;color:var(--accent);font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;}
+.form-section{background:rgba(var(--ink),.03);border:1px solid rgba(var(--ink),.06);border-radius:12px;padding:12px;margin-bottom:14px;}
+.form-section-title{font-size:12px;font-weight:700;color:var(--txt-hi);margin-bottom:10px;}
+.cover-preview-box{width:52px;height:74px;border-radius:8px;background:rgba(var(--ink),.06);border:1px dashed rgba(var(--ink),.2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden;}
+.cover-pencil-btn{background:rgba(var(--acc),.12);border:1px solid rgba(var(--acc),.3);border-radius:8px;color:var(--accent);font-size:14px;padding:8px 10px;cursor:pointer;font-family:inherit;}
+.finput{width:100%;background:rgba(var(--ink),.07);border:1px solid rgba(var(--ink),.15);border-radius:10px;padding:9px 12px;color:var(--txt-hi);font-size:13px;outline:none;margin-bottom:10px;}
+.finput:focus{border-color:var(--accent);}
+select option{background:var(--panel);color:var(--txt-hi);}
+.ppill{background:rgba(var(--acc),.15);color:var(--accent);font-size:12px;font-weight:600;padding:8px;border-radius:10px;text-align:center;margin-bottom:10px;}
+.sp-error{background:rgba(var(--bad-rgb),.14);border:1px solid rgba(var(--bad-rgb),.35);color:var(--bad);font-size:12px;font-weight:600;padding:9px 12px;border-radius:10px;text-align:center;margin-bottom:10px;}
 .bd-hero{position:relative;margin:-1.5rem -1.5rem 14px;padding:26px 1.5rem 14px;display:flex;justify-content:center;overflow:hidden;}
 .bd-hero-bg{position:absolute;inset:-25%;background-size:cover;background-position:center;filter:blur(30px) saturate(150%) brightness(.65);transform:scale(1.15);}
-.bd-hero-fade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(30,45,74,0) 45%,#1e2d4a 100%);}
+.bd-hero-fade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(var(--panel-rgb),0) 45%,var(--panel) 100%);}
 .bd-cover-tap{position:relative;cursor:pointer;z-index:1;}
-.bd-delete-btn{display:block;margin:6px auto 0;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#a0a8bb;font-size:14px;cursor:pointer;}
-.bd-delete-btn:hover{background:rgba(239,68,68,.15);color:#f87171;border-color:rgba(239,68,68,.3);}
-.shelf-wrap{width:100%;display:flex;flex-direction:column;gap:16px;background:#111009;border-radius:10px;padding:14px 0;}
+.bd-delete-btn{display:block;margin:6px auto 0;width:34px;height:34px;border-radius:50%;background:rgba(var(--ink),.06);border:1px solid rgba(var(--ink),.12);color:var(--txt-3);font-size:14px;cursor:pointer;}
+.bd-delete-btn:hover{background:rgba(var(--bad-rgb),.15);color:var(--bad);border-color:rgba(var(--bad-rgb),.3);}
+.shelf-wrap{width:100%;display:flex;flex-direction:column;gap:16px;background:var(--shelf);border-radius:10px;padding:14px 0;}
 .wall-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px;}
-.wall-tile{aspect-ratio:2/3;border-radius:6px;overflow:hidden;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.4);}
+.wall-tile{aspect-ratio:2/3;border-radius:6px;overflow:hidden;cursor:pointer;box-shadow:0 2px 6px rgba(var(--shadow),.4);}
 .shelf-row{display:flex;flex-direction:column;}
-.shelf-label{font-size:9px;color:#a08a5c;padding:0 10px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;}
-.shelf-books{display:flex;align-items:flex-end;gap:5px;padding:16px 10px 0;height:192px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent;}
+.shelf-label{font-size:9px;color:var(--shelf-lbl);padding:0 10px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;}
+.shelf-books{display:flex;align-items:flex-end;gap:5px;padding:16px 10px 0;height:192px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x;scrollbar-width:thin;scrollbar-color:rgba(var(--ink),.15) transparent;}
 .shelf-books.compact{height:165px;}
-.shelf-books::-webkit-scrollbar{height:3px;}.shelf-books::-webkit-scrollbar-track{background:transparent;}.shelf-books::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px;}
-.shelf-plank{width:100%;height:13px;background:linear-gradient(180deg,#7a5a32 0%,#5a3e1e 35%,#3e2a10 100%);box-shadow:0 6px 16px rgba(0,0,0,.7),inset 0 2px 0 rgba(255,255,255,.07);border-top:2px solid #9a7a4a;flex-shrink:0;margin-top:0;}
+.shelf-books::-webkit-scrollbar{height:3px;}.shelf-books::-webkit-scrollbar-track{background:transparent;}.shelf-books::-webkit-scrollbar-thumb{background:rgba(var(--ink),.15);border-radius:2px;}
+.shelf-plank{width:100%;height:13px;background:linear-gradient(180deg,var(--plank-1) 0%,var(--plank-2) 35%,var(--plank-3) 100%);box-shadow:0 6px 16px rgba(var(--shadow),.7),inset 0 2px 0 rgba(255,255,255,.07);border-top:2px solid var(--plank-edge);flex-shrink:0;margin-top:0;}
 .book-wrap{position:relative;display:flex;flex-direction:row;flex-shrink:0;cursor:pointer;transition:transform .18s;}
 .book-wrap:hover{transform:translateY(-14px);z-index:20;}
 .book-cover{position:relative;overflow:hidden;flex-shrink:0;border-radius:4px;}
@@ -270,36 +419,47 @@ select option{background:#1e2d4a;color:#fff;}
 
 /* EVO DOTS */
 .evo-dots{display:flex;gap:2px;justify-content:center;margin-top:3px;}
-.evo-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.2);}
-.evo-dot.filled{background:#7eceff;}
+.evo-dot{width:5px;height:5px;border-radius:50%;background:rgba(var(--ink),.2);}
+.evo-dot.filled{background:var(--accent);}
 
 /* SHOP ROW */
-.shop-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.shop-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(var(--ink),.06);}
 .sh-emoji{font-size:20px;flex-shrink:0;}
 .sh-info{flex:1;}
-.sh-name{font-size:12px;font-weight:600;color:#fff;}
-.sh-desc{font-size:10px;color:#888;margin-top:1px;}
-.sh-price{font-size:11px;font-weight:600;color:#fbbf24;}
-.sh-btn{font-size:11px;padding:5px 12px;border-radius:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;cursor:pointer;margin-top:4px;display:block;}
+.sh-name{font-size:12px;font-weight:600;color:var(--txt-hi);}
+.sh-desc{font-size:10px;color:var(--txt-3);margin-top:1px;}
+.sh-price{font-size:11px;font-weight:600;color:var(--gold);}
+.sh-btn{font-size:11px;padding:5px 12px;border-radius:8px;background:rgba(var(--ink),.1);border:1px solid rgba(var(--ink),.18);color:var(--txt-hi);cursor:pointer;margin-top:4px;display:block;}
 .sh-btn:disabled{opacity:.3;cursor:not-allowed;}
-.sh-btn:not(:disabled):hover{background:rgba(255,255,255,.2);}
+.sh-btn:not(:disabled):hover{background:rgba(var(--ink),.2);}
 
 /* SIDE PANEL */
-#side-panel{position:fixed;top:0;right:-380px;width:350px;max-width:88vw;height:100vh;height:100dvh;background:#1e2d4a;border-left:1px solid rgba(126,206,255,.15);z-index:400;transition:right .25s;padding:1rem;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;}
+#side-panel{position:fixed;top:0;right:-380px;width:350px;max-width:88vw;height:100vh;height:100dvh;background:var(--panel);border-left:1px solid rgba(var(--acc),.15);z-index:400;transition:right .25s;padding:1rem;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;}
 #side-panel.open{right:0;}
-#side-ov{position:fixed;inset:0;z-index:399;display:none;background:rgba(0,0,0,.4);}
+#side-ov{position:fixed;inset:0;z-index:399;display:none;background:var(--scrim-2);}
 #side-ov.open{display:block;}
 
 /* TOAST */
-.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#1e2d4a;border:1px solid rgba(126,206,255,.3);color:#7eceff;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:700;white-space:nowrap;}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--panel);border:1px solid rgba(var(--acc),.3);color:var(--accent);padding:8px 18px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:700;white-space:nowrap;}
 .toast.show{opacity:1;}
-.loc-toast{position:fixed;top:64px;left:50%;transform:translateX(-50%);background:#0f1830;border:1px solid rgba(126,206,255,.4);color:#fff;padding:10px 20px;border-radius:14px;font-size:13px;font-weight:700;text-align:center;opacity:0;transition:opacity .3s;pointer-events:none;z-index:700;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.5);}
+.loc-toast{position:fixed;top:64px;left:50%;transform:translateX(-50%);background:var(--pop);border:1px solid rgba(var(--acc),.4);color:var(--txt-hi);padding:10px 20px;border-radius:14px;font-size:13px;font-weight:700;text-align:center;opacity:0;transition:opacity .3s;pointer-events:none;z-index:700;white-space:nowrap;box-shadow:0 4px 16px rgba(var(--shadow),.5);}
 .loc-toast.show{opacity:1;}
-.loc-toast small{display:block;font-size:11px;font-weight:600;color:#7eceff;margin-top:3px;}
+.loc-toast small{display:block;font-size:11px;font-weight:600;color:var(--accent);margin-top:3px;}
 
 ::-webkit-scrollbar{width:4px;}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px;}
+::-webkit-scrollbar-thumb{background:rgba(var(--ink),.15);border-radius:2px;}
+
+/* рядок з мініатюрами тем у налаштуваннях */
+.theme-row{display:flex;gap:8px;overflow-x:auto;padding:2px 0 5px;scrollbar-width:thin;scrollbar-color:rgba(var(--ink),.15) transparent;}
+.theme-row::-webkit-scrollbar{height:3px;}
+.theme-row::-webkit-scrollbar-thumb{background:rgba(var(--ink),.15);border-radius:2px;}
 </style>
+<script>
+/* Тема ставиться до першого малювання, окремим скриптом у <head>: основний
+   скрипт іде після <body>, і сторінка встигла б блимнути темною перед
+   світлою. Формат — той самий JSON, що пише lsSet. */
+try{var _t=localStorage.getItem('rw_theme');if(_t){_t=JSON.parse(_t);if(_t&&_t!=='night')document.documentElement.setAttribute('data-theme',_t);}}catch(e){}
+</script>
 </head>
 <body>
 <div class="app">
@@ -307,8 +467,10 @@ select option{background:#1e2d4a;color:#fff;}
 <!-- LOGIN -->
 <div id="screen-select" class="screen active">
   <div class="sel-bg">
-    <div class="login-box" id="login-box"></div>
-    <div class="disclaimer">Некомерційний фанатський проєкт. Pokémon © Nintendo / Creatures Inc. / GAME FREAK inc.</div>
+    <div class="login-box" id="login-box">
+      <div id="login-body"></div>
+      <div class="disclaimer">Некомерційний фанатський проєкт. Pokémon © Nintendo / Creatures Inc. / GAME FREAK inc.</div>
+    </div>
   </div>
 </div>
 
@@ -328,7 +490,7 @@ select option{background:#1e2d4a;color:#fff;}
   </div>
   <div class="main-content">
     <div class="tab-page" id="tab-map">
-      <div class="sec-title"><span>Колекція</span><span id="dex-count" title="🐣 Спіймано видів · 🐉 Мега-еволюцій" style="font-weight:600;color:#ccc;font-size:15px;text-transform:none;letter-spacing:0"></span></div>
+      <div class="sec-title"><span>Колекція</span><span id="dex-count" title="🐣 Спіймано видів · 🐉 Мега-еволюцій" style="font-weight:600;color:var(--txt);font-size:15px;text-transform:none;letter-spacing:0"></span></div>
       <div class="dex-grid" id="dex-grid"></div>
       <div id="dex-complete"></div>
       <div class="map-card"><div id="map-region-tabs"></div><svg id="map-svg" class="map-svg" viewBox="0 0 460 240" xmlns="http://www.w3.org/2000/svg">
@@ -384,12 +546,12 @@ select option{background:#1e2d4a;color:#fff;}
 <div id="side-ov" onclick="closeSidePanel()"></div>
 <div id="side-panel">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
-    <span style="font-size:14px;font-weight:700;color:#fff">Додати книгу</span>
-    <button onclick="closeSidePanel()" style="background:none;border:none;cursor:pointer;font-size:18px;color:#7eceff">✕</button>
+    <span style="font-size:14px;font-weight:700;color:var(--txt-hi)">Додати книгу</span>
+    <button onclick="closeSidePanel()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--accent)">✕</button>
   </div>
   <div id="side-content" style="flex:1"></div>
-  <div style="padding-top:1rem;margin-top:1rem;border-top:1px solid rgba(255,255,255,.07)">
-    <button onclick="closeSidePanel();saveToCloud(cur)" style="width:100%;padding:12px;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.25);border-radius:10px;color:#4ade80;font-size:13px;font-weight:600;cursor:pointer">💾 Зберегти прогрес</button>
+  <div style="padding-top:1rem;margin-top:1rem;border-top:1px solid rgba(var(--ink),.07)">
+    <button onclick="closeSidePanel();saveToCloud(cur)" style="width:100%;padding:12px;background:rgba(var(--ok-rgb),.15);border:1px solid rgba(var(--ok-rgb),.25);border-radius:10px;color:var(--ok);font-size:13px;font-weight:600;cursor:pointer">💾 Зберегти прогрес</button>
   </div>
 </div>
 
@@ -551,10 +713,10 @@ function isLocComplete(locId){
 // ═══════════ LOCATIONS ═══════════
 const LOCS={
   oak:{id:'oak',name:"Лабораторія Оука",mLabel:'Лабораторія',emoji:'🧪',cx:46,cy:122,
-    color:'#1e3a1e',stroke:'#4ade80',badge:'Старт',badgeBg:'rgba(74,222,128,.2)',badgeTxt:'#4ade80',
+    color:'#1e3a1e',stroke:'#4ade80',badge:'Старт',badgeBg:'rgba(var(--ok-rgb),.2)',badgeTxt:'#4ade80',
     unlockReq:null},
   pallet:{id:'pallet',name:'Місто Палет',mLabel:'Палет',emoji:'🏘️',cx:148,cy:122,
-    color:'#166534',stroke:'#4ade80',badge:'Зона 1',badgeBg:'rgba(74,222,128,.15)',badgeTxt:'#4ade80',
+    color:'#166534',stroke:'#4ade80',badge:'Зона 1',badgeBg:'rgba(var(--ok-rgb),.15)',badgeTxt:'#4ade80',
     unlockReq:{type:'keyChain',chainId:'pikachu',stageIdx:1}},
   forest:{id:'forest',name:'Ліс Вірідіан',mLabel:'Вірідіан',emoji:'🌲',cx:242,cy:62,
     color:'#064e3b',stroke:'#34d399',badge:'Зона 2',badgeBg:'rgba(52,211,153,.2)',badgeTxt:'#34d399',
@@ -598,7 +760,7 @@ function unlockHintText(loc){
     const chain=CHAINS.find(c=>c.id===req.chainId);const stage=chain.stages[req.stageIdx];
     const cur=d.progress[req.chainId];
     const seq=chain.stages.map((s,i)=>{
-      if(i===req.stageIdx)return`<b style="color:#fbbf24">${s.name}</b>`;
+      if(i===req.stageIdx)return`<b style="color:var(--gold)">${s.name}</b>`;
       if(cur!==undefined&&i<=cur)return`${s.name} ✓`;
       return s.name;
     }).join(' → ');
@@ -833,7 +995,7 @@ function checkGoalEvents(){
 function showSetGoalModal(period){
   const isMonth=period==='month';
   const label=isMonth?'місяць':'рік';
-  mHTML(`<button onclick="dismissGoalPrompt('${period}')" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;font-size:18px;color:#7eceff;line-height:1;padding:4px">✕</button>
+  mHTML(`<button onclick="dismissGoalPrompt('${period}')" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;font-size:18px;color:var(--accent);line-height:1;padding:4px">✕</button>
     <div class="m-emoji">🎯</div>
     <div class="m-title">Постав ціль на ${label}</div>
     <div class="m-desc">Скільки книг плануєш прочитати? Виконаєш — отримаєш відповідну нагороду.</div>
@@ -868,7 +1030,11 @@ function setMainTab(tab){
   });
   if(tab==='library')renderLibraryTab();
   else if(tab==='stats'){renderGoalWidget();renderGeneralStatsWidget();renderAchievementsWidget();renderYearWrapWidget();}
-  else if(tab==='friends'){_frMsg={text:'',bad:false};renderFriendsTab();loadFriends();}
+  else if(tab==='friends'){
+    _frMsg={text:'',bad:false};
+    _rxSeenSnap=+((pd()||{}).reaxSeen||0);
+    renderFriendsTab();markReaxSeen();loadFriends();
+  }
 }
 function renderLibraryTab(){
   const el=document.getElementById('library-fullscreen');if(!el)return;
@@ -903,7 +1069,7 @@ function renderGoalWidget(){
       <defs><linearGradient id="goalGaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%" stop-color="#facc15"/><stop offset="100%" stop-color="#22c55e"/>
       </linearGradient></defs>
-      <path d="${arcD}" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="${sw}" stroke-linecap="round"/>
+      <path d="${arcD}" fill="none" style="stroke:rgba(var(--ink),.18)" stroke-width="${sw}" stroke-linecap="round"/>
       <path d="${arcD}" fill="none" stroke="url(#goalGaugeGrad)" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${arcLen}" stroke-dashoffset="${dashOffset}"/>
     </svg>
     <div class="goal-gauge-center">
@@ -927,7 +1093,7 @@ function renderLangDonutHTML(books){
   if(!total){
     return`<div class="stats-chart-card">
       <div class="stats-chart-title">Топ за мовами</div>
-      <div style="text-align:center;color:#666;font-size:12px;padding:20px 0">Немає книг за цей період</div>
+      <div style="text-align:center;color:var(--txt-4);font-size:12px;padding:20px 0">Немає книг за цей період</div>
     </div>`;
   }
   const r=45,cx=60,cy=60,sw=22,circ=2*Math.PI*r,gapLen=breakdown.length>1?4:0;
@@ -947,8 +1113,8 @@ function renderLangDonutHTML(books){
     <div class="stats-chart-title">Топ за мовами</div>
     <div class="lang-donut-row">
       <svg viewBox="0 0 120 120" class="lang-donut-svg">${arcs}
-        <text x="60" y="54" text-anchor="middle" dominant-baseline="central" font-size="24" font-weight="800" fill="#fff">${total}</text>
-        <text x="60" y="71" text-anchor="middle" font-size="9" font-weight="600" fill="#888">${bookWord(total)}</text>
+        <text x="60" y="54" text-anchor="middle" dominant-baseline="central" font-size="24" font-weight="800" style="fill:var(--txt-hi)">${total}</text>
+        <text x="60" y="71" text-anchor="middle" font-size="9" font-weight="600" style="fill:var(--txt-3)">${bookWord(total)}</text>
       </svg>
       <div class="lang-legend">${legend}</div>
     </div>
@@ -966,7 +1132,7 @@ function renderGenreDonutHTML(books){
   if(!total){
     return`<div class="stats-chart-card">
       <div class="stats-chart-title">Топ за жанрами</div>
-      <div style="text-align:center;color:#666;font-size:12px;padding:20px 0">Ще не вказано жанр для книг цього періоду</div>
+      <div style="text-align:center;color:var(--txt-4);font-size:12px;padding:20px 0">Ще не вказано жанр для книг цього періоду</div>
     </div>`;
   }
   const r=45,cx=60,cy=60,sw=22,circ=2*Math.PI*r,gapLen=breakdown.length>1?4:0;
@@ -986,8 +1152,8 @@ function renderGenreDonutHTML(books){
     <div class="stats-chart-title">Топ за жанрами</div>
     <div class="lang-donut-row">
       <svg viewBox="0 0 120 120" class="lang-donut-svg">${arcs}
-        <text x="60" y="54" text-anchor="middle" dominant-baseline="central" font-size="24" font-weight="800" fill="#fff">${total}</text>
-        <text x="60" y="71" text-anchor="middle" font-size="9" font-weight="600" fill="#888">з жанром</text>
+        <text x="60" y="54" text-anchor="middle" dominant-baseline="central" font-size="24" font-weight="800" style="fill:var(--txt-hi)">${total}</text>
+        <text x="60" y="71" text-anchor="middle" font-size="9" font-weight="600" style="fill:var(--txt-3)">з жанром</text>
       </svg>
       <div class="lang-legend">${legend}</div>
     </div>
@@ -1024,7 +1190,7 @@ function renderLocationProgressHTML(d){
     const unlocked=(d.unlockedLocs||[]).includes(locId);
     const caught=unlocked?caughtCountIn(d,[locId]):0;
     return`<div class="lang-legend-row">
-      <span class="lang-dot" style="background:${unlocked?LOC_COLORS[locId]:'#444'}"></span>
+      <span class="lang-dot" style="background:${unlocked?LOC_COLORS[locId]:'var(--txt-5)'}"></span>
       <span class="lang-legend-lbl">${loc.name}${unlocked?'':' 🔒'}</span>
       <span class="lang-legend-val">${unlocked?caught+'/'+total:'—'}</span>
     </div>`;
@@ -1033,9 +1199,9 @@ function renderLocationProgressHTML(d){
     <div class="stats-chart-title">Прогрес по локаціях</div>
     <div class="lang-donut-row">
       <svg viewBox="0 0 120 120" class="lang-donut-svg">
-        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="${sw}"/>
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" style="stroke:rgba(var(--ink),.16)" stroke-width="${sw}"/>
         ${arcs}
-        <text x="60" y="60" text-anchor="middle" dominant-baseline="central" font-size="20" font-weight="800" fill="#fff">${caughtAll}/${totalAll}</text>
+        <text x="60" y="60" text-anchor="middle" dominant-baseline="central" font-size="20" font-weight="800" style="fill:var(--txt-hi)">${caughtAll}/${totalAll}</text>
       </svg>
       <div class="lang-legend">${legend}</div>
     </div>
@@ -1119,11 +1285,11 @@ function renderYearWrapWidget(){
   // код гілки _wrapScope==='family' лишається робочим.
 
   if(!wrap){
-    el.innerHTML=`<div class="stats-chart-card">${controls}<div style="text-align:center;color:#666;font-size:12px;padding:20px 0">Ще нічого не прочитано у ${_wrapYear}${_wrapScope==='family'?' родиною':''}</div></div>`;
+    el.innerHTML=`<div class="stats-chart-card">${controls}<div style="text-align:center;color:var(--txt-4);font-size:12px;padding:20px 0">Ще нічого не прочитано у ${_wrapYear}${_wrapScope==='family'?' родиною':''}</div></div>`;
     return;
   }
 
-  const inProgressNote=isCurrentYear?`<div style="text-align:center;font-size:10px;color:#7eceff;margin-bottom:8px">рік ще триває</div>`:'';
+  const inProgressNote=isCurrentYear?`<div style="text-align:center;font-size:10px;color:var(--accent);margin-bottom:8px">рік ще триває</div>`:'';
   const heroTiles=`<div class="stat-tiles">
     <div class="stat-tile"><div class="stat-tile-val">${wrap.count}</div><div class="stat-tile-lbl">${bookWord(wrap.count)}</div></div>
     <div class="stat-tile"><div class="stat-tile-val">${wrap.pages}</div><div class="stat-tile-lbl">сторінок</div></div>
@@ -1170,7 +1336,7 @@ function renderGeneralStatsWidget(){
     return`<g style="cursor:pointer" onclick="showChartTip(event,${v})">
       <rect x="${x}" y="0" width="${barW}" height="${chartH}" fill="transparent"/>
       <rect class="bar-fill" x="${x}" y="${chartH-h}" width="${barW}" height="${h}" rx="4" fill="url(#statBarGrad)"/>
-      <text x="${x+barW/2}" y="${chartH+11}" font-size="7" fill="#888" text-anchor="middle">${monthLbls[i]}</text>
+      <text x="${x+barW/2}" y="${chartH+11}" font-size="7" style="fill:var(--txt-3)" text-anchor="middle">${monthLbls[i]}</text>
     </g>`;
   }).join('');
   const chartWidth=12*(barW+gap)-gap;
@@ -1189,7 +1355,7 @@ function renderGeneralStatsWidget(){
     <div class="stats-chart-tooltip" style="display:none"></div>
     <svg viewBox="0 0 ${chartWidth} ${chartH+18}" class="stats-chart-svg">
       <defs><linearGradient id="statBarGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#7eceff"/><stop offset="100%" stop-color="#3d7ab8"/>
+        <stop offset="0%" style="stop-color:var(--accent)"/><stop offset="100%" style="stop-color:var(--accent-2)"/>
       </linearGradient></defs>
       ${bars}
     </svg>
@@ -1400,7 +1566,7 @@ function achBadgeHTML(a,d){
     :`<text x="35" y="36" font-size="24" text-anchor="middle" dominant-baseline="central">${locked?'🔒':a.emoji}</text>`;
   return`<div class="ach-badge" onclick="openAchievementDetail('${a.key}')">
     <svg viewBox="0 0 70 70" width="64" height="64">
-      <circle cx="35" cy="35" r="${r}" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="6"/>
+      <circle cx="35" cy="35" r="${r}" fill="none" style="stroke:rgba(var(--ink),.18)" stroke-width="6"/>
       <circle cx="35" cy="35" r="${r}" fill="none" stroke="${stroke}" stroke-width="6" stroke-linecap="round"
         stroke-dasharray="${circ}" stroke-dashoffset="${circ-dash}" transform="rotate(-90 35 35)"/>
       ${iconSvg}
@@ -1414,7 +1580,7 @@ function renderAchievementsGridHTML(d){
   const badges=ACHIEVEMENTS.map(a=>achBadgeHTML(a,d)).join('');
   return`${M_CLOSE_BTN}<div class="ach-modal-hdr">
       <div class="m-title" style="margin-bottom:2px">🏆 Досягнення</div>
-      <div style="font-size:12px;color:#888">${unlocked} з ${total} нагород відкрито</div>
+      <div style="font-size:12px;color:var(--txt-3)">${unlocked} з ${total} нагород відкрито</div>
     </div>
     <div class="ach-grid-scroll"><div class="ach-grid">${badges}</div></div>`;
 }
@@ -1474,7 +1640,7 @@ function closeModal(){const m=document.getElementById('mOv');if(m)m.remove();nex
 
 // Every modal gets the same dismiss affordance — a fixed ✕ in the corner —
 // so no popup needs its own "Закрити"/"Скасувати" button just to go away.
-const M_CLOSE_BTN=`<button onclick="closeModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;font-size:18px;color:#7eceff;line-height:1;padding:4px;z-index:1">✕</button>`;
+const M_CLOSE_BTN=`<button onclick="closeModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;font-size:18px;color:var(--accent);line-height:1;padding:4px;z-index:1">✕</button>`;
 function mImg(src,title,desc,btns){_mShow(`<img class="m-img" src="${src}" onerror="this.style.display='none'">`,title,desc,btns);}
 function mEmoji(em,title,desc,btns){_mShow(`<div class="m-emoji">${em}</div>`,title,desc,btns);}
 function _mShow(top,title,desc,btns){
@@ -1499,6 +1665,73 @@ const LS_GUESTS='rw_guests';
 
 function lsGet(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def;}catch(e){return def;}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+
+// ═══════════ ТЕМИ (кольорові гами) ═══════════
+// id мусить збігатися з html[data-theme="…"] у <style>. 'night' лежить
+// у :root, тому їй атрибут не потрібен — вона й є значення за замовчуванням.
+// sw — три кольори для мініатюри в налаштуваннях: тло, акцент, текст.
+// Тема належить профілю (d.theme), тобто в кожного своя і їде за ним на
+// інший пристрій. У localStorage лежить копія — щоб застосувати гаму до
+// першого малювання і не блимнути чужими кольорами на екрані входу.
+const LS_THEME='rw_theme';
+const THEMES=[
+  {id:'night', name:'Ніч',    desc:'Темно-синя — як було',       sw:['#16213e','#7eceff','#e2e8f0']},
+  {id:'day',   name:'День',   desc:'Світла, білий папір екрана', sw:['#f6f8fc','#0369a1','#0f172a']},
+  {id:'ocean', name:'Океан',  desc:'Блакитна й прохолодна',      sw:['#eaf5fd','#0284c7','#062b45']},
+  {id:'paper', name:'Папір',  desc:'Тепла, як стара книжка',     sw:['#f7efe0','#8a5a24','#2e2318']},
+  {id:'forest',name:'Ліс',    desc:'Темно-зелена, для вечора',   sw:['#0c2118','#6ee7b7','#e3f0e7']},
+  {id:'plum',  name:'Слива',  desc:'Темно-фіолетова',            sw:['#1c1030','#d8b4fe','#ede4f7']},
+];
+function themeById(id){return THEMES.find(t=>t.id===id)||null;}
+// Єдине місце, де тема реально вмикається. Повертає id, який застосувався:
+// невідоме (стара збірка, зіпсований localStorage) тихо падає на 'night'.
+function applyTheme(id){
+  const t=themeById(id)?id:'night';
+  const root=document.documentElement;
+  if(t==='night')root.removeAttribute('data-theme');
+  else root.setAttribute('data-theme',t);
+  lsSet(LS_THEME,t);
+  return t;
+}
+// Профіль важливіший за пристрій: увійшов зі своїм профілем — бачиш свою гаму,
+// навіть якщо на цьому пристрої останнім сидів хтось інший. Тому копія з
+// localStorage годиться тільки до входу (екран входу, перше малювання):
+// в профілі без гами — базова, а не та, що лишив попередній гравець.
+function curTheme(){
+  if(cur){
+    const d=state.players[cur];
+    return(d&&themeById(d.theme))?d.theme:'night';
+  }
+  const ls=lsGet(LS_THEME,'');
+  return themeById(ls)?ls:'night';
+}
+function themeCardHTML(t,act){
+  const bg=t.sw[0],acc=t.sw[1],txt=t.sw[2];
+  return`<div onclick="pickTheme('${t.id}')" role="button" aria-label="Гама ${t.name}" title="${t.desc}"
+      style="flex:0 0 auto;width:74px;cursor:pointer;text-align:center">
+    <div style="height:54px;border-radius:10px;overflow:hidden;background:${bg};padding:7px 7px 0;box-sizing:border-box;
+        border:2px solid ${act?acc:'rgba(var(--ink),.14)'}">
+      <div style="height:7px;border-radius:3px;background:${acc};margin-bottom:6px"></div>
+      <div style="height:6px;border-radius:3px;background:${txt};opacity:.8;margin-bottom:5px"></div>
+      <div style="height:6px;width:65%;border-radius:3px;background:${txt};opacity:.45"></div>
+    </div>
+    <div style="font-size:10px;font-weight:700;margin-top:5px;color:${act?'var(--accent)':'var(--txt-3)'}">${act?'✓ ':''}${t.name}</div>
+  </div>`;
+}
+// Перемальовувати гру не треба: і CSS, і inline-стилі беруть кольори через
+// var(--…), тому вже намальований екран перефарбовується сам. Оновлюємо лише
+// самі картки — інакше довелось би перебудовувати модалку й губити
+// недописаний нік у полі поруч.
+function pickTheme(id){
+  const t=applyTheme(id);
+  const d=pd();
+  if(d){d.theme=t;saveToCloud(cur);}
+  const row=document.getElementById('ps-themes');
+  if(row)row.innerHTML=THEMES.map(x=>themeCardHTML(x,x.id===t)).join('');
+  const note=document.getElementById('ps-theme-note');
+  if(note)note.textContent=themeById(t).desc;
+  showToast('Гама «'+themeById(t).name+'»');
+}
 
 // Усе, що містить пароль або токен, ходить через POST — у GET параметри
 // потрапили б в історію браузера і в логи виконання Apps Script.
@@ -1591,8 +1824,8 @@ function loginBusy(on,label){
   b.textContent=on?(label||'Хвилинку…'):b.dataset.label;
 }
 function renderLoginLoading(){
-  document.getElementById('login-box').innerHTML=
-    `<div style="text-align:center;padding:1.5rem 0;color:#7eceff;font-size:13px">Завантаження…</div>`;
+  document.getElementById('login-body').innerHTML=
+    `<div style="text-align:center;padding:1.5rem 0;color:var(--accent);font-size:13px">Завантаження…</div>`;
 }
 
 function renderLogin(){
@@ -1615,7 +1848,7 @@ function renderLogin(){
       <input type="text" id="rg-inv" class="finput" placeholder="XXXX-XXXX" maxlength="12" ${enter}>
       <div class="login-warn">⚠️ Без коду запрошення ти граєш як гість: прогрес зберігається лише в цьому браузері на цьому пристрої. Якщо очистити дані браузера — все зникне. Код можна ввести й пізніше.</div>
       <button class="login-btn" id="login-submit" data-label="Створити профіль" onclick="submitRegister()">Створити профіль</button>`;
-  document.getElementById('login-box').innerHTML=tabs+body;
+  document.getElementById('login-body').innerHTML=tabs+body;
 }
 
 async function submitLogin(){
@@ -1696,8 +1929,9 @@ function enterGame(){
   cur=me.userId;
   setPlayers(me.userId,me.nick);
   initState(cur);
+  applyTheme(curTheme());   // гама профілю, а не та, що лишилась на пристрої
   renderGuestBar();
-  friendsData={friends:[],incoming:[],outgoing:[]};
+  friendsData={friends:[],incoming:[],outgoing:[],reax:[]};
   if(!me.guest){
     // Спершу викладаємо свій зліпок, потім забираємо друзів — обидва тихо,
     // у фоні. Без pushPublic картка в друзів висіла б порожньою («щойно
@@ -1766,7 +2000,7 @@ async function doLogout(){
   localStorage.removeItem(LS_SESSION);
   if(s&&!s.guest&&s.token)_api({action:'logout',userId:s.userId,token:s.token});
   cur=null;me=null;PLAYERS=[];
-  friendsData={friends:[],incoming:[],outgoing:[]};
+  friendsData={friends:[],incoming:[],outgoing:[],reax:[]};
   _loginTab='in';
   showLogin();
 }
@@ -1844,7 +2078,7 @@ function escUrl(u){
   return /^https:\/\/[^\s"'<>()\\]+$/i.test(u)?u:'';
 }
 
-let friendsData={friends:[],incoming:[],outgoing:[]};
+let friendsData={friends:[],incoming:[],outgoing:[],reax:[]};
 
 let _frWrapYear={};   // userId → обраний рік у його підсумку
 // Текст під полем додавання мусить пережити перемальовування списку: інакше
@@ -1931,11 +2165,15 @@ async function loadFriends(silent){
   _frPromise=(async()=>{
     const r=await _api({action:'friendList',userId:me.userId,token:me.token});
     if(r&&r.ok){
-      friendsData={friends:r.friends||[],incoming:r.incoming||[],outgoing:r.outgoing||[]};
+      friendsData={friends:r.friends||[],incoming:r.incoming||[],
+                   outgoing:r.outgoing||[],reax:r.reax||[]};
       _frState='ok';
       syncFriendPins();
       updateFriendBadge();
       renderMap();
+      // Таб закритий — про нові реакції інакше ніхто не дізнається, крім
+      // крапки на кнопці. Плашка і є те «серденько при заході».
+      if(_mainTab!=='friends')showReaxToast();
     }else{
       _frState='error';
       _frErr=(r&&r.error==='auth')?'Сесія закінчилась — увійди знову'
@@ -1945,7 +2183,7 @@ async function loadFriends(silent){
     _frPromise=null;
     // Перемальовуємо ЗАВЖДИ, якщо таб відкритий — незалежно від того, тихим
     // був запит чи ні. Раніше тихий запит приносив дані й нічого не показував.
-    if(_mainTab==='friends')renderFriendsTab();
+    if(_mainTab==='friends'){renderFriendsTab();markReaxSeen();}
   })();
   return _frPromise;
 }
@@ -1966,10 +2204,12 @@ function syncFriendPins(){
   });
 }
 
+// Одна крапка на всі новини таба — і запити на дружбу, і нові реакції.
+// Саме одна: два бейджі на одній кнопці неминуче наїхали б один на одного.
 function updateFriendBadge(){
   const el=document.getElementById('fr-badge');
   if(!el)return;
-  const n=(friendsData.incoming||[]).length;
+  const n=(friendsData.incoming||[]).length+reaxFresh().length;
   el.textContent=n>9?'9+':String(n);
   el.style.display=n>0?'':'none';
 }
@@ -1987,10 +2227,10 @@ function renderFriendsTab(){
         onkeydown="if(event.key==='Enter')sendFriendRequest()">
       <button class="fr-btn" id="fr-add-btn" style="padding:9px 14px" onclick="sendFriendRequest()">Додати</button>
     </div>
-    <div id="fr-msg" style="font-size:10.5px;color:${_frMsg.bad?'#fca5a5':'#4ade80'};min-height:14px;margin-bottom:4px">${esc(_frMsg.text)}</div>`;
+    <div id="fr-msg" style="font-size:10.5px;color:${_frMsg.bad?'var(--bad-2)':'var(--ok)'};min-height:14px;margin-bottom:4px">${esc(_frMsg.text)}</div>`;
 
   const inc=(friendsData.incoming||[]).map(r=>`<div class="fr-card">
-      <div class="fr-av" style="background:rgba(255,255,255,.08)">👋</div>
+      <div class="fr-av" style="background:rgba(var(--ink),.08)">👋</div>
       <div class="fr-main"><div class="fr-nick">${esc(r.nick)}</div>
         <div class="fr-loc">хоче додати тебе в друзі</div></div>
       <div style="display:flex;flex-direction:column;gap:5px">
@@ -2000,26 +2240,29 @@ function renderFriendsTab(){
     </div>`).join('');
 
   const out=(friendsData.outgoing||[]).map(r=>`<div class="fr-card">
-      <div class="fr-av" style="background:rgba(255,255,255,.05)">⏳</div>
+      <div class="fr-av" style="background:rgba(var(--ink),.05)">⏳</div>
       <div class="fr-main"><div class="fr-nick">${esc(r.nick)}</div>
         <div class="fr-loc">запит надіслано, чекаємо підтвердження</div></div>
     </div>`).join('');
 
   const list=(friendsData.friends||[]).map(f=>friendCardHTML(f)).join('');
+  const rx=reaxBlockHTML();
 
   // Порожній список, помилка мережі й «ще вантажиться» — три різні речі,
   // і виглядати вони мусять по-різному.
-  const nothing=!inc&&!out&&!list;
+  const nothing=!inc&&!out&&!list&&!rx;
   let middle;
   if(_frState==='loading'&&nothing)
     middle=`<div class="fr-empty">Завантаження…</div>`;
   else if(_frState==='error'&&nothing)
-    middle=`<div class="fr-empty" style="color:#fca5a5">${esc(_frErr)}</div>
+    middle=`<div class="fr-empty" style="color:var(--bad-2)">${esc(_frErr)}</div>
       <button class="fr-btn" style="width:100%;padding:11px" onclick="loadFriends()">Спробувати ще раз</button>`;
   else if(nothing)
     middle=`<div class="fr-empty">Друзів поки немає.<br>Впиши нікнейм — друг побачить запит і зможе його підтвердити.</div>`;
   else
-    middle=(inc?`<div class="fr-sub">Запити до тебе</div>${inc}`:'')
+    // Реакції — найприємніша новина, тому першими.
+    middle=rx
+          +(inc?`<div class="fr-sub">Запити до тебе</div>${inc}`:'')
           +list
           +(out?`<div class="fr-sub">Надіслані запити</div>${out}`:'');
 
@@ -2028,7 +2271,7 @@ function renderFriendsTab(){
         ${_frState==='loading'?'Оновлюю…':'↻ Оновити'}</button>
     </div>`;
   const errLine=(_frState==='error'&&!nothing)
-    ?`<div class="fr-empty" style="color:#fca5a5;padding:6px 0">${esc(_frErr)}</div>`:'';
+    ?`<div class="fr-empty" style="color:var(--bad-2);padding:6px 0">${esc(_frErr)}</div>`:'';
 
   el.innerHTML=add+refresh+errLine+middle;
 }
@@ -2048,6 +2291,163 @@ function agoLabel(ts){
   return'давно';
 }
 
+// ═══════════ РЕАКЦІЇ ❤️ НА КНИГИ ═══════════
+// Друг тапає серденько на книзі у твоїй картці — тобі в таб «Друзі» приходить
+// крапка, а в самому табі видно книгу й хто саме відреагував.
+// Реакція живе в рядку ОТРИМУВАЧА на сервері (див. doReact в apps_script.gs)
+// і приїжджає тим самим friendList, окремого запиту немає.
+//
+// Ключ книги — назва+автор у нормалізованому вигляді: у книжок у сейві немає
+// id, а друг узагалі бачить лише зліпок (`last`), тому впізнати книгу можна
+// тільки так. Побічний бонус: ключ дає зіставити реакцію зі своєю книгою і
+// показати її обкладинку та серденька в картці книги.
+const RX_KEY_MAX=120;
+const RX_MINE_MAX=200;   // скільки своїх реакцій тримаємо в сейві
+function reaxKey(title,author){
+  const n=s=>String(s==null?'':s).toLowerCase().replace(/\s+/g,' ').trim();
+  return (n(title)+'|'+n(author)).slice(0,RX_KEY_MAX);
+}
+// Свої поставлені реакції лежать у сейві, а не в localStorage: серденько
+// мусить лишатись натиснутим і коли зайдеш з іншого пристрою.
+function myReax(){const d=pd();if(!d)return{};if(!d.myReax)d.myReax={};return d.myReax;}
+function iReacted(fid,key){return !!myReax()[fid+'|'+key];}
+
+async function toggleBookReaction(btn){
+  if(!btn||btn.disabled)return;
+  const fid=btn.dataset.fid,key=btn.dataset.key,title=btn.dataset.title||'';
+  if(!fid||!key)return;
+  if(!me||me.guest||!me.token){showToast('Реакції доступні читачам');return;}
+  const was=iReacted(fid,key);
+  btn.disabled=true;
+  const r=await _api({action:'react',userId:me.userId,token:me.token,
+                      other:fid,key:key,title:title,off:was?1:0});
+  btn.disabled=false;
+  if(!r||!r.ok){
+    // Якщо index.html залили раніше, ніж розгорнули новий apps_script.gs,
+    // сервер відповість «Unknown action» — кажемо це по-людськи, а не кодом.
+    const err=String((r&&r.error)||'');
+    showToast(err==='network'?"Немає зв'язку з сервером"
+             :err==='auth'?'Сесія закінчилась — увійди знову'
+             :/Unknown action/.test(err)?'Реакції ще не ввімкнені на сервері'
+             :(err||'Не вдалося поставити реакцію'));
+    return;
+  }
+  const mine=myReax();
+  if(was)delete mine[fid+'|'+key];
+  else{
+    mine[fid+'|'+key]=Date.now();
+    // Свій список не даємо розпухати: сейв живе в одній клітинці таблиці.
+    const keys=Object.keys(mine);
+    if(keys.length>RX_MINE_MAX)
+      keys.sort((a,b)=>mine[a]-mine[b]).slice(0,keys.length-RX_MINE_MAX)
+          .forEach(k=>delete mine[k]);
+  }
+  setReaxBtn(btn,!was);
+  saveToCloud(cur);
+  showToast(was?'Реакцію знято':'❤️ Друг побачить твоє серденько');
+}
+// U+FE0E після глифа — щоб система показала саме символ, а не підмінила його
+// емодзі: підмінене емодзі має власний колір і токен теми на нього не діє.
+const RX_ON='♥︎',RX_OFF='♡︎';
+function setReaxBtn(btn,on){
+  btn.classList.toggle('on',on);
+  btn.textContent=on?RX_ON:RX_OFF;
+  btn.title=on?'Прибрати реакцію':'Сподобалась книга друга';
+}
+// Серденько в картці друга — біля його останньої книги.
+function reaxBtnHTML(f){
+  if(!f||!f.last||!f.last.title)return'';
+  if(!me||me.guest)return'';
+  const key=reaxKey(f.last.title,f.last.author);
+  const on=iReacted(f.userId,key);
+  // Назва книги приходить з чужого клієнта і може містити апостроф («Ім'я
+  // вітру»), тому вона їде в data-атрибутах, а не в тексті onclick: у другому
+  // випадку апостроф розірвав би JS-рядок.
+  return`<button class="rx-btn${on?' on':''}" onclick="toggleBookReaction(this)"
+    title="${on?'Прибрати реакцію':'Сподобалась книга друга'}"
+    aria-label="${on?'Прибрати реакцію':'Сподобалась книга друга'}"
+    data-fid="${esc(f.userId)}" data-key="${esc(key)}" data-title="${esc(f.last.title)}"
+    >${on?RX_ON:RX_OFF}</button>`;
+}
+
+// Групуємо по книзі: три друзі на одну книгу — це один рядок із трьома
+// чіпами. Реакція другого друга не затирає першу ні в даних (на сервері запис
+// ідентифікується парою «хто + яка книга»), ні на екрані.
+function reaxGroups(){
+  const by={};
+  (friendsData.reax||[]).forEach(r=>{
+    if(!r||!r.k)return;
+    const k=String(r.k),ts=+r.ts||0;
+    const g=by[k]||(by[k]={key:k,title:String(r.t||''),ts:0,who:[]});
+    if(!g.title&&r.t)g.title=String(r.t);
+    if(ts>g.ts)g.ts=ts;
+    if(!g.who.some(w=>w.f===String(r.f)))g.who.push({f:String(r.f),n:String(r.n||''),ts:ts});
+  });
+  return Object.keys(by).map(k=>by[k]).sort((a,b)=>b.ts-a.ts);
+}
+function reaxFresh(){
+  const seen=+((pd()||{}).reaxSeen||0);
+  return (friendsData.reax||[]).filter(r=>r&&(+r.ts||0)>seen);
+}
+// Позначку «нове» рахуємо від зліпка на момент відкриття таба, а не від
+// поточного reaxSeen: інакше вона зникала б у ту саму мить, коли ти зайшов.
+let _rxSeenSnap=0;
+function markReaxSeen(){
+  const d=pd();if(!d)return;
+  const max=(friendsData.reax||[]).reduce((m,r)=>Math.max(m,+((r&&r.ts)||0)),0);
+  if(max>(+d.reaxSeen||0)){d.reaxSeen=max;saveToCloud(cur);}
+  updateFriendBadge();
+}
+function bookByReaxKey(key){
+  const d=pd();if(!d)return null;
+  return (d.books||[]).find(b=>reaxKey(b.title,b.author)===key)||null;
+}
+// Нік беремо зі свіжого списку друзів (нік могли змінити), а збережений у
+// реакції — як запас, якщо друга в списку вже немає.
+function reaxChipHTML(w){
+  const f=(friendsData.friends||[]).find(x=>String(x.userId)===w.f);
+  const nick=(f&&f.nick)||w.n||'друг';
+  const clr=(f&&esc(f.clr))||'#22c55e';
+  const av=(f&&escUrl(f.av))
+    ?`<span class="rx-chip-av"><img src="${escUrl(f.av)}" onerror="this.style.display='none'"></span>`
+    :`<span class="rx-chip-av" style="background:${clr}">${esc((f&&f.em)||'📖')}</span>`;
+  return`<span class="rx-chip">${av}<span class="rx-chip-n">${esc(nick)}</span></span>`;
+}
+function reaxBlockHTML(){
+  const groups=reaxGroups();
+  if(!groups.length)return'';
+  const rows=groups.map(g=>{
+    const book=bookByReaxKey(g.key);
+    const cover=(book&&escUrl(book.coverUrl))
+      ?`<img class="rx-cover" src="${escUrl(book.coverUrl)}" onerror="this.style.display='none'">`:'';
+    return`<div class="rx-card">
+      ${cover}
+      <div class="rx-main">
+        <div class="rx-title">❤️ «${esc(g.title||(book&&book.title)||'книга')}»</div>
+        <div class="rx-who">${g.who.map(reaxChipHTML).join('')}</div>
+      </div>
+      ${g.ts>_rxSeenSnap?`<div class="rx-new">нове</div>`:''}
+    </div>`;
+  }).join('');
+  return`<div class="fr-sub">❤️ Твої книги сподобались</div>${rows}`;
+}
+// Показуємо, коли таб закритий: у самому табі про це й так написано.
+function showReaxToast(){
+  const fresh=reaxFresh();
+  if(!fresh.length)return;
+  const names=[];
+  fresh.forEach(r=>{
+    const f=(friendsData.friends||[]).find(x=>String(x.userId)===String(r.f));
+    const nick=(f&&f.nick)||r.n||'друг';
+    if(names.indexOf(nick)<0)names.push(nick);
+  });
+  const who=names.slice(0,2).join(', ')+(names.length>2?' +'+(names.length-2):'');
+  const n=fresh.length;
+  showLocToast('❤️ '+esc(who),
+    n===1?'сподобалась твоя книга'
+         :n+' '+pluralUA(n,'реакція','реакції','реакцій')+' на твої книги');
+}
+
 function friendCardHTML(f,opts){
   opts=opts||{};
   const clr=escUrl(f.av)?'transparent':(esc(f.clr)||'#22c55e');
@@ -2062,6 +2462,7 @@ function friendCardHTML(f,opts){
   const last=f.last?`<div class="fr-last">
       ${escUrl(f.last.cover)?`<img class="fr-last-cover" src="${escUrl(f.last.cover)}" onerror="this.style.display='none'">`:''}
       <div class="fr-last-txt">Остання: ${esc(f.last.title)}${f.last.rating?' · ★'+esc(f.last.rating):''}</div>
+      ${reaxBtnHTML(f)}
     </div>`:'';
   const hasWrap=f.wraps&&Object.keys(f.wraps).length>0;
   return`<div class="fr-card">
@@ -2118,7 +2519,7 @@ function frMsg(text,bad){
   const el=document.getElementById('fr-msg');
   if(!el)return;
   el.textContent=_frMsg.text;
-  el.style.color=_frMsg.bad?'#fca5a5':'#4ade80';
+  el.style.color=_frMsg.bad?'var(--bad-2)':'var(--ok)';
 }
 
 async function sendFriendRequest(){
@@ -2182,7 +2583,7 @@ function openFriendWrap(id){
   // розміри, шрифти й секції збігаються з рештою статистики.
   const card=(b,label,stat)=>b?`<div class="wrap-book-card" style="cursor:default">
       ${escUrl(b.cover)?`<img src="${escUrl(b.cover)}" style="width:44px;height:64px;object-fit:cover;border-radius:4px;flex-shrink:0">`
-        :`<div style="width:44px;height:64px;background:rgba(255,255,255,.08);border-radius:4px;flex-shrink:0"></div>`}
+        :`<div style="width:44px;height:64px;background:rgba(var(--ink),.08);border-radius:4px;flex-shrink:0"></div>`}
       <div class="wrap-book-info">
         <div class="wrap-book-lbl">${label}</div>
         <div class="wrap-book-title">${esc(b.title)}</div>
@@ -2208,7 +2609,7 @@ function openFriendWrap(id){
   mHTML(`${M_CLOSE_BTN}
     <div class="ach-modal-hdr">
       <div class="m-title" style="margin-bottom:2px">📅 Рік у книгах</div>
-      <div style="font-size:12px;color:#888;text-align:center">${esc(f.nick)} · ${esc(y)}</div>
+      <div style="font-size:12px;color:var(--txt-3);text-align:center">${esc(f.nick)} · ${esc(y)}</div>
       ${yearTabs}
     </div>
     <div class="fr-wrap-scroll">
@@ -2289,11 +2690,11 @@ function renderDex(){
     const sprites=chain.stages.map((s,i)=>(i>0?`<div class="chain-arrow">→</div>`:'')+
       `<div class="chain-sprite" onclick="event.stopPropagation();openDexCard('${chain.id}')">
         <img style="width:38px;height:38px;object-fit:contain;image-rendering:pixelated" src="${img(s.pid)}" onerror="this.style.display='none'">
-        <div style="font-size:6.5px;color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:44px;margin-top:1px;line-height:1.2">${s.name}</div>
+        <div style="font-size:6.5px;color:var(--txt-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:44px;margin-top:1px;line-height:1.2">${s.name}</div>
       </div>`).join('');
     return`<div class="chain-block"><div class="chain-block-badge">✓</div>${sprites}</div>`;
   }).join('');
-  completeEl.innerHTML=`<div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#fbbf24;margin:4px 0 5px;opacity:.8">🏆 Завершені</div><div class="chain-row">${chainHtml}</div>`;
+  completeEl.innerHTML=`<div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin:4px 0 5px;opacity:.8">🏆 Завершені</div><div class="chain-row">${chainHtml}</div>`;
 }
 
 function openDexCard(chainId){
@@ -2303,18 +2704,18 @@ function openDexCard(chainId){
   if(idx===chain.stages.length-1&&chain.stages.length>1){
     const gallery=chain.stages.map(s=>`<div style="text-align:center">
         <img src="${img(s.pid)}" style="width:76px;height:76px;object-fit:contain;image-rendering:pixelated" onerror="this.style.display='none'">
-        <div style="font-size:10px;color:#ccc;margin-top:2px;max-width:82px">${s.name}</div>
+        <div style="font-size:10px;color:var(--txt);margin-top:2px;max-width:82px">${s.name}</div>
       </div>`).join('');
     mHTML(`${M_CLOSE_BTN}<div class="m-title" style="text-align:center">🏆 Завершено!</div>
       <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:10px 0 14px">${gallery}</div>
-      <div style="font-size:10px;color:#888;text-align:center;margin-bottom:8px">📍 Де ловиться: <b style="color:#aaa">${loc?loc.name:'—'}</b></div>`);
+      <div style="font-size:10px;color:var(--txt-3);text-align:center;margin-bottom:8px">📍 Де ловиться: <b style="color:var(--txt-2)">${loc?loc.name:'—'}</b></div>`);
     return;
   }
   const stage=chain.stages[idx];
   mHTML(`${M_CLOSE_BTN}<img class="m-img" src="${img(stage.pid)}" onerror="this.style.display='none'">
     <div class="m-title">${stage.name}</div>
-    <div style="text-align:center;font-size:11px;color:#888;margin-bottom:10px">Стадія ${idx+1} / ${chain.stages.length}${stage.mega?' · 🐉 Мега':''}</div>
-    <div style="font-size:10px;color:#888;text-align:center;margin-bottom:8px">📍 Де ловиться: <b style="color:#aaa">${loc?loc.name:'—'}</b></div>`);
+    <div style="text-align:center;font-size:11px;color:var(--txt-3);margin-bottom:10px">Стадія ${idx+1} / ${chain.stages.length}${stage.mega?' · 🐉 Мега':''}</div>
+    <div style="font-size:10px;color:var(--txt-3);text-align:center;margin-bottom:8px">📍 Де ловиться: <b style="color:var(--txt-2)">${loc?loc.name:'—'}</b></div>`);
 }
 
 // ═══════════ UNLOCK CHECK ═══════════
@@ -2333,8 +2734,8 @@ function renderMap(){
   const region=d.region||'kanto';
   const johtoUnlocked=d.unlockedLocs.includes('map2');
   document.getElementById('map-region-tabs').innerHTML=`<div style="display:flex;gap:4px;padding:8px 8px 0">
-    <div style="flex:1;padding:6px 4px;font-size:10px;font-weight:700;text-align:center;border-radius:7px 7px 0 0;border:1px solid ${region==='kanto'?'#4ade80':'rgba(255,255,255,.07)'};border-bottom:none;background:${region==='kanto'?'rgba(74,222,128,.12)':'rgba(255,255,255,.02)'};color:${region==='kanto'?'#4ade80':'#666'}">🗺️ Регіон Канто</div>
-    <div style="flex:1;padding:6px 4px;font-size:10px;font-weight:700;text-align:center;border-radius:7px 7px 0 0;border:1px solid ${region==='johto'?'#60a5fa':'rgba(255,255,255,.05)'};border-bottom:none;background:${region==='johto'?'rgba(96,165,250,.12)':'rgba(255,255,255,.01)'};color:${region==='johto'?'#60a5fa':johtoUnlocked?'#555':'#333'}">${johtoUnlocked?'🌏':'🔒'} Регіон Джото</div>
+    <div style="flex:1;padding:6px 4px;font-size:10px;font-weight:700;text-align:center;border-radius:7px 7px 0 0;border:1px solid ${region==='kanto'?'var(--ok)':'rgba(var(--ink),.07)'};border-bottom:none;background:${region==='kanto'?'rgba(var(--ok-rgb),.12)':'rgba(var(--ink),.02)'};color:${region==='kanto'?'var(--ok)':'var(--txt-4)'}">🗺️ Регіон Канто</div>
+    <div style="flex:1;padding:6px 4px;font-size:10px;font-weight:700;text-align:center;border-radius:7px 7px 0 0;border:1px solid ${region==='johto'?'#60a5fa':'rgba(var(--ink),.05)'};border-bottom:none;background:${region==='johto'?'rgba(96,165,250,.12)':'rgba(var(--ink),.01)'};color:${region==='johto'?'#60a5fa':johtoUnlocked?'var(--txt-4)':'var(--txt-5)'}">${johtoUnlocked?'🌏':'🔒'} Регіон Джото</div>
   </div>`;
   if(region==='johto'){
     document.getElementById('map-png').style.display='none';
@@ -2509,10 +2910,10 @@ function _buildShopHTML(){
     let keyNote='';
     if(keyLoc){
       keyNote=r.idx===keyLoc.unlockReq.stageIdx
-        ?`<div style="margin-top:3px;font-size:9px;font-weight:700;color:#4ade80">🔑 Відкриє «${keyLoc.name}»!</div>`
-        :`<div style="margin-top:3px;font-size:9px;color:#fbbf24">→ веде до ключа «${keyLoc.name}»</div>`;
+        ?`<div style="margin-top:3px;font-size:9px;font-weight:700;color:var(--ok)">🔑 Відкриє «${keyLoc.name}»!</div>`
+        :`<div style="margin-top:3px;font-size:9px;color:var(--gold)">→ веде до ключа «${keyLoc.name}»</div>`;
     }
-    return`<div class="shop-row" ${keyLoc&&r.idx===keyLoc.unlockReq.stageIdx?'style="background:rgba(74,222,128,.06);border-radius:8px;padding:8px 6px;margin:0 -6px"':''}>
+    return`<div class="shop-row" ${keyLoc&&r.idx===keyLoc.unlockReq.stageIdx?'style="background:rgba(var(--ok-rgb),.06);border-radius:8px;padding:8px 6px;margin:0 -6px"':''}>
       <img class="sh-emoji" src="${img(r.stage.pid)}" style="width:40px;height:40px;image-rendering:pixelated" onerror="this.style.display='none'">
       <div class="sh-info"><div class="sh-name">${r.stage.name}</div><div class="sh-desc">${r.chain.stages.length>1?'Стадія '+(r.idx+1)+'/'+r.chain.stages.length:'Локація: '+(LOCS[r.chain.loc]?.name||'')}</div>${keyNote}</div>
       <div style="text-align:right;flex-shrink:0"><div class="sh-price">🪙${r.price}</div>
@@ -2521,8 +2922,8 @@ function _buildShopHTML(){
   }).join('');
   return`${M_CLOSE_BTN}<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-right:26px">
     <div class="m-title" style="margin:0">🛒 Магазин</div>
-    <div style="font-size:14px;font-weight:700;color:#fbbf24">🪙${d.coins}</div>
-  </div><div style="max-height:340px;overflow-y:auto;padding-right:10px;margin-right:-10px">${html||'<div style="font-size:12px;color:#555;text-align:center;padding:1rem">Немає нічого на продаж — спочатку відкрий локації!</div>'}</div>`;
+    <div style="font-size:14px;font-weight:700;color:var(--gold)">🪙${d.coins}</div>
+  </div><div style="max-height:340px;overflow-y:auto;padding-right:10px;margin-right:-10px">${html||'<div style="font-size:12px;color:var(--txt-4);text-align:center;padding:1rem">Немає нічого на продаж — спочатку відкрий локації!</div>'}</div>`;
 }
 function openShop(){
   const box=document.querySelector('#mOv .modal-box');
@@ -2638,16 +3039,18 @@ function openProfileSettings(){
   const name=d.customName||p.name;
   const url=d.avatarUrl||'';
   const curClr=pClr(p,d);
-  const swatches=PROFILE_COLORS.map(c=>`<div onclick="selectProfileColor('${c}')" id="pclr${c.replace('#','')}" style="width:36px;height:36px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${c===curClr?'#fff':'transparent'};box-sizing:border-box;flex-shrink:0"></div>`).join('');
+  const thm=curTheme();
+  const themeCards=THEMES.map(t=>themeCardHTML(t,t.id===thm)).join('');
+  const swatches=PROFILE_COLORS.map(c=>`<div onclick="selectProfileColor('${c}')" id="pclr${c.replace('#','')}" style="width:36px;height:36px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${c===curClr?'var(--txt-hi)':'transparent'};box-sizing:border-box;flex-shrink:0"></div>`).join('');
   const avInner=url
     ?`<img src="${url}" style="width:100%;height:100%;object-fit:cover;display:block" onerror="psAvatarBroken(this)">`
     :avatarPlaceholderSVG(curClr,86);
   const html=`${M_CLOSE_BTN}<div class="m-title">⚙️ Налаштування</div>
     <div style="position:relative;width:86px;height:86px;margin:2px auto 12px">
       <div id="ps-av-box" onclick="togglePsAvatarForm()" title="Змінити аватар"
-        style="width:100%;height:100%;border-radius:50%;overflow:hidden;cursor:pointer;border:3px solid ${curClr};box-sizing:border-box;background:rgba(255,255,255,.04)">${avInner}</div>
+        style="width:100%;height:100%;border-radius:50%;overflow:hidden;cursor:pointer;border:3px solid ${curClr};box-sizing:border-box;background:rgba(var(--ink),.04)">${avInner}</div>
       <div id="ps-av-pencil" onclick="togglePsAvatarForm()" title="Змінити аватар"
-        style="position:absolute;right:-3px;bottom:-3px;width:28px;height:28px;border-radius:50%;background:${curClr};box-shadow:0 0 0 2px #1e2d4a;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer">✎</div>
+        style="position:absolute;right:-3px;bottom:-3px;width:28px;height:28px;border-radius:50%;background:${curClr};box-shadow:0 0 0 2px var(--panel);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer">✎</div>
     </div>
     <div id="ps-av-form" style="display:none;margin-bottom:14px" onclick="event.stopPropagation()">
       <input type="url" id="ps-avatar" class="finput" value="${url}" placeholder="https://…" style="font-size:11px;margin-bottom:6px">
@@ -2663,8 +3066,13 @@ function openProfileSettings(){
       <input type="hidden" id="ps-color" value="${curClr}">
     </div>
     <button class="btn-ok" id="ps-save" style="width:100%;padding:13px;font-size:14px;min-height:44px" onclick="saveProfileSettings()">Зберегти</button>
-    <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:7px">
-      <div style="font-size:10.5px;color:#8a97ad;text-align:center">
+    <div style="text-align:left;margin-top:16px;padding-top:14px;border-top:1px solid rgba(var(--ink),.08)">
+      <div class="flbl">Кольорова гама</div>
+      <div class="theme-row" id="ps-themes">${themeCards}</div>
+      <div id="ps-theme-note" style="font-size:10px;line-height:1.4;color:var(--txt-3)">${themeById(thm).desc}</div>
+    </div>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(var(--ink),.08);display:flex;flex-direction:column;gap:7px">
+      <div style="font-size:10.5px;color:var(--txt-3);text-align:center">
         ${me&&me.guest?'Гість — прогрес лише на цьому пристрої':'Читач'}
       </div>
       ${me&&me.guest?`<button class="btn-cancel" style="width:100%" onclick="closeModal();openClaim()">🔑 У мене є код запрошення</button>`:''}
@@ -2681,8 +3089,8 @@ function openProfileSettings(){
 
 function openAbout(){
   const html=`${M_CLOSE_BTN}<div class="m-title">Про проєкт</div>
-    <div style="font-size:12px;line-height:1.55;color:#b8c2d4;margin-top:10px;text-align:justify;hyphens:auto">
-      <p style="margin-bottom:10px"><b style="color:#fff">Читальний Світ</b> — безкоштовний некомерційний фанатський проєкт, зроблений для власних дітей, щоб більше читали. Не продається, не містить реклами і не приймає донатів.</p>
+    <div style="font-size:12px;line-height:1.55;color:var(--txt-2);margin-top:10px;text-align:justify;hyphens:auto">
+      <p style="margin-bottom:10px"><b style="color:var(--txt-hi)">Читальний Світ</b> — безкоштовний некомерційний фанатський проєкт, зроблений для власних дітей, щоб більше читали. Не продається, не містить реклами і не приймає донатів.</p>
       <p style="margin-bottom:10px">Pokémon, назви та зображення персонажів — торгові марки й об'єкти авторського права Nintendo, Creatures Inc. та GAME FREAK inc. Проєкт з ними не пов'язаний, ними не схвалений і не претендує на жодні права. Зображення персонажів завантажуються з відкритого проєкту PokeAPI.</p>
     </div>`;
   // Якщо модалка вже відкрита (нас викликали з налаштувань) — перемальовуємо
@@ -2693,7 +3101,7 @@ function openAbout(){
 }
 function selectProfileColor(c){
   document.getElementById('ps-color').value=c;
-  PROFILE_COLORS.forEach(h=>{const el=document.getElementById('pclr'+h.replace('#',''));if(el)el.style.borderColor=h===c?'#fff':'transparent';});
+  PROFILE_COLORS.forEach(h=>{const el=document.getElementById('pclr'+h.replace('#',''));if(el)el.style.borderColor=h===c?'var(--txt-hi)':'transparent';});
   // Колір видно на кружечку одразу, не чекаючи «Зберегти»: обідок, олівець
   // і намальована заглушка перефарбовуються на місці.
   const box=document.getElementById('ps-av-box');
@@ -2844,10 +3252,10 @@ function _buildPagesHTML(){
   return`<div style="margin-bottom:1rem">
       <div class="form-section">
         <div class="form-section-title">🔍 Розпізнавання</div>
-        <div class="flbl">Посилання на Goodreads <a href="https://www.goodreads.com" target="_blank" rel="noopener" style="color:#9cc9f0;font-weight:400;text-transform:none;letter-spacing:normal;text-decoration:underline">goodreads.com ↗</a></div>
+        <div class="flbl">Посилання на Goodreads <a href="https://www.goodreads.com" target="_blank" rel="noopener" style="color:var(--accent);font-weight:400;text-transform:none;letter-spacing:normal;text-decoration:underline">goodreads.com ↗</a></div>
         <div style="display:flex;gap:6px">
           <input type="url" id="sp-goodreads" class="finput" placeholder="https://www.goodreads.com/book/show/…" style="font-size:11px;margin-bottom:0;flex:1">
-          <button id="sp-parse-btn" onclick="parseGoodreadsLink()" style="flex-shrink:0;padding:0 14px;font-size:12px;font-weight:600;background:rgba(126,206,255,.15);border:1px solid rgba(126,206,255,.3);border-radius:10px;color:#7eceff;cursor:pointer">Розпізнати</button>
+          <button id="sp-parse-btn" onclick="parseGoodreadsLink()" style="flex-shrink:0;padding:0 14px;font-size:12px;font-weight:600;background:rgba(var(--acc),.15);border:1px solid rgba(var(--acc),.3);border-radius:10px;color:var(--accent);cursor:pointer">Розпізнати</button>
         </div>
         <div id="sp-goodreads-error" class="sp-error" style="display:none;margin-top:8px;margin-bottom:0"></div>
       </div>
@@ -2955,7 +3363,7 @@ function _renderBookPreviewHTML(book){
     <div style="width:${sw}px;height:${h}px;background:${spineGrad};display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:inset 2px 0 5px rgba(255,255,255,.06),inset -3px 0 8px rgba(0,0,0,.45)">
       ${sw>=12?`<span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:${Math.max(7,sw>20?9:8)}px;font-weight:700;color:rgba(255,255,255,.7);white-space:normal;word-break:break-word;text-align:center;overflow:visible;max-height:${h-16}px">${book.title}</span>`:''}
     </div>
-    <div style="width:${cw}px;height:${h}px;background:${coverGrad};position:relative;overflow:hidden;box-shadow:2px 2px 0 rgba(0,0,0,.3),4px 5px 0 rgba(0,0,0,.18),6px 10px 20px rgba(0,0,0,.55)">
+    <div style="width:${cw}px;height:${h}px;background:${coverGrad};position:relative;overflow:hidden;box-shadow:2px 2px 0 rgba(var(--shadow),.3),4px 5px 0 rgba(var(--shadow),.18),6px 10px 20px rgba(var(--shadow),.55)">
       ${coverUrl?`<img src="${coverUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`:''}
       ${!coverUrl?`<div style="position:absolute;inset:0">
         <div style="position:absolute;top:9px;left:5px;right:5px;font-size:8px;opacity:.5;text-transform:uppercase;letter-spacing:.08em;color:#fff">${book.author||''}</div>
@@ -2982,7 +3390,7 @@ function _renderBookHTML(book, i, sc=1){
     <div style="position:absolute;bottom:6px;left:5px;right:5px;font-size:${fsz}px;opacity:.45;color:#fff;text-align:right">${p} стор.</div>
   </div>`:'';
   return`<div class="book-wrap" style="height:${h}px" onclick="openBookDetail(${i})" title="">
-    <div class="book-cover" style="width:${cw}px;height:${h}px;background:${coverGrad};box-shadow:2px 4px 12px rgba(0,0,0,.5)">
+    <div class="book-cover" style="width:${cw}px;height:${h}px;background:${coverGrad};box-shadow:2px 4px 12px rgba(var(--shadow),.5)">
       ${coverUrl?`<img src="${coverUrl}" onerror="this.style.display='none'">`:''}
       ${textOverlay}
     </div>
@@ -3056,11 +3464,11 @@ function _buildLibraryHTML(){
   const d=pd();
   const books=d.books||[];
   const header=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#7eceff;font-weight:600">Моя Бібліотека</div>
-    <button onclick="openLibrarySettings()" style="background:none;border:none;cursor:pointer;font-size:18px;color:#7eceff;padding:4px" title="Налаштування вигляду">⚙️</button>
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:600">Моя Бібліотека</div>
+    <button onclick="openLibrarySettings()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--accent);padding:4px" title="Налаштування вигляду">⚙️</button>
   </div>`;
   if(!books.length){
-    return header+`<div style="text-align:center;padding:40px 0;color:#778;font-size:13px;line-height:2">📚<br>Ще немає книжок.<br>Додай першу книгу!</div>`;
+    return header+`<div style="text-align:center;padding:40px 0;color:var(--txt-3);font-size:13px;line-height:2">📚<br>Ще немає книжок.<br>Додай першу книгу!</div>`;
   }
   if(_libViewMode==='wall')return header+_buildWallHTML(books);
   const withIdx=[...books].map((b,i)=>({b,i})).reverse(); // newest first within each shelf
@@ -3086,7 +3494,7 @@ function openBookDetail(i,playerId){
   const [top,bot]=_colorFor(book.title);
   const cw=_coverW(book.pages||1),h=_bookH(book.pages||1);
   const heroStyle=book.coverUrl?`background-image:url('${book.coverUrl}')`:`background:linear-gradient(150deg,${top} 0%,${bot} 100%)`;
-  const coverBoxHtml=`<div id="bd-cover-box" style="width:${cw}px;height:${h}px;border-radius:6px;overflow:hidden;box-shadow:0 10px 24px rgba(0,0,0,.45);${book.coverUrl?'':`background:linear-gradient(150deg,${top} 0%,${bot} 100%);`}">${book.coverUrl?`<img id="bd-cover-img" src="${book.coverUrl}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`:''}</div>`;
+  const coverBoxHtml=`<div id="bd-cover-box" style="width:${cw}px;height:${h}px;border-radius:6px;overflow:hidden;box-shadow:0 10px 24px rgba(var(--shadow),.45);${book.coverUrl?'':`background:linear-gradient(150deg,${top} 0%,${bot} 100%);`}">${book.coverUrl?`<img id="bd-cover-img" src="${book.coverUrl}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`:''}</div>`;
   const coverHtml=editable?`<div class="bd-cover-tap" onclick="toggleBdCoverEdit()">${coverBoxHtml}</div>`:coverBoxHtml;
   const coverEditForm=editable?`<div id="bd-cover-editform" style="display:none;margin-bottom:12px" onclick="event.stopPropagation()">
       <input type="url" id="bd-cover-input" class="finput" placeholder="https://…" style="font-size:11px;margin-bottom:6px" value="${book.coverUrl||''}" oninput="updBdCoverPreview()">
@@ -3096,7 +3504,7 @@ function openBookDetail(i,playerId){
     <select id="bd-genre" class="finput">
       <option value="">Оберіть жанр</option>
       ${GENRES.map(g=>`<option value="${g}" ${book.genre===g?'selected':''}>${g}</option>`).join('')}
-    </select>`:(book.genre?`<div style="text-align:center;font-size:12px;color:#ccc;margin-bottom:12px">${book.genre}</div>`:'');
+    </select>`:(book.genre?`<div style="text-align:center;font-size:12px;color:var(--txt);margin-bottom:12px">${book.genre}</div>`:'');
   const footer=editable?`<button class="btn-ok" style="width:100%;margin-top:4px;padding:12px;font-size:13px" onclick="saveBookDetail(${i})">Зберегти</button>
     <button class="bd-delete-btn" onclick="confirmDeleteBook(${i})" title="Видалити книгу">🗑️</button>`:'';
   mHTML(`${M_CLOSE_BTN}
@@ -3107,9 +3515,9 @@ function openBookDetail(i,playerId){
     </div>
     ${coverEditForm}
     <div class="m-title" style="font-size:15px">${book.title}</div>
-    <div style="text-align:center;font-size:12px;color:#aaa;margin-bottom:8px">${book.author||''}</div>
+    <div style="text-align:center;font-size:12px;color:var(--txt-2);margin-bottom:8px">${book.author||''}</div>
     <div id="bd-stars" style="display:flex;justify-content:center;margin-bottom:8px">${starRatingHTML(_bdRating,editable,'onBdStarClick')}</div>
-    <div style="text-align:center;font-size:11px;color:#778;margin-bottom:12px">${book.pages} стор. · ${book.date||''}</div>
+    <div style="text-align:center;font-size:11px;color:var(--txt-3);margin-bottom:12px">${book.pages} стор. · ${book.date||''}</div>
     ${genreHtml}
     ${footer}`);
 }
@@ -3247,9 +3655,9 @@ function showLocToast(name,desc){
 function showSaveStatus(s){
   const el=document.getElementById('save-status');if(!el)return;
   clearTimeout(_saveTimer);
-  if(s==='saving'){el.textContent='💾';el.style.color='#fbbf24';el.style.visibility='visible';}
-  else if(s==='saved'){el.textContent='✓';el.style.color='#4ade80';el.style.visibility='visible';_saveTimer=setTimeout(()=>el.style.visibility='hidden',2000);}
-  else if(s==='error'){el.textContent='⚠️';el.style.color='#ef4444';el.style.visibility='visible';_saveTimer=setTimeout(()=>el.style.visibility='hidden',3500);}
+  if(s==='saving'){el.textContent='💾';el.style.color='var(--gold)';el.style.visibility='visible';}
+  else if(s==='saved'){el.textContent='✓';el.style.color='var(--ok)';el.style.visibility='visible';_saveTimer=setTimeout(()=>el.style.visibility='hidden',2000);}
+  else if(s==='error'){el.textContent='⚠️';el.style.color='var(--bad-solid)';el.style.visibility='visible';_saveTimer=setTimeout(()=>el.style.visibility='hidden',3500);}
   else{el.style.visibility='hidden';}
 }
 
