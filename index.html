@@ -270,6 +270,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .dex-grid::-webkit-scrollbar{height:3px;}.dex-grid::-webkit-scrollbar-thumb{background:rgba(var(--ink),.15);border-radius:2px;}
 .dex-card{background:rgba(var(--ink),.05);border:1px solid rgba(var(--ink),.07);border-radius:10px;padding:0 3px 5px;text-align:center;cursor:pointer;transition:all .15s;overflow:hidden;width:68px;flex-shrink:0;position:relative;}
 .dex-card:hover{background:rgba(var(--ink),.1);}
+.spr-ph{display:flex;align-items:center;justify-content:center;text-align:center;
+  font-size:8px;line-height:1.15;padding:2px;color:var(--txt-3);
+  background:rgba(var(--ink),.08);border-radius:6px;overflow:hidden;}
 .dex-img{width:calc(100% + 6px);height:68px;object-fit:contain;object-position:bottom center;image-rendering:pixelated;margin:0 -3px;display:block;}
 .dex-name{font-size:8px;color:var(--txt);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2;}
 .dex-sub{font-size:8px;color:var(--accent);line-height:1.2;}
@@ -898,7 +901,107 @@ function pd(){return state.players[cur];}
 function pl(){return PLAYERS.find(x=>x.id===cur);}
 function cLoc(){const d=pd();return((d.region||'kanto')==='johto'?LOCS_JOHTO:LOCS)[d.location];}
 function _anyLoc(id){return LOCS[id]||LOCS_JOHTO[id];}
-function img(pid){return`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pid}.png`;}
+// ═══════════ СПРАЙТИ ПОКЕМОНІВ ═══════════
+// Картинки лежать на raw.githubusercontent.com і віддаються з
+// `Cache-Control: max-age=300` — через п'ять хвилин браузер тягне всі 98
+// заново. На мобільному це і є «довго грузиться», а кожен зірваний запит
+// показувався літерою замість покемона.
+//
+// Тому перший раз забираємо їх СОБІ: data:URI в localStorage. Спрайт важить
+// ~600 байт, тобто вся колекція — десятки кілобайт. Далі екран колекції
+// відкривається без жодного запиту й працює офлайн.
+const SPR_KEY='rw_spr_';
+const SPR_WARM_PAR=4;              // скільком дозволяємо їхати водночас
+let _sprMem={},_sprBusy=0,_sprQueue=[],_sprOff=false;
+function sprUrl(pid){return`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pid}.png`;}
+function sprCached(pid){
+  if(_sprMem[pid]!==undefined)return _sprMem[pid];
+  let v=null;
+  try{v=localStorage.getItem(SPR_KEY+pid);}catch(e){}
+  _sprMem[pid]=v;
+  return v;
+}
+// Викидає всі закешовані спрайти — місце під сейв важливіше за картинки.
+function sprDrop(){
+  const kill=[];
+  try{
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(k&&k.indexOf(SPR_KEY)===0)kill.push(k);
+    }
+    kill.forEach(k=>localStorage.removeItem(k));
+  }catch(e){}
+  _sprMem={};_sprQueue=[];
+  return kill.length;
+}
+// Сейв мусить лягти навіть тоді, коли місця не стало.
+function saveLocal(key,json){
+  try{localStorage.setItem(key,json);return true;}
+  catch(e){
+    const n=sprDrop();
+    _sprOff=true;                 // до перезавантаження більше не кешуємо
+    try{localStorage.setItem(key,json);
+      console.warn('[LS] місце скінчилось, викинуто спрайтів: '+n);
+      return true;}
+    catch(e2){
+      console.error('[LS] сейв не влазить у localStorage',e2);
+      showToast('Не вдалося зберегти на пристрої — звільни місце в браузері');
+      return false;
+    }
+  }
+}
+function sprStore(pid,uri){
+  _sprMem[pid]=uri;
+  if(_sprOff)return;
+  // Місце в localStorage спільне зі сейвом, тому при переповненні просто
+  // перестаємо кешувати — гра від цього не ламається, лише знову ходить
+  // у мережу.
+  try{localStorage.setItem(SPR_KEY+pid,uri);}catch(e){_sprOff=true;}
+}
+function img(pid){return sprCached(pid)||sprUrl(pid);}
+// Дотягуємо те, чого ще немає, ПІСЛЯ того, як екран намалювався: браузер уже
+// взяв ці ж файли для <img>, тому fetch майже завжди влучає в його кеш і
+// нової мережі не створює.
+function sprWarm(pids){
+  if(_sprOff)return;
+  pids.forEach(pid=>{
+    if(pid==null||sprCached(pid)||_sprQueue.indexOf(pid)>=0)return;
+    _sprQueue.push(pid);
+  });
+  _sprPump();
+}
+function _sprPump(){
+  while(_sprBusy<SPR_WARM_PAR&&_sprQueue.length){
+    const pid=_sprQueue.shift();
+    _sprBusy++;
+    fetch(sprUrl(pid)).then(r=>r.ok?r.blob():null).then(b=>{
+      if(!b)return null;
+      return new Promise(res=>{
+        const fr=new FileReader();
+        fr.onload=()=>res(String(fr.result||''));
+        fr.onerror=()=>res(null);
+        fr.readAsDataURL(b);
+      });
+    }).then(uri=>{
+      if(uri&&uri.indexOf('data:image')===0)sprStore(pid,uri);
+    }).catch(()=>{}).then(()=>{_sprBusy--;_sprPump();});
+  }
+}
+// Зірваний запит більше не стає літерою: пробуємо ще раз, і лише потім
+// показуємо назву.
+function sprFail(el){
+  if(!el)return;
+  if(!el.dataset.retried){
+    el.dataset.retried='1';
+    el.src=sprUrl(el.dataset.pid)+'?r='+Date.now();
+    return;
+  }
+  if(el.dataset.ph==='hide'){el.style.display='none';return;}
+  const ph=document.createElement('div');
+  ph.className=(el.className||'')+' spr-ph';
+  ph.textContent=el.dataset.name||'?';
+  el.replaceWith(ph);
+}
 function ri(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
 function coinsForPages(p){return Math.floor(p/100)+1;}
 
@@ -1511,10 +1614,11 @@ function lastCaughtSprite(d,filterFn){
   }
   return null;
 }
+// Порядок у списку — це порядок у сітці досягнень, і читається він
+// зверху вниз одною лінією: книги → автори → жанри → покемони → друзі →
+// строки. Додаєш нове — став у свою групу, а не в кінець.
 const ACHIEVEMENTS=[
-  {key:'quests',title:'Разом',emoji:'🤝',unit:'спільних квестів',tiers:[1,3,5,10],
-    valueFn:d=>(d.questsDone||[]).length,
-    desc:t=>`Пройти ${t} ${pluralUA(t,'спільний квест','спільні квести','спільних квестів')}`},
+  // ── книги: скільки, які завтовшки, як оцінені ──
   {key:'books',title:'Книгоман',emoji:'📚',unit:'книг',tiers:[10,50,100,200,300,500],
     valueFn:d=>(d.books||[]).length,
     reward:{pid:151,name:'Мью'},
@@ -1523,58 +1627,66 @@ const ACHIEVEMENTS=[
     valueFn:d=>(d.books||[]).reduce((s,b)=>s+(b.pages||0),0),
     reward:{pid:150,name:'Мьюту'},
     desc:t=>`Прочитати ${t} сторінок`},
-  {key:'monthBooks',title:'Місячний ривок',emoji:'🗓️',unit:'книг цього місяця',resets:true,tiers:[3,5,10],
-    valueFn:d=>booksInMonth(d,curMonthKey()),
-    desc:t=>`Прочитати ${t} ${bookWord(t)} за один місяць`},
   {key:'longestBook',title:'Товстенна книга',emoji:'📔',unit:'стор. в 1 книзі',tiers:[500,900,1200],
     valueFn:d=>(d.books||[]).reduce((m,b)=>Math.max(m,b.pages||0),0),
     desc:t=>`Прочитати книгу на ${t}+ сторінок`},
+  {key:'fiveStars',title:'Найвища оцінка',emoji:'⭐',unit:'книг з оцінкою 5',tiers:[5,10,20],
+    valueFn:d=>(d.books||[]).filter(b=>b.rating===5).length,
+    reward:{pid:145,name:'Запдос'},
+    desc:t=>`Оцінити ${t} ${bookWord(t)} на 5 зірок`},
+  // ── автори ──
   {key:'author',title:'Фанат автора',emoji:'✍️',unit:'книг одного автора',tiers:[3,5,10,20],
     valueFn:maxByAuthor,
     reward:{pid:144,name:'Артикуно'},
     desc:t=>`Прочитати ${t} ${bookWord(t)} одного автора`},
+  // ── жанри й мови ──
+  {key:'genreFan',title:'Знавець жанру',emoji:'📗',unit:'книг одного жанру',tiers:[5,10,25,50],
+    valueFn:maxByGenre,
+    reward:{pid:244,name:'Ентей'},
+    desc:t=>`Прочитати ${t} ${bookWord(t)} одного жанру`},
+  {key:'genreVariety',title:'Всеїдний читач',emoji:'🎭',unit:'жанрів серед прочитаного',tiers:[3,6,10,15],
+    valueFn:d=>new Set((d.books||[]).map(b=>b.genre).filter(Boolean)).size,
+    reward:{pid:146,name:'Молтрес'},
+    desc:t=>`Прочитати книги ${t} різних жанрів`},
+  {key:'polyglot',title:'Поліглот',emoji:'🌐',unit:'мов серед прочитаного',tiers:[2,3,4],
+    valueFn:d=>langBreakdown(d.books||[]).length,
+    desc:t=>`Прочитати книги ${t} різними мовами`},
+  // ── покемони та їхній світ ──
   {key:'species',title:'Колекціонер видів',emoji:'🐣',unit:'видів',tiers:[10,25,50,100],
     valueFn:d=>Object.keys(d.progress||{}).length,
     iconFn:d=>lastCaughtSprite(d),
     reward:{pid:249,name:'Лугія'},
     desc:t=>`Спіймати ${t} різних видів покемонів`},
-  {key:'bought',title:'Покупець',emoji:'🛒',unit:'покупок',tiers:[3,10,25,50],
-    valueFn:d=>d.totalBought||0,
-    desc:t=>`Зробити ${t} ${purchaseWord(t)} у магазині`},
   {key:'mega',title:'Мега-майстер',emoji:'🐉',unit:'мег',tiers:[1,5,10,15],
     valueFn:d=>megasCaughtIn(d,ALL_KANTO_LOCS),
     iconFn:d=>lastCaughtSprite(d,(ch,idx)=>ch.stages[idx].mega),
     reward:{pid:243,name:'Райкоу'},
     desc:t=>`Виростити ${t} ${pokeWord(t)} до Мега-еволюції`},
-  {key:'coinsSpent',title:'Транжира',emoji:'🪙',unit:'монет витрачено',tiers:[25,75,150,300,600,1000],
-    valueFn:d=>d.totalCoinsSpent||0,
-    desc:t=>`Витратити ${t} монет у магазині`},
   {key:'locations',title:'Дослідник',emoji:'🗺️',unit:'локацій',tiers:[3,5,7],
     valueFn:d=>(d.unlockedLocs||[]).length,
     desc:t=>`Відкрити ${t} ${locWord(t)}`},
-  {key:'polyglot',title:'Поліглот',emoji:'🌐',unit:'мов серед прочитаного',tiers:[2,3,4],
-    valueFn:d=>langBreakdown(d.books||[]).length,
-    desc:t=>`Прочитати книги ${t} різними мовами`},
-  {key:'genreVariety',title:'Всеїдний читач',emoji:'🎭',unit:'жанрів серед прочитаного',tiers:[3,6,10,15],
-    valueFn:d=>new Set((d.books||[]).map(b=>b.genre).filter(Boolean)).size,
-    reward:{pid:146,name:'Молтрес'},
-    desc:t=>`Прочитати книги ${t} різних жанрів`},
-  {key:'genreFan',title:'Знавець жанру',emoji:'📗',unit:'книг одного жанру',tiers:[5,10,25,50],
-    valueFn:maxByGenre,
-    reward:{pid:244,name:'Ентей'},
-    desc:t=>`Прочитати ${t} ${bookWord(t)} одного жанру`},
-  {key:'longPlayer',title:'Довгограй',emoji:'📆',unit:'місяців з хоча б 1 книгою',tiers:[3,6,12,24],
-    valueFn:distinctActiveMonths,
-    reward:{pid:250,name:'Хо-Ох'},
-    desc:t=>`Прочитати хоча б 1 книгу у ${t} різних місяцях`},
-  {key:'fiveStars',title:'Найвища оцінка',emoji:'⭐',unit:'книг з оцінкою 5',tiers:[5,10,20],
-    valueFn:d=>(d.books||[]).filter(b=>b.rating===5).length,
-    reward:{pid:145,name:'Запдос'},
-    desc:t=>`Оцінити ${t} ${bookWord(t)} на 5 зірок`},
+  {key:'bought',title:'Покупець',emoji:'🛒',unit:'покупок',tiers:[3,10,25,50],
+    valueFn:d=>d.totalBought||0,
+    desc:t=>`Зробити ${t} ${purchaseWord(t)} у магазині`},
+  {key:'coinsSpent',title:'Транжира',emoji:'🪙',unit:'монет витрачено',tiers:[25,75,150,300,600,1000],
+    valueFn:d=>d.totalCoinsSpent||0,
+    desc:t=>`Витратити ${t} монет у магазині`},
+  // ── друзі ──
+  {key:'quests',title:'Разом',emoji:'🤝',unit:'спільних квестів',tiers:[1,3,5,10],
+    valueFn:d=>(d.questsDone||[]).length,
+    desc:t=>`Пройти ${t} ${pluralUA(t,'спільний квест','спільні квести','спільних квестів')}`},
+  // ── строки: за місяць, поспіль, узагалі ──
+  {key:'monthBooks',title:'Місячний ривок',emoji:'🗓️',unit:'книг цього місяця',resets:true,tiers:[3,5,10],
+    valueFn:d=>booksInMonth(d,curMonthKey()),
+    desc:t=>`Прочитати ${t} ${bookWord(t)} за один місяць`},
   {key:'streak',title:'Серія без пропусків',emoji:'🔥',unit:'місяців поспіль',tiers:[2,3,6,12],
     valueFn:d=>d.bestGoalStreak||0,
     reward:{pid:245,name:'Суікун'},
     desc:t=>`Виконати місячну ціль ${t} ${pluralUA(t,'місяць','місяці','місяців')} поспіль`},
+  {key:'longPlayer',title:'Довгограй',emoji:'📆',unit:'місяців з хоча б 1 книгою',tiers:[3,6,12,24],
+    valueFn:distinctActiveMonths,
+    reward:{pid:250,name:'Хо-Ох'},
+    desc:t=>`Прочитати хоча б 1 книгу у ${t} різних місяцях`},
 ];
 function achievementTierInfo(a,d){
   const val=a.valueFn(d);
@@ -2009,7 +2121,7 @@ async function loadStateFor(userId,tryCloud){
   // хмарну, бо новішою може виявитись будь-яка з них.
   let mig=migrateBookDates(state.players[userId]);
   const keepLocal=()=>{
-    if(mig)localStorage.setItem('rpg_state_'+userId,JSON.stringify(state.players[userId]));
+    if(mig)saveLocal('rpg_state_'+userId,JSON.stringify(state.players[userId]));
   };
   if(!(tryCloud&&me&&me.token)){keepLocal();return;}
   const r=await _api({action:'load',userId:userId,token:me.token});
@@ -2027,10 +2139,11 @@ async function loadStateFor(userId,tryCloud){
   state.players[userId]=Object.assign({},state.players[userId],r.state);
   mergeCovers(state.players[userId],r.covers);
   if(migrateBookDates(state.players[userId]))mig=true;
-  localStorage.setItem('rpg_state_'+userId,JSON.stringify(state.players[userId]));
+  saveLocal('rpg_state_'+userId,JSON.stringify(state.players[userId]));
   // Перенесене треба один раз відправити нагору, інакше в хмарі `date`
-  // лежатиме вічно й місце не звільниться.
-  if(mig)await saveToCloud(userId);
+  // лежатиме вічно й місце не звільниться. БЕЗ await: інакше вхід у гру
+  // чекає ще один запит до сервера (це й були ті «довго завантажується»).
+  if(mig)saveToCloud(userId);
 }
 
 function enterGame(){
@@ -2558,7 +2671,11 @@ function reaxChipHTML(w){
   return`<span class="rx-chip">${av}<span class="rx-chip-n">${esc(nick)}</span></span>`;
 }
 function reaxBlockHTML(){
-  const groups=reaxGroups();
+  // Реакція — швидка активність, а не список, який живе вічно. Показуємо
+  // ЛИШЕ те, що з'явилось після минулого заходу в таб: подивилась — і
+  // плашка зникла сама. Раніше тут висіли всі реакції взагалі, і зникав
+  // лише значок «нове», тому в дитини напис не йшов і після перезаходу.
+  const groups=reaxGroups().filter(g=>g.ts>_rxSeenSnap);
   if(!groups.length)return'';
   const rows=groups.map(g=>{
     const book=bookByReaxKey(g.key);
@@ -2570,7 +2687,6 @@ function reaxBlockHTML(){
         <div class="rx-title">❤️ «${esc(g.title||(book&&book.title)||'книга')}»</div>
         <div class="rx-who">${g.who.map(reaxChipHTML).join('')}</div>
       </div>
-      ${g.ts>_rxSeenSnap?`<div class="rx-new">нове</div>`:''}
     </div>`;
   }).join('');
   return`<div class="fr-sub">❤️ Твої книги сподобались</div>${rows}`;
@@ -2619,6 +2735,7 @@ const Q_DAYS=30;                       // активний квест живе 3
 const Q_MS=Q_DAYS*86400000;
 const Q_INV_MS=7*86400000;             // запрошення без відповіді — 7 днів
 const Q_SEEN_MS=2*86400000;
+const Q_DECL_MS=60*86400000;           // «вже відмовився» — підказка, не заборона
 const Q_BOARD_MAX=60;                  // дошка: скільки квестів пам'ятаємо
 const Q_PUB_MAX=12;                    // скільки квестів їде другові у зліпку            // dec/done — доки другий бік побачить
 function qList(){const d=pd();if(!d)return[];if(!d.quests)d.quests=[];return d.quests;}
@@ -2706,7 +2823,13 @@ function questsTick(){
     if(q.st==='inv'&&age>Q_INV_MS)return false;
     if((q.st==='dec'||q.st==='done')&&age>Q_SEEN_MS)return false;
     const t=qTheirs(q);
-    if(t&&t.st==='dec')return false;
+    // Друг відмовився. НЕ видаляємо тихо: інакше запрошення просто зникає,
+    // і людина не розуміє, що сталось (і чому жанр більше не пропонується).
+    // Помічаємо своє й лишаємо на Q_SEEN_MS — далі воно згорить саме.
+    if(t&&t.st==='dec'){
+      if(q.st!=='dec'){q.st='dec';q.tsUp=Date.now();}
+      return true;
+    }
     if(q.st==='inv'&&t&&t.st==='act'){q.st='act';q.ts0=+t.ts0||Date.now();q.tsUp=Date.now();}
     return true;
   });
@@ -2762,7 +2885,14 @@ function openQuestCreate(fid,skipGenre){
   if(!friends.length){showToast('З усіма друзями квест уже є');return;}
   const sel=friends.some(f=>String(f.userId)===String(fid))?String(fid):String(friends[0].userId);
   const decl=qDecl();
-  const genres=GENRES.filter(g=>!decl[sel+'|'+g]&&g!==skipGenre);
+  // Раніше жанр після відмови ЗНИКАВ зі списку — назавжди й без пояснень,
+  // тому запропонувати те саме вдруге було неможливо. Тепер це підказка:
+  // жанр на місці, просто помічений.
+  const genres=GENRES.filter(g=>g!==skipGenre);
+  const declLbl=g=>{
+    const was=+decl[sel+'|'+g]||0;
+    return (was&&Date.now()-was<Q_DECL_MS)?' — вже відмовлявся':'';
+  };
   mHTML(`${M_CLOSE_BTN}<div class="m-title">🤝 Спільний квест</div>
     <div class="m-desc" style="margin-bottom:12px">По одній книзі з кожного. ${Q_DAYS} днів.</div>
     <div class="flbl">З ким</div>
@@ -2771,9 +2901,8 @@ function openQuestCreate(fid,skipGenre){
     </select>
     <div class="flbl">Жанр</div>
     <select id="q-genre" class="finput">
-      ${genres.map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join('')}
+      ${genres.map(g=>`<option value="${esc(g)}">${esc(g)}${declLbl(g)}</option>`).join('')}
     </select>
-    ${genres.length?'':`<div class="sp-error" style="display:block">На всі жанри вже була відмова</div>`}
     <button class="btn-ok" style="width:100%;padding:13px;margin-top:6px" onclick="sendQuest()">Запропонувати</button>`);
 }
 function sendQuest(){
@@ -2806,7 +2935,7 @@ function declineQuest(id,counter){
   if(!inc)return;
   qDecl()[inc.from+'|'+inc.g]=Date.now();
   qList().push({id:inc.id,with:inc.from,withNick:inc.fromNick,g:inc.g,
-                ts0:0,tsUp:Date.now(),st:'dec'});
+                ts0:0,tsUp:Date.now(),st:'dec',by:'me'});
   saveToCloud(cur);
   if(counter)openQuestCreate(inc.from,inc.g);
   else{renderFriendsTab();showToast('Відхилено');}
@@ -2873,7 +3002,9 @@ function questsBoardHTML(){
 function questsBlockHTML(){
   if(!me||me.guest)return'';
   const inc=qIncoming();
-  const mine=qList().filter(q=>q.st==='inv'||q.st==='act');
+  // 'dec' від друга теж показуємо — але не свій власний службовий запис
+  // (його ставить declineQuest, щоб інший бік дізнався про відмову).
+  const mine=qList().filter(q=>q.st==='inv'||q.st==='act'||(q.st==='dec'&&q.by!=='me'));
   if(!inc.length&&!mine.length)return'';
   const m=qMatchAll();
   const cards=[];
@@ -2887,6 +3018,15 @@ function questsBlockHTML(){
       <button class="fr-btn danger" onclick="declineQuest('${esc(x.id)}')">Відхилити</button>
     </div></div>`));
   mine.forEach(q=>{
+    if(q.st==='dec'){
+      cards.push(`<div class="q-card">
+        <div class="q-hdr"><span class="q-emoji">🚫</span>
+          <div><div class="q-title">${esc(q.withNick)} відхилив квест</div>
+            <div class="q-sub">Жанр: ${esc(q.g)}</div></div></div>
+        <div class="q-btns"><button class="fr-btn" onclick="openQuestCreate('${esc(q.with)}','${esc(q.g)}')">Запропонувати інший жанр</button></div>
+      </div>`);
+      return;
+    }
     if(q.st==='inv'){
       const t=qTheirs(q);
       const txt=t&&t.st==='dec'?`Відмова · ${esc(q.withNick)}`:`Чекаємо · ${esc(q.withNick)}`;
@@ -3173,7 +3313,8 @@ function renderDex(){
     const idx=d.progress[chain.id];const stage=chain.stages[idx];
     const dots=chain.stages.length>1?`<div class="evo-dots">${chain.stages.map((s,i)=>`<div class="evo-dot ${i<=idx?'filled':''}"></div>`).join('')}</div>`:'';
     return`<div class="dex-card" onclick="openDexCard('${chain.id}')">
-      <img class="dex-img" src="${img(stage.pid)}" onerror="this.outerHTML='<div style=font-size:24px;text-align:center;height:68px;line-height:68px>${stage.name[0]}</div>'">
+      <img class="dex-img" src="${img(stage.pid)}" loading="lazy" decoding="async"
+        data-pid="${stage.pid}" data-name="${esc(stage.name)}" onerror="sprFail(this)">
       <div class="dex-name">${stage.name}</div>
       ${dots}
     </div>`;
@@ -3182,12 +3323,21 @@ function renderDex(){
   const chainHtml=done.map(chain=>{
     const sprites=chain.stages.map((s,i)=>(i>0?`<div class="chain-arrow">→</div>`:'')+
       `<div class="chain-sprite" onclick="event.stopPropagation();openDexCard('${chain.id}')">
-        <img style="width:38px;height:38px;object-fit:contain;image-rendering:pixelated" src="${img(s.pid)}" onerror="this.style.display='none'">
+        <img style="width:38px;height:38px;object-fit:contain;image-rendering:pixelated" src="${img(s.pid)}"
+          loading="lazy" decoding="async" data-pid="${s.pid}" data-ph="hide" onerror="sprFail(this)">
         <div style="font-size:6.5px;color:var(--txt-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:44px;margin-top:1px;line-height:1.2">${s.name}</div>
       </div>`).join('');
     return`<div class="chain-block"><div class="chain-block-badge">✓</div>${sprites}</div>`;
   }).join('');
   completeEl.innerHTML=`<div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin:4px 0 5px;opacity:.8">🏆 Завершені</div><div class="chain-row">${chainHtml}</div>`;
+  sprWarm(_dexPids(held));
+}
+// Усі pid, які взагалі зустрінуться в колекції — і поточні стадії, і всі
+// стадії завершених ланцюжків.
+function _dexPids(held){
+  const out=[];
+  (held||[]).forEach(c=>c.stages.forEach(s=>out.push(s.pid)));
+  return out;
 }
 
 function openDexCard(chainId){
@@ -4548,7 +4698,7 @@ async function saveToCloud(pid){
   // Мітка часу збереження — по ній loadStateFor вирішує, чия копія новіша.
   if(state.players[pid])state.players[pid]._ts=Date.now();
   const stateJson=JSON.stringify(state.players[pid]);
-  localStorage.setItem('rpg_state_'+pid,stateJson);
+  saveLocal('rpg_state_'+pid,stateJson);
   // Гість у хмару не пишеться взагалі — його на сервері не існує.
   if(!me||me.guest||!me.token||!SCRIPT_URL)return;
   showSaveStatus('saving');
@@ -4588,7 +4738,7 @@ function locIconEl(locId,size=64){
 boot();
 window.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='hidden'&&cur)
-    localStorage.setItem('rpg_state_'+cur,JSON.stringify(state.players[cur]));
+    saveLocal('rpg_state_'+cur,JSON.stringify(state.players[cur]));
 });
 </script>
 </body>
