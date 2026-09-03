@@ -43,6 +43,9 @@
   --tip-bg:#fff; --tip-txt:#1e2d4a;
   --jn-road-op:.62;
 }
+/* Якщо нові (легкі) картинки ще не залиті — тихо лишаємось на старих PNG.
+   Клас ставить перевірка при завантаженні, див. «картинки». */
+html.no-webp .sel-bg{background-image:url('start.jpg');}
 html[data-theme="day"]{
   color-scheme:light;
   --ink:23,37,66; --shadow:100,116,139;
@@ -147,7 +150,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .screen{display:none;height:100%;flex-direction:column;}.screen.active{display:flex;}
 
 /* SELECT */
-.sel-bg{background:url('start.png') center top/cover no-repeat;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 1rem calc(6rem + env(safe-area-inset-bottom, 0px));overflow-y:auto;}
+/* Назва поверх малюнка. Колір НЕ з токенів свідомо: текст лежить на темному
+   куполі картинки, як підписи на мапі, і мусить бути світлим у будь-якій
+   гамі (гама тут узагалі профільна, а профіль ще не обраний). */
+.sel-title{margin:11vh 0 auto;text-align:center;font-weight:800;line-height:1.1;
+  font-size:clamp(26px,7.4vw,40px);color:#fff;letter-spacing:.005em;
+  text-shadow:0 2px 14px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.6);}
+.sel-bg{background:url('start.webp') center top/cover no-repeat;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 1rem calc(6rem + env(safe-area-inset-bottom, 0px));overflow-y:auto;}
 .spill{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;background:rgba(var(--acc),.15);color:var(--accent);display:inline-block;margin:2px 1px;}
 
 /* LOGIN */
@@ -559,6 +568,7 @@ try{var _t=localStorage.getItem('rw_theme');if(_t){_t=JSON.parse(_t);if(_t&&_t!=
 <!-- LOGIN -->
 <div id="screen-select" class="screen active">
   <div class="sel-bg">
+    <div class="sel-title">Читальний Світ</div>
     <div class="login-box" id="login-box">
       <div id="login-body"></div>
       <div class="disclaimer">Некомерційний фанатський проєкт. Pokémon © Nintendo / Creatures Inc. / GAME FREAK inc.</div>
@@ -593,7 +603,8 @@ try{var _t=localStorage.getItem('rw_theme');if(_t){_t=JSON.parse(_t);if(_t&&_t!=
           </radialGradient>
         </defs>
         <rect id="map-bg" width="460" height="240" fill="url(#mapBg)" style="display:none"/>
-        <image id="map-png" href="map1.png" x="0" y="0" width="460" height="240" preserveAspectRatio="xMidYMid slice"/>
+        <image id="map-png" href="map1.webp" x="0" y="0" width="460" height="240" preserveAspectRatio="xMidYMid slice"
+          onerror="this.setAttribute('href','map1.jpg')"/>
         <g id="map-edges"></g><g id="map-nodes"></g><g id="map-markers"></g>
       </svg></div>
       <div class="act-card">
@@ -2129,7 +2140,10 @@ async function loadStateFor(userId,tryCloud){
   // інакше пошкоджений сейв виглядає як «просто нічого не підтяглось».
   if(r&&r.error&&r.error!=='auth'&&r.error!=='network')showToast(r.error);
   if(!(r&&r.ok&&r.state&&Object.keys(r.state).length>0)){keepLocal();return;}
-  const cloudTs=+r.state._ts||0, localTs=(local&&+local._ts)||0;
+  // Порівнюємо і зі знімком ДО запиту, і з тим, що в пам'яті ЗАРАЗ: поки
+  // хмарний сейв їхав, людина могла додати книгу, і ця книга новіша за все.
+  const cloudTs=+r.state._ts||0;
+  const localTs=Math.max((local&&+local._ts)||0,+((state.players[userId]||{})._ts)||0);
   if(localTs&&cloudTs&&localTs>cloudTs){
     // Локальне новіше — лишаємо його й одразу лікуємо розбіжність у хмарі.
     console.log('[Load] локальний сейв новіший за хмарний, заливаю нагору',localTs,'>',cloudTs);
@@ -2172,6 +2186,31 @@ function enterGame(){
   checkGoalEvents();
 }
 
+// Гра вже відкрита з локальної копії. Тепер тихо перевіряємо сесію й
+// забираємо хмарний сейв; якщо він новіший — перемальовуємо. Токен помер —
+// відправляємо на вхід, але дані на пристрої лишаються цілі.
+async function bootSync(){
+  if(!me||me.guest||!me.token)return;
+  const r=await _api({action:'session',userId:me.userId,token:me.token});
+  if(r&&r.error==='auth'){
+    localStorage.removeItem(LS_SESSION);
+    me=null;showLogin();
+    showToast('Сесія закінчилась — увійди знову');
+    return;
+  }
+  if(!(r&&r.ok))return;              // немає зв'язку — граємо з локального
+  me.nick=r.nick;me.role=r.role;
+  lsSet(LS_SESSION,me);
+  const before=JSON.stringify(state.players[me.userId]||{});
+  await loadStateFor(me.userId,true);
+  if(JSON.stringify(state.players[me.userId]||{})===before)return;
+  // Хмара принесла інше (грали з іншого пристрою) — перемальовуємо видиме.
+  applyTheme(curTheme());
+  checkUnlocks();
+  renderMain();
+  setMainTab(_mainTab||'map');
+}
+
 // Автовхід: сесія лежить у localStorage, тому на своєму пристрої
 // логінитись доводиться один раз.
 async function boot(){
@@ -2183,9 +2222,19 @@ async function boot(){
     finishGuest(rec);
     return;
   }
+  me={userId:s.userId,nick:s.nick,role:s.role,token:s.token,guest:false};
+  // Є локальна копія — відкриваємо гру ОДРАЗУ, а сервер перевіряємо у фоні.
+  // Раніше кожен запуск чекав два запити до Apps Script підряд (сесія, потім
+  // сейв), а це секунд шість на холодному скрипті — саме воно й виглядало
+  // як «довго завантажується».
+  if(lsGet('rpg_state_'+s.userId,null)){
+    await loadStateFor(me.userId,false);
+    enterGame();
+    bootSync();
+    return;
+  }
   renderLoginLoading();
   show('screen-select');
-  me={userId:s.userId,nick:s.nick,role:s.role,token:s.token,guest:false};
   const r=await _api({action:'session',userId:s.userId,token:s.token});
   if(r&&r.ok){
     me.nick=r.nick;me.role=r.role;
@@ -2680,7 +2729,7 @@ function reaxBlockHTML(){
   const rows=groups.map(g=>{
     const book=bookByReaxKey(g.key);
     const cover=(book&&escUrl(book.coverUrl))
-      ?`<img class="rx-cover" src="${escUrl(book.coverUrl)}" onerror="this.style.display='none'">`:'';
+      ?`<img class="rx-cover" src="${escUrl(book.coverUrl)}" loading="lazy" onerror="this.style.display='none'">`:'';
     return`<div class="rx-card">
       ${cover}
       <div class="rx-main">
@@ -4033,7 +4082,7 @@ function _renderBookHTML(book, i, sc=1){
   </div>`:'';
   return`<div class="book-wrap" style="height:${h}px" onclick="openBookDetail(${i})" title="">
     <div class="book-cover" style="width:${cw}px;height:${h}px;background:${coverGrad};box-shadow:2px 4px 12px rgba(var(--shadow),.5)">
-      ${coverUrl?`<img src="${coverUrl}" onerror="this.style.display='none'">`:''}
+      ${coverUrl?`<img src="${coverUrl}" loading="lazy" decoding="async" onerror="this.style.display='none'">`:''}
       ${textOverlay}
     </div>
   </div>`;
@@ -4724,17 +4773,38 @@ async function saveToCloud(pid){
 }
 
 // ═══════════ LOC ICONS — individual files ═══════════
+// Картинки віддаються з GitHub Pages з max-age=600, тобто щодесять хвилин
+// качаються заново. Тому вони переведені у WebP: ті самі малюнки важать 0,5 МБ
+// замість 17 МБ (мапа 7 МБ → 172 КБ).
+//
+// Відступ — JPEG того самого розміру (311 КБ на всі): він страхує і випадок
+// «файл ще не залитий», і пристрій, застарий для WebP (iOS до 14). PNG-и,
+// з яких це зроблено, у репозиторії більше не потрібні.
+function locImgFail(el,em){
+  if(!el)return;
+  if(!el.dataset.alt){el.dataset.alt='1';el.src=el.dataset.base+'.jpg';return;}
+  const p=el.parentElement;if(!p)return;
+  p.style.cssText+='display:flex;align-items:center;justify-content:center;font-size:'+(el.dataset.fs||24)+'px';
+  p.textContent=em||'?';
+}
 function locIconEl(locId,size=64){
-  const FILES={oak:'loc_oak.png',pallet:'loc_pallet.png',forest:'loc_forest.png',
-               glade:'loc_glade.png',butterfly:'loc_butterfly.png',caves:'loc_caves.png',
-               shore:'loc_shore.png',map2:'loc_map2.png'};
+  const FILES={oak:'loc_oak',pallet:'loc_pallet',forest:'loc_forest',
+               glade:'loc_glade',butterfly:'loc_butterfly',caves:'loc_caves',
+               shore:'loc_shore',map2:'loc_map2'};
   const src=FILES[locId];
   const loc=_anyLoc(locId);
   if(!src) return`<div style="font-size:${Math.round(size*.55)}px;text-align:center;line-height:${size}px;width:${size}px;height:${size}px;margin:0 auto">${loc?loc.emoji:''}</div>`;
   const em=loc?loc.emoji:'?';
-  return`<div style="width:${size}px;height:${size}px;border-radius:50%;overflow:hidden;margin:0 auto;flex-shrink:0"><img src="${src}" style="width:100%;height:100%;object-fit:cover;object-position:center center;display:block" onerror="this.parentElement.style.cssText+='display:flex;align-items:center;justify-content:center;font-size:${Math.round(size*.55)}px';this.parentElement.textContent='${em}'"></div>`;
+  return`<div style="width:${size}px;height:${size}px;border-radius:50%;overflow:hidden;margin:0 auto;flex-shrink:0"><img src="${src}.webp"
+    data-base="${src}" data-fs="${Math.round(size*.55)}" loading="lazy" decoding="async"
+    style="width:100%;height:100%;object-fit:cover;object-position:center center;display:block"
+    onerror="locImgFail(this,'${em}')"></div>`;
 }
 
+// Одна дрібна перевірка: беремо найлегший із нових файлів (6 КБ, і він
+// однаково потрібен на мапі). Немає — кажемо CSS, і стартовий екран
+// візьме старий PNG.
+(function(){const i=new Image();i.onerror=function(){document.documentElement.classList.add('no-webp');};i.src='loc_oak.webp';})();
 boot();
 window.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='hidden'&&cur)
