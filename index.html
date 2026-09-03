@@ -190,6 +190,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .fr-empty{text-align:center;color:var(--txt-4);font-size:12px;padding:18px 8px;line-height:1.5;}
 .fr-sub{font-size:10px;color:var(--accent);font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin:14px 0 6px;}
 
+/* СПІЛЬНІ КВЕСТИ 🤝 */
+.q-card{background:rgba(var(--tl-rgb),.08);border:1px solid rgba(var(--tl-rgb),.3);border-radius:14px;padding:10px 11px;margin-bottom:8px;}
+.q-hint{font-size:10.5px;color:var(--txt-3);margin-top:8px;font-style:italic;}
+.q-bk{color:var(--txt-3);}
+/* дошка пройдених: обкладинки ОБОХ книг поруч */
+.q-board{background:rgba(var(--tl-rgb),.06);border:1px solid rgba(var(--tl-rgb),.24);border-radius:14px;padding:10px 11px;margin-bottom:8px;}
+.q-board-hdr{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px;}
+.q-board-g{font-size:12.5px;font-weight:700;color:var(--txt-hi);}
+.q-board-d{font-size:10px;color:var(--txt-3);white-space:nowrap;}
+.q-pair{display:flex;align-items:flex-start;justify-content:center;gap:14px;}
+.q-pair-side{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;}
+.q-pair-n{font-size:10px;color:var(--txt-2);font-weight:600;max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.q-pair-plus{font-size:15px;align-self:center;padding-bottom:14px;}
+.q-cover{width:54px;height:77px;border-radius:5px;object-fit:cover;box-shadow:0 3px 10px rgba(var(--shadow),.4);}
+.q-cover-ph{display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;font-size:8.5px;font-weight:700;line-height:1.15;overflow:hidden;overflow-wrap:anywhere;color:rgba(255,255,255,.85);}
+.q-hdr{display:flex;gap:9px;align-items:flex-start;}
+.q-emoji{font-size:17px;line-height:1.2;flex-shrink:0;}
+.q-title{font-size:12.5px;font-weight:700;color:var(--txt-hi);}
+.q-sub{font-size:10.5px;color:var(--txt-3);margin-top:1px;}
+.q-side{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--txt-2);margin-top:6px;}
+.q-tick{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;font-size:10px;font-weight:700;background:rgba(var(--ink),.07);border:1px solid rgba(var(--ink),.14);color:var(--txt-3);flex-shrink:0;}
+.q-tick.on{background:rgba(var(--ok-rgb),.16);border-color:rgba(var(--ok-rgb),.45);color:var(--ok);}
+.q-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;}
+.q-mark{font-size:11px;flex-shrink:0;}
+
 /* РЕАКЦІЇ ❤️ */
 /* Серце — символьний глиф (♡/♥), а не емодзі: емодзі 🤍 має власний білий
    колір і на світлих гамах просто зникало. Глиф фарбується токеном теми. */
@@ -319,7 +344,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .wrap-book-info{min-width:0;}
 .wrap-book-lbl{font-size:9px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
 .wrap-book-title{font-size:11px;color:var(--txt-hi);font-weight:600;margin:2px 0;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
-.wrap-book-pages{font-size:14px;color:var(--gold-solid);font-weight:800;}
+.wrap-book-pages{font-size:14px;color:var(--gold);font-weight:800;}
 .wrap-facts{display:flex;flex-direction:column;gap:8px;margin:10px 0;}
 .wrap-fact-row{display:flex;align-items:center;gap:8px;font-size:12px;}
 .wrap-fact-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
@@ -328,7 +353,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .wrap-month-card{background:rgba(var(--ink),.04);border:1px solid rgba(var(--ink),.07);border-radius:12px;padding:12px;text-align:center;margin-top:4px;}
 .wrap-month-lbl{font-size:10px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
 .wrap-month-name{font-size:15px;color:var(--txt-hi);font-weight:700;}
-.wrap-month-count{font-size:19px;color:var(--gold-solid);font-weight:800;margin-top:2px;}
+.wrap-month-count{font-size:19px;color:var(--gold);font-weight:800;margin-top:2px;}
 .stats-chart-title{font-size:13px;font-weight:700;color:var(--txt-hi);margin-bottom:10px;}
 .lang-donut-row{display:flex;align-items:center;gap:14px;}
 .lang-donut-svg{width:110px;height:110px;flex-shrink:0;}
@@ -409,6 +434,15 @@ select option{background:var(--panel);color:var(--txt-hi);}
 .shelf-wrap{width:100%;display:flex;flex-direction:column;gap:16px;background:var(--shelf);border-radius:10px;padding:14px 0;}
 .wall-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px;}
 
+/* Шапка бібліотеки приклеєна до верху разом з контролями вигляду.
+   Від'ємні відступи й top:-10px гасять padding .main-content, інакше над
+   шапкою лишається просвіт, у який видно контент, що проїжджає. */
+.lib-top{position:sticky;top:-10px;z-index:6;margin:-10px -10px 12px;padding:10px 10px 0;background:var(--app);}
+.lib-hdr{display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;}
+.lib-title{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:600;}
+.lib-gear{background:none;border:none;cursor:pointer;font-size:18px;color:var(--accent);padding:4px;font-family:inherit;line-height:1;}
+.lib-top::after{content:'';display:block;height:1px;background:rgba(var(--ink),.07);margin:0 -10px;}
+
 /* ПОДОРОЖ — бібліотека доріжкою.
    Геометрія рахується в JS одним кроком (PITCH), а доріжка малюється SVG
    з viewBox "0 0 100 H": x у ньому — це відсотки ширини, y — пікселі 1:1.
@@ -453,6 +487,8 @@ select option{background:var(--panel);color:var(--txt-hi);}
 .gn-cover{display:block;width:42px;height:60px;border-radius:4px;object-fit:cover;box-shadow:0 3px 9px rgba(var(--shadow),.35);}
 .gn-cover-ph{display:flex;align-items:center;justify-content:center;width:42px;height:60px;border-radius:4px;font-size:8.5px;font-weight:700;line-height:1.15;text-align:center;padding:3px;overflow:hidden;overflow-wrap:anywhere;hyphens:auto;color:rgba(255,255,255,.82);box-shadow:0 3px 9px rgba(var(--shadow),.35);}
 .gn-star{font-size:9px;font-weight:700;color:var(--gold);text-align:center;margin-top:2px;}
+/* наліпка «прочитано разом» — на кутку обкладинки, бо саме там її шукають */
+.gn-q{position:absolute;top:-6px;right:-7px;font-size:13px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5));}
 .jn-years{display:flex;gap:4px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none;}
 .jn-years::-webkit-scrollbar{display:none;}
 .jn-year{flex:0 0 auto;font-size:11px;font-weight:700;padding:5px 12px;border-radius:14px;border:1px solid rgba(var(--ink),.14);background:rgba(var(--ink),.04);color:var(--txt-3);cursor:pointer;font-family:inherit;}
@@ -460,7 +496,7 @@ select option{background:var(--panel);color:var(--txt-hi);}
 .wall-tile{aspect-ratio:2/3;border-radius:6px;overflow:hidden;cursor:pointer;box-shadow:0 2px 6px rgba(var(--shadow),.4);}
 .shelf-row{display:flex;flex-direction:column;}
 .shelf-label{font-size:9px;color:var(--shelf-lbl);padding:0 10px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;}
-.shelf-books{display:flex;align-items:flex-end;gap:5px;padding:16px 10px 0;height:192px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x;scrollbar-width:thin;scrollbar-color:rgba(var(--ink),.15) transparent;}
+.shelf-books{display:flex;align-items:flex-end;gap:5px;padding:16px 10px 0;height:192px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;scrollbar-width:thin;scrollbar-color:rgba(var(--ink),.15) transparent;}
 .shelf-books.compact{height:165px;}
 .shelf-books::-webkit-scrollbar{height:3px;}.shelf-books::-webkit-scrollbar-track{background:transparent;}.shelf-books::-webkit-scrollbar-thumb{background:rgba(var(--ink),.15);border-radius:2px;}
 .shelf-plank{width:100%;height:13px;background:linear-gradient(180deg,var(--plank-1) 0%,var(--plank-2) 35%,var(--plank-3) 100%);box-shadow:0 6px 16px rgba(var(--shadow),.7),inset 0 2px 0 rgba(255,255,255,.07);border-top:2px solid var(--plank-edge);flex-shrink:0;margin-top:0;}
@@ -1094,7 +1130,7 @@ function renderLibraryTab(){
   el.innerHTML=_buildLibraryHTML();
   // Висота дороги задана явно, тому міряти нічого не треба — але даємо
   // браузеру домалювати, інакше scrollTop приліплюється до старої висоти.
-  if(_libViewMode==='journey')requestAnimationFrame(_jnScrollToLatest);
+  if(_libViewMode==='journey'&&_libPath==='date')requestAnimationFrame(_jnScrollToLatest);
 }
 function renderGoalWidget(){
   const el=document.getElementById('goal-widget');if(!el)return;
@@ -1477,6 +1513,9 @@ function lastCaughtSprite(d,filterFn){
   return null;
 }
 const ACHIEVEMENTS=[
+  {key:'quests',title:'Разом',emoji:'🤝',unit:'спільних квестів',tiers:[1,3,5,10],
+    valueFn:d=>(d.questsDone||[]).length,
+    desc:t=>`Пройти ${t} ${pluralUA(t,'спільний квест','спільні квести','спільних квестів')}`},
   {key:'books',title:'Книгоман',emoji:'📚',unit:'книг',tiers:[10,50,100,200,300,500],
     valueFn:d=>(d.books||[]).length,
     reward:{pid:151,name:'Мью'},
@@ -1969,6 +2008,9 @@ async function loadStateFor(userId,tryCloud){
   if(local)state.players[userId]=Object.assign({},state.players[userId],local);
   if(!(tryCloud&&me&&me.token))return;
   const r=await _api({action:'load',userId:userId,token:me.token});
+  // Локальна копія лишається робочою, але сказати про причину треба:
+  // інакше пошкоджений сейв виглядає як «просто нічого не підтяглось».
+  if(r&&r.error&&r.error!=='auth'&&r.error!=='network')showToast(r.error);
   if(!(r&&r.ok&&r.state&&Object.keys(r.state).length>0))return;
   const cloudTs=+r.state._ts||0, localTs=(local&&+local._ts)||0;
   if(localTs&&cloudTs&&localTs>cloudTs){
@@ -1978,6 +2020,7 @@ async function loadStateFor(userId,tryCloud){
     return;
   }
   state.players[userId]=Object.assign({},state.players[userId],r.state);
+  mergeCovers(state.players[userId],r.covers);
   localStorage.setItem('rpg_state_'+userId,JSON.stringify(state.players[userId]));
 }
 
@@ -1987,8 +2030,10 @@ function enterGame(){
   initState(cur);
   applyTheme(curTheme());   // гама профілю, а не та, що лишилась на пристрої
   const _d=state.players[cur]||{};
-  if(['shelves','wall','journey','genre'].includes(_d.libView))_libViewMode=_d.libView;
+  if(_d.libView==='genre'){_libViewMode='journey';_libPath='genre';}          // стара назва вигляду
+  else if(['shelves','wall','journey'].includes(_d.libView))_libViewMode=_d.libView;
   if(['size','genre','author'].includes(_d.libSort))_libSortBy=_d.libSort;
+  if(['date','genre'].includes(_d.libPath))_libPath=_d.libPath;
   renderGuestBar();
   friendsData={friends:[],incoming:[],outgoing:[],reax:[]};
   if(!me.guest){
@@ -2135,6 +2180,33 @@ function escUrl(u){
 }
 
 let friendsData={friends:[],incoming:[],outgoing:[],reax:[]};
+// Дані друга приходять з ЧУЖОГО клієнта — довіряти їм не можна. esc() рятує
+// текст у тілі HTML, але НЕ рятує рядок усередині onclick="fn('…')": браузер
+// декодує &#39; ДО того, як JS побачить код, тому апостроф із чужого поля
+// закриває виклик і далі йде його код. Тому ключі, які потім підставляються
+// в onclick або в індекс масиву, фільтруємо одразу на вході — одне місце на
+// всі майбутні поля, а не оберігання при кожному рендері.
+function sanitizeFriends(list){
+  return(Array.isArray(list)?list:[]).filter(f=>f&&typeof f==='object').map(f=>{
+    // id квесту йде в onclick="acceptQuest('…')" — лише те, що ми самі генеруємо.
+    if(Array.isArray(f.q))f.q=f.q.filter(x=>x&&typeof x==='object'&&
+      /^[A-Za-z0-9]{1,32}$/.test(String(x.id||''))&&GENRES.indexOf(String(x.g))>=0).slice(0,20);
+    else delete f.q;
+    // рік іде в onclick="setFriendWrapYear(…)", місяць — в індекс масиву назв.
+    if(f.wraps&&typeof f.wraps==='object'&&!Array.isArray(f.wraps)){
+      const w={};
+      Object.keys(f.wraps).forEach(k=>{
+        const v=f.wraps[k];
+        if(!/^[0-9]{4}$/.test(k)||!v||typeof v!=='object')return;
+        const bm=v.bestMonth;
+        if(bm&&!(+bm.idx>=0&&+bm.idx<=11))delete v.bestMonth;
+        w[k]=v;
+      });
+      f.wraps=w;
+    }else delete f.wraps;
+    return f;
+  });
+}
 
 let _frWrapYear={};   // userId → обраний рік у його підсумку
 // Текст під полем додавання мусить пережити перемальовування списку: інакше
@@ -2171,6 +2243,7 @@ function buildPublicSummary(d){
     last:last?{title:last.title,author:last.author,cover:last.coverUrl||null,
                rating:last.rating||null,date:last.date||null}:null,
     wraps:wraps,
+    q:qPublic(d),          // свій бік спільних квестів — другий бік читає це
     ts:Date.now(),
   };
 }
@@ -2221,10 +2294,12 @@ async function loadFriends(silent){
   _frPromise=(async()=>{
     const r=await _api({action:'friendList',userId:me.userId,token:me.token});
     if(r&&r.ok){
-      friendsData={friends:r.friends||[],incoming:r.incoming||[],
+      friendsData={friends:sanitizeFriends(r.friends),incoming:r.incoming||[],
                    outgoing:r.outgoing||[],reax:r.reax||[]};
       _frState='ok';
       syncFriendPins();
+      questsTick();
+      questsSettle();
       updateFriendBadge();
       renderMap();
       // Таб закритий — про нові реакції інакше ніхто не дізнається, крім
@@ -2265,7 +2340,7 @@ function syncFriendPins(){
 function updateFriendBadge(){
   const el=document.getElementById('fr-badge');
   if(!el)return;
-  const n=(friendsData.incoming||[]).length+reaxFresh().length;
+  const n=(friendsData.incoming||[]).length+reaxFresh().length+qIncoming().length+qReadyCount();
   el.textContent=n>9?'9+':String(n);
   el.style.display=n>0?'':'none';
 }
@@ -2303,10 +2378,12 @@ function renderFriendsTab(){
 
   const list=(friendsData.friends||[]).map(f=>friendCardHTML(f)).join('');
   const rx=reaxBlockHTML();
+  const qs=questsBlockHTML();
+  const qb=questsBoardHTML();
 
   // Порожній список, помилка мережі й «ще вантажиться» — три різні речі,
   // і виглядати вони мусять по-різному.
-  const nothing=!inc&&!out&&!list&&!rx;
+  const nothing=!inc&&!out&&!list&&!rx&&!qs&&!qb;
   let middle;
   if(_frState==='loading'&&nothing)
     middle=`<div class="fr-empty">Завантаження…</div>`;
@@ -2317,12 +2394,14 @@ function renderFriendsTab(){
     middle=`<div class="fr-empty">Друзів поки немає.<br>Впиши нікнейм — друг побачить запит і зможе його підтвердити.</div>`;
   else
     // Реакції — найприємніша новина, тому першими.
-    middle=rx
+    middle=rx+qs
           +(inc?`<div class="fr-sub">Запити до тебе</div>${inc}`:'')
           +list
-          +(out?`<div class="fr-sub">Надіслані запити</div>${out}`:'');
+          +(out?`<div class="fr-sub">Надіслані запити</div>${out}`:'')
+          +qb;
 
-  const refresh=`<div style="display:flex;justify-content:flex-end;margin-bottom:6px">
+  const refresh=`<div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:6px">
+      <button class="fr-btn" onclick="openQuestCreate()">🤝 Спільний квест</button>
       <button class="fr-btn" onclick="loadFriends()" ${_frState==='loading'?'disabled':''}>
         ${_frState==='loading'?'Оновлюю…':'↻ Оновити'}</button>
     </div>`;
@@ -2504,6 +2583,355 @@ function showReaxToast(){
          :n+' '+pluralUA(n,'реакція','реакції','реакцій')+' на твої книги');
 }
 
+// ═══════════ СПІЛЬНІ КВЕСТИ ═══════════
+// «Давай цього місяця прочитаємо щось із детективів» — по одній книзі з
+// кожного. Одиниця тут не кількість, а ЖАНР, тому з місячною ціллю не
+// конфліктує: квест міняє ЩО читаєш, а не СКІЛЬКИ.
+//
+// ГОЛОВНИЙ ПРИНЦИП: нуль кнопок. Дочитав книгу → додав у бібліотеку →
+// вказав жанр. Якщо жанр збігся з квестом і книга додана після його початку,
+// вона зараховується САМА. Коли зарахувалось у обох, квест сам переїжджає
+// на дошку пройдених — нічого не «забирати».
+// Працює на совість (у детективи можна занести й «Колобка») — і це свідомо:
+// перевіряти нічого, бо це сім'я, а не змагання.
+//
+// Де що лежить:
+//   d.quests      — живі: {id,with,withNick,g,ts0,tsUp,st}
+//                   st: inv (запросив) | act (йде) | dec (відмовив) | done
+//   d.questsDone   — дошка пройдених, з обкладинками ОБОХ книг
+//   d.questDecl    — відмови: «друг|жанр», щоб не пропонувати те саме
+//   book.q         — позначка 🤝 на книзі
+//
+// Спільного запису на сервері НЕМА: кожен публікує свій бік у власному
+// стовпці `public` (поле q), другий читає його тим самим friendList. Час
+// старту призначає ТОЙ, ХТО ПРИЙНЯВ — інакше двоє розійшлись би в тому, коли
+// квест почався.
+const Q_DAYS=30;                       // активний квест живе 30 днів
+const Q_MS=Q_DAYS*86400000;
+const Q_INV_MS=7*86400000;             // запрошення без відповіді — 7 днів
+const Q_SEEN_MS=2*86400000;
+const Q_BOARD_MAX=60;                  // дошка: скільки квестів пам'ятаємо
+const Q_PUB_MAX=12;                    // скільки квестів їде другові у зліпку            // dec/done — доки другий бік побачить
+function qList(){const d=pd();if(!d)return[];if(!d.quests)d.quests=[];return d.quests;}
+function qDone(){const d=pd();if(!d)return[];if(!d.questsDone)d.questsDone=[];return d.questsDone;}
+function qDecl(){const d=pd();if(!d)return{};if(!d.questDecl)d.questDecl={};return d.questDecl;}
+function qNewId(){return 'q'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function qDaysLeft(q){return Math.max(0,Math.ceil((q.ts0+Q_MS-Date.now())/86400000));}
+function qActive(){return qList().filter(q=>q.st==='act');}
+
+// ── автозарахування ──
+// Книга підходить квесту, якщо жанр той самий і додана після старту.
+// Одна книга йде максимум в один квест: розподіляємо по порядку старту
+// квестів, інакше при двох квестах на той самий жанр одна книга закрила б
+// обидва. Нічого не зберігаємо — рахуємо щоразу, тому «зарахувати» й
+// «не та книга» стають непотрібні.
+function qMatchAll(d){
+  d=d||pd();
+  if(!d)return{};
+  const used={};
+  (d.questsDone||[]).forEach(x=>{if(x.my&&x.my.k)used[x.my.k]=1;});
+  const out={};
+  (d.quests||[]).filter(q=>q.st==='act').slice()
+    .sort((a,b)=>(+a.ts0||0)-(+b.ts0||0)).forEach(q=>{
+      const hit=(d.books||[]).map((b,i)=>({b,i}))
+        .filter(({b})=>b&&b.genre===q.g&&bookTime(b)>q.ts0&&!used[reaxKey(b.title,b.author)])
+        .sort((x,y)=>bookTime(x.b)-bookTime(y.b))[0];
+      if(hit){used[reaxKey(hit.b.title,hit.b.author)]=1;out[q.id]=hit.i;}
+    });
+  return out;
+}
+// Те, що бачить друг. Разом з галочкою їде й книга — щоб на дошці пройдених
+// стояли обкладинки обох, а не лише своя.
+function qPublic(d){
+  const m=qMatchAll(d);
+  // У стовпчик public влазить 8000 символів на ВСЕ, а тут на кожен квест ще
+  // назва й посилання на обкладинку. Тому спершу живі квести, далі —
+  // найсвіжіші службові записи, і не більше Q_PUB_MAX.
+  const rank=q=>(q.st==='act'||q.st==='inv')?0:1;
+  return(d.quests||[]).slice()
+    .sort((a,b)=>rank(a)-rank(b)||(+b.tsUp||0)-(+a.tsUp||0))
+    .slice(0,Q_PUB_MAX)
+    .map(q=>{
+    const rec={id:q.id,w:q.with,g:q.g,ts0:q.ts0||0,st:q.st,m:m[q.id]!==undefined?1:0};
+    const b=m[q.id]!==undefined?(d.books||[])[m[q.id]]:null;
+    if(b)rec.b={t:String(b.title||'').slice(0,80),c:b.coverUrl||null};
+    return rec;
+  });
+}
+function qTheirs(q){
+  const f=(friendsData.friends||[]).find(x=>String(x.userId)===String(q.with));
+  if(!f||!Array.isArray(f.q))return null;
+  return f.q.find(x=>x&&x.id===q.id&&String(x.w)===String(me&&me.userId))||null;
+}
+function qTheirOk(t){return!!(t&&(t.m||t.st==='done'));}
+function qIncoming(){
+  if(!me)return[];
+  const mine=qList();
+  const decl=qDecl();
+  const out=[];
+  (friendsData.friends||[]).forEach(f=>{
+    if(!Array.isArray(f.q))return;
+    f.q.forEach(x=>{
+      if(!x||x.st!=='inv'||String(x.w)!==String(me.userId))return;
+      if(mine.some(q=>q.id===x.id))return;
+      // Своя відмова живе два дні, а чуже запрошення — сім. Без цієї
+      // перевірки відхилений квест повертався, якщо друг не заходив у гру.
+      if(decl[String(f.userId)+'|'+String(x.g||'')])return;
+      out.push({id:x.id,from:String(f.userId),fromNick:f.nick,g:String(x.g||'')});
+    });
+  });
+  return out;
+}
+
+// ── прибирання й закриття ──
+// Строк має кожен стан, не лише активний: інакше запрошення висіло б вічно.
+function questsTick(){
+  const d=pd();if(!d)return false;
+  const before=JSON.stringify(d.quests||[]);
+  d.quests=(d.quests||[]).filter(q=>{
+    if(!q||!q.id||!q.with)return false;
+    const friend=(friendsData.friends||[]).some(x=>String(x.userId)===String(q.with));
+    if(_frState==='ok'&&!friend)return false;
+    const age=Date.now()-(+q.tsUp||+q.ts0||0);
+    if(q.st==='act'&&q.ts0&&Date.now()-q.ts0>Q_MS)return false;
+    if(q.st==='inv'&&age>Q_INV_MS)return false;
+    if((q.st==='dec'||q.st==='done')&&age>Q_SEEN_MS)return false;
+    const t=qTheirs(q);
+    if(t&&t.st==='dec')return false;
+    if(q.st==='inv'&&t&&t.st==='act'){q.st='act';q.ts0=+t.ts0||Date.now();q.tsUp=Date.now();}
+    return true;
+  });
+  const changed=JSON.stringify(d.quests)!==before;
+  if(changed)saveToCloud(cur);
+  return changed;
+}
+// Обидва зарахували → квест сам переїжджає на дошку. Запис лишається зі
+// станом 'done' ще два дні: інакше друг, який не встиг закрити свій бік,
+// перестав би бачити мою галочку.
+function questsSettle(silent){
+  const d=pd();if(!d)return[];
+  const m=qMatchAll(d);
+  const fresh=[];
+  (d.quests||[]).forEach(q=>{
+    if(q.st!=='act')return;
+    const idx=m[q.id];
+    if(idx===undefined)return;
+    const t=qTheirs(q);
+    if(!qTheirOk(t))return;
+    const b=(d.books||[])[idx];
+    const rec={id:q.id,with:q.with,withNick:q.withNick,g:q.g,ts0:q.ts0,endedAt:Date.now(),
+      my:{t:b.title,k:reaxKey(b.title,b.author)},
+      their:(t&&t.b)?{t:t.b.t,c:t.b.c||null}:null};
+    (d.questsDone=d.questsDone||[]).push(rec);
+    if(d.questsDone.length>Q_BOARD_MAX)d.questsDone=d.questsDone.slice(-Q_BOARD_MAX);
+    if(b)b.q={n:q.withNick,g:q.g};
+    q.st='done';q.tsUp=Date.now();
+    fresh.push(rec);
+  });
+  if(fresh.length){
+    const beforeAch=fullyCompletedKeys(d);
+    saveToCloud(cur);
+    renderLibraryTab();renderAchievementsWidget();
+    if(!silent){
+      const r=fresh[0];
+      mHTML(`${M_CLOSE_BTN}<div class="m-emoji">🤝</div>
+        <div class="m-title">Квест пройдено!</div>
+        <div class="m-desc" style="margin-bottom:14px">Ти і ${esc(r.withNick)} прочитали «${esc(r.g)}».
+          Обидві книги — на дошці пройдених квестів.</div>
+        ${qPairHTML(r)}
+        <button class="btn-ok" style="width:100%;margin-top:14px;padding:12px" onclick="closeModal()">Клас</button>`);
+    }
+    celebrateNewAchievements(d,beforeAch);
+  }
+  return fresh;
+}
+function qReadyCount(){return 0;}   // нічого «забирати» — квест закривається сам
+
+// ── створення й відповіді ──
+function openQuestCreate(fid,skipGenre){
+  const friends=(friendsData.friends||[]).filter(f=>!qList().some(q=>
+    String(q.with)===String(f.userId)&&(q.st==='inv'||q.st==='act')));
+  if(!friends.length){showToast('З усіма друзями квест уже є');return;}
+  const sel=friends.some(f=>String(f.userId)===String(fid))?String(fid):String(friends[0].userId);
+  const decl=qDecl();
+  const genres=GENRES.filter(g=>!decl[sel+'|'+g]&&g!==skipGenre);
+  mHTML(`${M_CLOSE_BTN}<div class="m-title">🤝 Спільний квест</div>
+    <div class="m-desc" style="margin-bottom:12px">По одній книзі з кожного. ${Q_DAYS} днів.</div>
+    <div class="flbl">З ким</div>
+    <select id="q-friend" class="finput" onchange="openQuestCreate(this.value)">
+      ${friends.map(f=>`<option value="${esc(f.userId)}" ${String(f.userId)===sel?'selected':''}>${esc(f.nick)}</option>`).join('')}
+    </select>
+    <div class="flbl">Жанр</div>
+    <select id="q-genre" class="finput">
+      ${genres.map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join('')}
+    </select>
+    ${genres.length?'':`<div class="sp-error" style="display:block">На всі жанри вже була відмова</div>`}
+    <button class="btn-ok" style="width:100%;padding:13px;margin-top:6px" onclick="sendQuest()">Запропонувати</button>`);
+}
+function sendQuest(){
+  const fid=document.getElementById('q-friend')?.value;
+  const g=document.getElementById('q-genre')?.value;
+  if(!fid||!g){showToast('Обери друга й жанр');return;}
+  if(qList().some(q=>String(q.with)===String(fid)&&(q.st==='inv'||q.st==='act'))){
+    closeModal();showToast('З цим другом квест уже є');return;   // подвійний тап
+  }
+  const f=(friendsData.friends||[]).find(x=>String(x.userId)===String(fid));
+  qList().push({id:qNewId(),with:String(fid),withNick:(f&&f.nick)||'друг',
+                g:g,ts0:0,tsUp:Date.now(),st:'inv'});
+  saveToCloud(cur);
+  closeModal();
+  renderFriendsTab();
+  showToast('Запрошення надіслано');
+}
+function acceptQuest(id){
+  const inc=qIncoming().find(x=>x.id===id);
+  if(!inc)return;
+  qList().push({id:inc.id,with:inc.from,withNick:inc.fromNick,g:inc.g,
+                ts0:Date.now(),tsUp:Date.now(),st:'act'});
+  saveToCloud(cur);
+  questsSettle();                 // могла бути книга, додана вже після старту
+  renderFriendsTab();
+  showToast('Квест почався!');
+}
+function declineQuest(id,counter){
+  const inc=qIncoming().find(x=>x.id===id);
+  if(!inc)return;
+  qDecl()[inc.from+'|'+inc.g]=Date.now();
+  qList().push({id:inc.id,with:inc.from,withNick:inc.fromNick,g:inc.g,
+                ts0:0,tsUp:Date.now(),st:'dec'});
+  saveToCloud(cur);
+  if(counter)openQuestCreate(inc.from,inc.g);
+  else{renderFriendsTab();showToast('Відхилено');}
+}
+// Скасувати можна лише СВОЄ запрошення, яке ще не прийняли: домовленості
+// ще немає, тому втрачати нічого. Активний квест не завершується руками —
+// або зарахується сам, або згорить за 30 днів.
+function cancelInvite(id){
+  const q=qList().find(x=>x.id===id&&x.st==='inv');
+  if(!q)return;
+  // Друг уже прийняв, просто до мене ще не дійшло. Скасовувати нічого —
+  // інакше в нього лишився б квест, у якого зник другий бік.
+  const t=qTheirs(q);
+  if(t&&t.st==='act'){
+    q.st='act';q.ts0=+t.ts0||Date.now();q.tsUp=Date.now();
+    saveToCloud(cur);renderFriendsTab();
+    showToast('Друг уже прийняв — квест почався');
+    return;
+  }
+  const d=pd();
+  d.quests=(d.quests||[]).filter(x=>x.id!==id);
+  saveToCloud(cur);
+  renderFriendsTab();
+  showToast('Запрошення скасовано');
+}
+
+// ── дошка пройдених: обкладинки обох книг ──
+function qCoverHTML(b,cls){
+  if(!b)return`<div class="${cls} q-cover-ph">?</div>`;
+  const[top,bot]=_colorFor(b.t||'');
+  return escUrl(b.c)
+    ?`<img class="${cls}" src="${escUrl(b.c)}" loading="lazy" alt="" title="${esc(b.t||'')}" onerror="this.style.display='none'">`
+    :`<div class="${cls} q-cover-ph" title="${esc(b.t||'')}" style="background:linear-gradient(150deg,${top},${bot})">${esc(b.t||'')}</div>`;
+}
+// Своя обкладинка в записі не лежить: тягнемо з бібліотеки за ключем. Книгу
+// видалили — лишається кольорова заглушка з назвою, запис не втрачається.
+function qMyCover(r){
+  if(!r||!r.my)return null;
+  if(r.my.c)return r.my;
+  const b=((pd()||{}).books||[]).find(x=>x&&reaxKey(x.title,x.author)===r.my.k);
+  return b&&b.coverUrl?{t:r.my.t,c:b.coverUrl}:r.my;
+}
+function qPairHTML(r){
+  return`<div class="q-pair">
+    <div class="q-pair-side">${qCoverHTML(qMyCover(r),'q-cover')}<div class="q-pair-n">Ти</div></div>
+    <div class="q-pair-plus">🤝</div>
+    <div class="q-pair-side">${qCoverHTML(r.their,'q-cover')}<div class="q-pair-n">${esc(r.withNick)}</div></div>
+  </div>`;
+}
+function questsBoardHTML(){
+  const list=qDone().slice().sort((a,b)=>(+b.endedAt||0)-(+a.endedAt||0));
+  if(!list.length)return'';
+  return`<div class="fr-sub">🤝 Дошка пройдених квестів</div>`+
+    list.map(r=>`<div class="q-board">
+      <div class="q-board-hdr">
+        <span class="q-board-g">${esc(r.g)}</span>
+        <span class="q-board-d">${esc(uaDate({ts:r.endedAt}))}</span>
+      </div>
+      ${qPairHTML(r)}
+    </div>`).join('');
+}
+
+// ── плашки в табі «Друзі» ──
+function questsBlockHTML(){
+  if(!me||me.guest)return'';
+  const inc=qIncoming();
+  const mine=qList().filter(q=>q.st==='inv'||q.st==='act');
+  if(!inc.length&&!mine.length)return'';
+  const m=qMatchAll();
+  const cards=[];
+  inc.forEach(x=>cards.push(`<div class="q-card">
+    <div class="q-hdr"><span class="q-emoji">🤝</span>
+      <div><div class="q-title">${esc(x.fromNick)} пропонує квест</div>
+        <div class="q-sub">Жанр: ${esc(x.g)} · по книзі з кожного</div></div></div>
+    <div class="q-btns">
+      <button class="fr-btn ok" onclick="acceptQuest('${esc(x.id)}')">Прийняти</button>
+      <button class="fr-btn" onclick="declineQuest('${esc(x.id)}',1)">Інший жанр</button>
+      <button class="fr-btn danger" onclick="declineQuest('${esc(x.id)}')">Відхилити</button>
+    </div></div>`));
+  mine.forEach(q=>{
+    if(q.st==='inv'){
+      const t=qTheirs(q);
+      const txt=t&&t.st==='dec'?`Відмова · ${esc(q.withNick)}`:`Чекаємо · ${esc(q.withNick)}`;
+      cards.push(`<div class="q-card">
+        <div class="q-hdr"><span class="q-emoji">⏳</span>
+          <div><div class="q-title">${txt}</div>
+            <div class="q-sub">Жанр: ${esc(q.g)}</div></div></div>
+        <div class="q-btns"><button class="fr-btn danger" onclick="cancelInvite('${esc(q.id)}')">Скасувати запрошення</button></div>
+      </div>`);
+      return;
+    }
+    const t=qTheirs(q);
+    const meOk=m[q.id]!==undefined,themOk=qTheirOk(t);
+    const days=qDaysLeft(q);
+    const myBook=meOk?(pd().books||[])[m[q.id]]:null;
+    cards.push(`<div class="q-card">
+      <div class="q-hdr"><span class="q-emoji">🤝</span>
+        <div><div class="q-title">${esc(q.g)}</div>
+          <div class="q-sub">${esc(q.withNick)} · ${days} ${pluralUA(days,'день','дні','днів')} лишилось</div></div></div>
+      <div class="q-side"><span class="q-tick${meOk?' on':''}">${meOk?'✓':'○'}</span>
+        Ти${myBook?` · <span class="q-bk">${esc(myBook.title)}</span>`:''}</div>
+      <div class="q-side"><span class="q-tick${themOk?' on':''}">${themOk?'✓':'○'}</span>
+        ${esc(q.withNick)}${(t&&t.b&&t.b.t)?` · <span class="q-bk">${esc(t.b.t)}</span>`:''}</div>
+      ${meOk?'':`<div class="q-hint">Прочитай книгу з жанром «${esc(q.g)}»</div>`}
+    </div>`);
+  });
+  return`<div class="fr-sub">🤝 Спільні квести</div>${cards.join('')}`;
+}
+// Історія з конкретним другом — у його картці.
+function openQuestHistory(fid){
+  const list=qDone().filter(q=>String(q.with)===String(fid))
+    .sort((a,b)=>(+b.endedAt||0)-(+a.endedAt||0));
+  const nick=(list[0]&&list[0].withNick)||
+    ((friendsData.friends||[]).find(f=>String(f.userId)===String(fid))||{}).nick||'друг';
+  mHTML(`${M_CLOSE_BTN}<div class="m-title">🤝 Пройдені квести</div>
+    <div class="m-desc" style="margin-bottom:12px">Разом: ${esc(nick)}</div>
+    ${list.length?list.map(r=>`<div class="q-board">
+        <div class="q-board-hdr"><span class="q-board-g">${esc(r.g)}</span>
+          <span class="q-board-d">${esc(uaDate({ts:r.endedAt}))}</span></div>
+        ${qPairHTML(r)}
+      </div>`).join(''):`<div class="fr-empty">Спільних квестів ще не було.</div>`}`);
+}
+// Жанри, пройдені разом — для відмітки на чіпі жанру.
+// Жанри активних квестів — щоб позначити їх у списку жанрів обох форм.
+// Мітка йде В КІНЕЦЬ назви: на початку вона зсувала б саму назву вправо, і
+// в розкритому списку цей рядок стояв би не нарівні з іншими жанрами.
+function qGenreMark(g){return qActive().some(q=>q.g===g)?' 🤝':'';}
+function qGenresDone(){
+  const by={};
+  qDone().forEach(q=>{(by[q.g]||(by[q.g]=[])).push(q.withNick);});
+  return by;
+}
+
 function friendCardHTML(f,opts){
   opts=opts||{};
   const clr=escUrl(f.av)?'transparent':(esc(f.clr)||'#22c55e');
@@ -2537,8 +2965,9 @@ function friendCardHTML(f,opts){
       ${f.streak?`<div class="fr-loc" style="margin-top:2px">🔥 ${esc(f.streak)} ${pluralUA(f.streak,'місяць','місяці','місяців')} підряд виконує ціль</div>`:''}
       ${goal?`<div class="fr-loc" style="margin-top:2px">${goal.replace(/^ · /,'')}</div>`:''}
       ${last}`}
-      ${hasWrap?`<div style="margin-top:8px">
-        <button class="fr-btn" onclick="openFriendWrap('${esc(f.userId)}')">📅 Рік у книгах</button>
+      ${(hasWrap||qDone().some(q=>String(q.with)===String(f.userId)))?`<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+        ${hasWrap?`<button class="fr-btn" onclick="openFriendWrap('${esc(f.userId)}')">📅 Рік у книгах</button>`:''}
+        ${qDone().some(q=>String(q.with)===String(f.userId))?`<button class="fr-btn" onclick="openQuestHistory('${esc(f.userId)}')">🤝 Спільні квести</button>`:''}
       </div>`:''}
     </div>
     ${opts.noMenu?'':`<div class="fr-menu-wrap">
@@ -3337,11 +3766,11 @@ function _buildPagesHTML(){
 
       <div class="form-section">
         ${_spSectionHdr('genre','🏷️ Жанр та оцінка')}
-        <div id="sp-section-genre" style="display:${_spSectionOpen.genre?'':'none'}">
+        <div id="sp-section-genre" style="display:${(_spSectionOpen.genre||qActive().length)?'':'none'}">
           <div class="flbl">Жанр</div>
           <select id="sp-genre" class="finput">
             <option value="">Оберіть жанр</option>
-            ${GENRES.map(g=>`<option value="${g}">${g}</option>`).join('')}
+            ${GENRES.map(g=>`<option value="${g}">${g}${qGenreMark(g)}</option>`).join('')}
           </select>
           <div class="flbl">Оцінка</div>
           <div id="add-book-stars" style="margin-bottom:0">${starRatingHTML(_addBookRating,true,'onAddStarClick')}</div>
@@ -3452,7 +3881,7 @@ function _renderBookHTML(book, i, sc=1){
   </div>`;
 }
 
-let _libViewMode='shelves',_libSortBy='size';
+let _libViewMode='shelves',_libSortBy='size',_libPath='date';
 function _computeShelfGroups(withIdx,sortBy){
   if(sortBy==='genre'){
     const groups={};
@@ -3511,11 +3940,10 @@ function _jnGroups(books){
   // Рік беремо з дати; книги без дати не вигадуємо куди подіти — окрема група.
   const by={};
   books.forEach((b,i)=>{
-    const y=String(b.date||'').slice(0,4);
-    const key=/^\d{4}$/.test(y)?y:'—';
+    const key=bookYearKey(b);
     (by[key]||(by[key]=[])).push({b,i});
   });
-  Object.values(by).forEach(list=>list.sort((x,y)=>String(x.b.date||'').localeCompare(String(y.b.date||''))));
+  Object.values(by).forEach(list=>list.sort((x,y)=>bookTime(x.b)-bookTime(y.b)));
   // Роки за зростанням, «без дати» — останньою пігулкою.
   const keys=Object.keys(by).filter(k=>k!=='—').sort();
   if(by['—'])keys.push('—');
@@ -3525,7 +3953,7 @@ function setJnYear(y){_jnYear=y;renderLibraryTab();}
 
 function _buildJourneyHTML(books){
   const{keys,by}=_jnGroups(books);
-  if(!keys.length)return'';
+  if(!keys.length)return{controls:'',body:''};
   // За замовчуванням — рік останньої прочитаної книги.
   if(!keys.includes(_jnYear))_jnYear=keys.filter(k=>k!=='—').pop()||keys[0];
   const list=by[_jnYear];
@@ -3576,9 +4004,9 @@ function _buildJourneyHTML(books){
         style="left:${cx}%;width:${cw}%;top:${y}px;background:linear-gradient(180deg,${top}26,${bot}19),rgba(var(--ink),.05);border:1px solid ${top}66">
         ${cover}
         <div class="jn-info">
-          <div class="jn-title">${esc(b.title)}</div>
+          <div class="jn-title">${b.q?'<span class="q-mark" title="Прочитано в спільному квесті">🤝 </span>':''}${esc(b.title)}</div>
           <div class="jn-author">${esc(b.author||'')}</div>
-          <div class="jn-date">${esc(uaDate(b.date))}</div>
+          <div class="jn-date">${esc(uaDate(b))}</div>
           ${b.rating?`<div class="jn-stars">${starRatingHTML(b.rating,false)}</div>`:''}
         </div>
       </div>`;
@@ -3595,15 +4023,34 @@ function _buildJourneyHTML(books){
   const years=keys.length>1
     ? `<div class="jn-years">${keys.map(k=>`<button class="jn-year ${k===_jnYear?'act':''}" onclick="setJnYear('${k}')">${k==='—'?'без дати':k}</button>`).join('')}</div>`
     : '';
-  return years+`<div class="jn-wrap" id="jn-wrap" style="height:${H}px">${svg}${startPill}${items}${endPill}</div>`;
+  return{controls:years,
+    body:`<div class="jn-wrap" id="jn-wrap" style="height:${H}px">${svg}${startPill}${items}${endPill}</div>`};
 }
 // Дата в підписі — по-людськи: «30 червня 2026», а не 2026-06-30.
 const UA_MONTHS=['січня','лютого','березня','квітня','травня','червня',
                  'липня','серпня','вересня','жовтня','листопада','грудня'];
-function uaDate(s){
-  const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s||''));
-  if(!m)return String(s||'');
-  return +m[3]+' '+UA_MONTHS[+m[2]-1]+' '+m[1];
+// Дата книги живе у ДВОХ полях: ts — мітка часу додавання (головне джерело),
+// date — рядок для показу в локальному форматі ДД.ММ.РРРР (так його пише
+// форма додавання). Тому і рік, і порядок беремо з ts, а не з рядка:
+// "02.09.2026".slice(0,4) дає "02.0", а сортування рядком ставить 2 вересня
+// перед 15 січня. ISO лишаємо третім варіантом — для старих чи підставлених
+// даних.
+function bookTime(b){
+  if(!b)return 0;
+  if(b.ts)return +b.ts||0;
+  const s=String(b.date||'');
+  let m=s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+  if(m)return new Date(+m[3],+m[2]-1,+m[1]).getTime();
+  m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(m)return new Date(+m[1],+m[2]-1,+m[3]).getTime();
+  return 0;
+}
+function bookYearKey(b){const t=bookTime(b);return t?String(new Date(t).getFullYear()):'—';}
+function uaDate(b){
+  const t=bookTime(b);
+  if(!t)return String((b&&b.date)||'');
+  const d=new Date(t);
+  return d.getDate()+' '+UA_MONTHS[d.getMonth()]+' '+d.getFullYear();
 }
 // «Відкривається на поточній книзі» — тобто на останній прочитаній: вона в
 // кінці дороги, тому докручуємо вниз так, щоб вона стала по центру екрана.
@@ -3635,23 +4082,24 @@ function _buildGenreHTML(books){
   const withIdx=books.map((b,i)=>({b,i}));
   const byGenre={};
   withIdx.forEach(({b,i})=>{
-    const g=GENRES.includes(b.genre)?b.genre:(b.genre?'Інше':'__none__');
+    if(!b.genre)return;                 // без жанру — не жанр, на дорогах не показуємо
+    const g=GENRES.includes(b.genre)?b.genre:'Інше';
     (byGenre[g]||(byGenre[g]=[])).push({b,i});
   });
-  Object.values(byGenre).forEach(l=>l.sort((x,y)=>String(x.b.date||'').localeCompare(String(y.b.date||''))));
+  Object.values(byGenre).forEach(l=>l.sort((x,y)=>bookTime(x.b)-bookTime(y.b)));
   const filled=GENRES.filter(g=>byGenre[g]&&byGenre[g].length);
   const empty=GENRES.filter(g=>!byGenre[g]||!byGenre[g].length);
   const order=filled.slice().sort((a,b)=>byGenre[b].length-byGenre[a].length);
-  if(byGenre.__none__)order.push('__none__');
+  const together=qGenresDone();
+
 
   let seq=0;
   const block=g=>{
     const gid=++seq;                 // id градієнтів унікальні на всю сторінку
     const list=byGenre[g]||[];
     const n=list.length;
-    const isNone=g==='__none__';
-    const name=isNone?'Без жанру':g;
-    const clr=isNone?GENRE_COLORS['Інше']:_gnColor(g);
+    const name=g;
+    const clr=_gnColor(g);
     const rows=Math.max(1,Math.ceil(n/GN_PER_ROW));
     // Порожньому жанру місце під обкладинки не потрібне: лишається сама
     // смуга, інакше десяток «доріг у нікуди» роздув би вигляд утричі.
@@ -3731,14 +4179,14 @@ function _buildGenreHTML(books){
         :`<div class="gn-cover-ph" style="background:linear-gradient(150deg,${top},${bot})">${esc(b.title)}</div>`;
       return`<div class="gn-stem" style="top:${y}px;left:${x}%"></div>
         <div class="gn-book" style="left:${x}%;top:${y+16}px" onclick="openBookDetail(${i})" title="${esc(b.title)}${b.author?' · '+esc(b.author):''}">
-          ${cover}${b.rating?`<div class="gn-star">★${esc(b.rating)}</div>`:''}
+          ${cover}${b.q?`<span class="gn-q" title="Прочитано разом: ${esc(b.q.n)}">🤝</span>`:''}${b.rating?`<div class="gn-star">★${esc(b.rating)}</div>`:''}
         </div>`;
     }).join('');
 
     return`<div class="gn-block" style="height:${H+(n?40:28)}px">
       <div class="gn-hdr">
         <span class="gn-dot" style="background:${clr}"></span>
-        <span class="gn-name" style="background:${clr}">${esc(name)}</span>
+        <span class="gn-name" style="background:${clr}">${esc(name)}${together[g]?` <span title="Пройдено разом: ${esc(together[g].join(', '))}">🤝</span>`:''}</span>
         ${n?`<span class="gn-count">${n}</span>`:`<span class="gn-empty">ще не пройдено</span>`}
       </div>
       <div style="position:relative;height:${H}px">${road}${items}</div>
@@ -3749,23 +4197,30 @@ function _buildGenreHTML(books){
     ${order.map(block).join('')}${empty.map(block).join('')}</div>`;
 }
 
+// Три вигляди. Другий рядок — сортування, і воно своє в кожного:
+// у полиць три варіанти, у Подорожі два шляхи, у Стіни немає нічого.
 function _buildLibrarySettingsHTML(){
+  const v=_libViewMode;
+  const sort=v==='shelves'
+    ?{label:'Сортування полиць',html:`
+      <button class="goal-tab ${_libSortBy==='size'?'act':''}" onclick="setLibSortBy('size')">Розмір</button>
+      <button class="goal-tab ${_libSortBy==='genre'?'act':''}" onclick="setLibSortBy('genre')">Жанр</button>
+      <button class="goal-tab ${_libSortBy==='author'?'act':''}" onclick="setLibSortBy('author')">Автор</button>`}
+    :v==='journey'
+    ?{label:'Який шлях',html:`
+      <button class="goal-tab ${_libPath==='date'?'act':''}" onclick="setLibPath('date')">📅 За датою</button>
+      <button class="goal-tab ${_libPath==='genre'?'act':''}" onclick="setLibPath('genre')">🎨 За жанром</button>`}
+    :{label:'Сортування',html:`<button class="goal-tab" disabled>у Стіни його немає</button>`};
+  const off=v==='wall'?'opacity:.4;pointer-events:none':'';
   return`${M_CLOSE_BTN}<div class="m-title">⚙️ Вигляд бібліотеки</div>
     <div class="flbl">Вигляд</div>
     <div class="goal-tabs" style="margin-bottom:14px">
-      <button class="goal-tab ${_libViewMode==='shelves'?'act':''}" onclick="setLibViewMode('shelves')">📚 Полиці</button>
-      <button class="goal-tab ${_libViewMode==='wall'?'act':''}" onclick="setLibViewMode('wall')">🖼️ Стіна</button>
+      <button class="goal-tab ${v==='shelves'?'act':''}" onclick="setLibViewMode('shelves')">📚 Полиці</button>
+      <button class="goal-tab ${v==='journey'?'act':''}" onclick="setLibViewMode('journey')">🛣️ Подорож</button>
+      <button class="goal-tab ${v==='wall'?'act':''}" onclick="setLibViewMode('wall')">🖼️ Стіна</button>
     </div>
-    <div class="goal-tabs" style="margin-bottom:14px">
-      <button class="goal-tab ${_libViewMode==='journey'?'act':''}" onclick="setLibViewMode('journey')">🛣️ Подорож</button>
-      <button class="goal-tab ${_libViewMode==='genre'?'act':''}" onclick="setLibViewMode('genre')">🎨 Жанри</button>
-    </div>
-    <div class="flbl" style="${_libViewMode==='shelves'?'':'opacity:.4'}">Сортування полиць</div>
-    <div class="goal-tabs" style="${_libViewMode==='shelves'?'':'opacity:.4;pointer-events:none'}">
-      <button class="goal-tab ${_libSortBy==='size'?'act':''}" onclick="setLibSortBy('size')">Розмір</button>
-      <button class="goal-tab ${_libSortBy==='genre'?'act':''}" onclick="setLibSortBy('genre')">Жанр</button>
-      <button class="goal-tab ${_libSortBy==='author'?'act':''}" onclick="setLibSortBy('author')">Автор</button>
-    </div>`;
+    <div class="flbl" style="${off}">${sort.label}</div>
+    <div class="goal-tabs" style="${off}">${sort.html}</div>`;
 }
 function openLibrarySettings(){
   const box=document.querySelector('#mOv .modal-box');
@@ -3774,22 +4229,11 @@ function openLibrarySettings(){
 }
 // Вигляд бібліотеки запам'ятовується в профілі, як і гама: вибрати
 // «Подорож» і побачити після перезаходу знову полиці — це дратує.
-function _libViewSave(){const d=pd();if(!d)return;d.libView=_libViewMode;d.libSort=_libSortBy;saveToCloud(cur);}
+function _libViewSave(){const d=pd();if(!d)return;d.libView=_libViewMode;d.libSort=_libSortBy;d.libPath=_libPath;saveToCloud(cur);}
 function setLibViewMode(m){_libViewMode=m;_libViewSave();openLibrarySettings();renderLibraryTab();}
 function setLibSortBy(s){_libSortBy=s;_libViewSave();openLibrarySettings();renderLibraryTab();}
-function _buildLibraryHTML(){
-  const d=pd();
-  const books=d.books||[];
-  const header=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:600">Моя Бібліотека</div>
-    <button onclick="openLibrarySettings()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--accent);padding:4px" title="Налаштування вигляду">⚙️</button>
-  </div>`;
-  if(!books.length){
-    return header+`<div style="text-align:center;padding:40px 0;color:var(--txt-3);font-size:13px;line-height:2">📚<br>Ще немає книжок.<br>Додай першу книгу!</div>`;
-  }
-  if(_libViewMode==='wall')return header+_buildWallHTML(books);
-  if(_libViewMode==='journey')return header+_buildJourneyHTML(books);
-  if(_libViewMode==='genre')return header+_buildGenreHTML(books);
+function setLibPath(p){_libPath=p;_jnYear=null;_libViewSave();openLibrarySettings();renderLibraryTab();}
+function _buildShelvesHTML(books){
   const withIdx=[...books].map((b,i)=>({b,i})).reverse(); // newest first within each shelf
   const groups=_computeShelfGroups(withIdx,_libSortBy);
   let shelves='';
@@ -3801,7 +4245,33 @@ function _buildLibraryHTML(){
       <div class="shelf-plank"></div>
     </div>`;
   });
-  return header+`<div class="shelf-wrap">${shelves}</div>`;
+  return`<div class="shelf-wrap">${shelves}</div>`;
+}
+
+// Шапка приклеєна до верху: у «Подорожі» вигляд одразу прокручений до
+// останньої книги, а в полицях за автором рядків десятки — без цього
+// шестерня й пігулки років лишались десь далеко вгорі, і вийти з вигляду
+// не було як.
+function _buildLibraryHTML(){
+  const d=pd();
+  const books=d.books||[];
+  const top=controls=>`<div class="lib-top">
+    <div class="lib-hdr">
+      <div class="lib-title">Моя Бібліотека</div>
+      <button class="lib-gear" onclick="openLibrarySettings()" title="Налаштування вигляду">⚙️</button>
+    </div>${controls||''}
+  </div>`;
+  if(!books.length){
+    return top()+`<div style="text-align:center;padding:40px 0;color:var(--txt-3);font-size:13px;line-height:2">📚<br>Ще немає книжок.<br>Додай першу книгу!</div>`;
+  }
+  if(_libViewMode==='wall')return top()+_buildWallHTML(books);
+  if(_libViewMode==='journey'){
+    // Подорож має два шляхи: за датою прочитання і за жанром.
+    if(_libPath==='genre')return top()+_buildGenreHTML(books);
+    const j=_buildJourneyHTML(books);
+    return top(j.controls)+j.body;
+  }
+  return top()+_buildShelvesHTML(books);
 }
 
 let _bdRating=0;
@@ -3822,7 +4292,7 @@ function openBookDetail(i,playerId){
   const genreHtml=editable?`<div class="flbl" style="opacity:.6">Жанр</div>
     <select id="bd-genre" class="finput">
       <option value="">Оберіть жанр</option>
-      ${GENRES.map(g=>`<option value="${g}" ${book.genre===g?'selected':''}>${g}</option>`).join('')}
+      ${GENRES.map(g=>`<option value="${g}" ${book.genre===g?'selected':''}>${g}${qGenreMark(g)}</option>`).join('')}
     </select>`:(book.genre?`<div style="text-align:center;font-size:12px;color:var(--txt);margin-bottom:12px">${book.genre}</div>`:'');
   const footer=editable?`<button class="btn-ok" style="width:100%;margin-top:4px;padding:12px;font-size:13px" onclick="saveBookDetail(${i})">Зберегти</button>
     <button class="bd-delete-btn" onclick="confirmDeleteBook(${i})" title="Видалити книгу">🗑️</button>`:'';
@@ -3835,6 +4305,7 @@ function openBookDetail(i,playerId){
     ${coverEditForm}
     <div class="m-title" style="font-size:15px">${book.title}</div>
     <div style="text-align:center;font-size:12px;color:var(--txt-2);margin-bottom:8px">${book.author||''}</div>
+    ${book.q?`<div style="text-align:center;font-size:11px;color:var(--ok);margin-bottom:8px">🤝 прочитано разом · ${esc(book.q.n)} · квест «${esc(book.q.g)}»</div>`:''}
     <div id="bd-stars" style="display:flex;justify-content:center;margin-bottom:8px">${starRatingHTML(_bdRating,editable,'onBdStarClick')}</div>
     <div style="text-align:center;font-size:11px;color:var(--txt-3);margin-bottom:12px">${book.pages} стор. · ${book.date||''}</div>
     ${genreHtml}
@@ -3870,6 +4341,8 @@ function saveBookDetail(i){
   if(_bdRating)book.rating=_bdRating;else delete book.rating;
   saveToCloud(cur);closeModal();renderLibraryTab();renderAchievementsWidget();renderGeneralStatsWidget();
   celebrateNewAchievements(d,beforeAch);
+  // Жанр могли вказати вже потім — тоді книга зараховується в квест саме тут.
+  questsSettle();
 }
 
 function confirmDeleteBook(i){
@@ -3944,6 +4417,7 @@ function submitPages(){
   if(genre)book.genre=genre;
   d.books.push(book);
   renderRes();renderActions();renderLibraryTab();renderAchievementsWidget();renderGeneralStatsWidget();closeSidePanel();saveToCloud(cur);
+  questsSettle(true);   // жанр збігся з квестом — зарахується сам
   const preview=_renderBookPreviewHTML(book);
   qM(()=>mHTML(`${M_CLOSE_BTN}${preview}<div class="m-title">Книга додана!</div><div class="m-desc" style="text-align:center">+1📙 &nbsp; +${coins}🪙</div><div class="m-btns"><button class="btn-ok" onclick="closeModal()">Вперед!</button></div>`));
   celebrateNewAchievements(d,beforeAch);
@@ -3971,6 +4445,45 @@ function showLocToast(name,desc){
 }
 
 // ═══════════ CLOUD SAVE ═══════════
+// Обкладинки не їдуть у блобі сейву: посилання з Goodreads по ~130 символів,
+// на сотні книг це майже 40% обсягу, а клітинка Google Sheets тримає лише
+// 50 000. Тому в хмару блоб їде без них, а обкладинки — окремим стовпцем.
+// У localStorage лишається ПОВНИЙ стан: там бюджет інший, і офлайн
+// обкладинки мусять бути на місці.
+// Ключ — назва+автор у нормалізованому вигляді (той самий reaxKey), бо
+// індекс книги зсувається при видаленні, а id у книжок немає.
+function splitCovers(d){
+  const covers={};
+  const books=(d.books||[]).map(b=>{
+    if(!b||!b.coverUrl)return b;
+    covers[reaxKey(b.title,b.author)]=b.coverUrl;
+    const c=Object.assign({},b);
+    delete c.coverUrl;
+    return c;
+  });
+  const qd=(d.questsDone||[]).map(r=>{
+    if(!r||!r.their||!r.their.c)return r;
+    covers['q:'+r.id]=r.their.c;
+    const c=Object.assign({},r,{their:Object.assign({},r.their)});
+    delete c.their.c;
+    return c;
+  });
+  return{slim:Object.assign({},d,{books:books,questsDone:qd}),covers:covers};
+}
+function mergeCovers(d,raw){
+  let covers={};
+  try{covers=raw?(typeof raw==='string'?JSON.parse(raw):raw):{};}catch(e){covers={};}
+  (d&&d.books||[]).forEach(b=>{
+    if(b&&!b.coverUrl){
+      const u=covers[reaxKey(b.title,b.author)];
+      if(u)b.coverUrl=u;
+    }
+  });
+  (d&&d.questsDone||[]).forEach(r=>{
+    if(r&&r.their&&!r.their.c){const u=covers['q:'+r.id];if(u)r.their.c=u;}
+  });
+  return d;
+}
 function showSaveStatus(s){
   const el=document.getElementById('save-status');if(!el)return;
   clearTimeout(_saveTimer);
@@ -3994,6 +4507,7 @@ function _jsonp(url){
   });
 }
 
+let _pubWarned=0,_saveWarnTs=0;
 async function saveToCloud(pid){
   if(!pid)return;
   // Мітка часу збереження — по ній loadStateFor вирішує, чия копія новіша.
@@ -4003,13 +4517,25 @@ async function saveToCloud(pid){
   // Гість у хмару не пишеться взагалі — його на сервері не існує.
   if(!me||me.guest||!me.token||!SCRIPT_URL)return;
   showSaveStatus('saving');
+  const split=splitCovers(state.players[pid]);
   // POST (not GET+JSONP) — a big library of books would otherwise blow past the
   // URL-length limit on a GET request and silently fail to save anything at all.
-  const r=await _api({action:'save',userId:me.userId,token:me.token,state:stateJson,
+  const r=await _api({action:'save',userId:me.userId,token:me.token,
+                      state:JSON.stringify(split.slim),
+                      covers:JSON.stringify(split.covers),
                       pub:JSON.stringify(buildPublicSummary(state.players[pid]))});
-  if(r&&r.ok){showSaveStatus('saved');return;}
+  if(r&&r.ok){
+    showSaveStatus('saved');
+    // Зліпок для друзів не влазив у стовпчик: друзі бачили б застиглі числа.
+    if(r.pubSkipped&&!_pubWarned){_pubWarned=1;showToast('Дані для друзів завеликі — напиши мені');}
+    return;
+  }
   showSaveStatus('error');
   if(r&&r.error==='auth')showToast('Сесія закінчилась — увійди знову');
+  // Причину провалу видно лише тут: без цього ⚠️ нічого не пояснює.
+  else if(r&&r.error&&r.error!=='network'&&Date.now()-_saveWarnTs>60000){
+    _saveWarnTs=Date.now();showToast(r.error);
+  }
 }
 
 // ═══════════ LOC ICONS — individual files ═══════════
