@@ -414,7 +414,7 @@ html.has-wall .app{
 .gen-cnt{font-size:11.5px;font-weight:700;color:var(--txt-2);font-variant-numeric:tabular-nums;flex-shrink:0;}
 .gen-thumb{width:26px;height:37px;border-radius:4px;object-fit:cover;display:block;flex-shrink:0;}
 .gen-lock{font-size:13px;opacity:.55;width:26px;text-align:center;flex-shrink:0;}
-.gen-note{font-size:10.5px;line-height:1.45;color:var(--txt-3);text-align:center;padding:10px 6px 2px;}
+
 .ach-badge{display:flex;flex-direction:column;align-items:center;cursor:pointer;text-align:center;padding:4px 2px;border-radius:10px;transition:background .15s;}
 .ach-badge:hover{background:rgba(var(--ink),.06);}
 .ach-badge-lbl{font-size:9px;font-weight:600;color:var(--txt);margin-top:4px;max-width:70px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.25;}
@@ -435,6 +435,10 @@ html.has-wall .app{
 .tier-mark.reached .tier-mark-val{color:var(--txt-hi);}
 .ach-back-btn{background:rgba(var(--acc),.1);border:1px solid rgba(var(--acc),.25);border-radius:20px;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;padding:7px 14px;margin-bottom:8px;}
 .modal-box.ach-modal{max-height:76vh;display:flex;flex-direction:column;overflow:hidden;}
+/* Налаштування довгі, тому шапка тримається на місці, як в ачівках. */
+.modal-box.ps-modal{max-height:84vh;display:flex;flex-direction:column;overflow:hidden;}
+.ps-hdr{flex-shrink:0;padding:0 26px 10px 0;border-bottom:1px solid rgba(var(--ink),.08);margin-bottom:12px;}
+.ps-body{flex:1;overflow-y:auto;margin:0 -6px;padding:0 6px 2px;}
 .ach-modal-hdr{flex-shrink:0;padding-right:26px;}
 .ach-grid-scroll{flex:1;overflow-y:auto;margin:0 -6px;padding:0 6px 4px;}
 
@@ -587,6 +591,15 @@ select option{background:var(--panel);color:var(--txt-hi);}
   font-family:inherit;font-size:11.5px;font-weight:600;color:var(--txt-3);
   background:rgba(var(--ink),.04);border:1px dashed rgba(var(--ink),.16);}
 .wall-more:hover{color:var(--accent);border-color:var(--accent);}
+/* Прев'ю на весь екран. contain, а не cover: сенс саме в тому, щоб
+   побачити арт цілим, а не обрізаним по краях. */
+.wall-fs{position:fixed;inset:0;z-index:600;background:var(--scrim);display:flex;flex-direction:column;}
+.wall-fs-img{flex:1;min-height:0;background-size:contain;background-position:center;background-repeat:no-repeat;}
+.wall-fs-bar{flex-shrink:0;display:flex;align-items:center;gap:9px;
+  padding:12px 14px calc(12px + env(safe-area-inset-bottom, 0px));background:var(--glass);}
+.wall-fs-nm{flex:1;min-width:0;font-size:14px;font-weight:700;color:var(--txt-hi);}
+.wall-fs-cur{font-size:12px;font-weight:700;color:var(--ok);white-space:nowrap;}
+.wall-fs .btn-ok,.wall-fs .btn-cancel{flex-shrink:0;padding:9px 14px;font-size:13px;width:auto;}
 .wall-item{display:flex;flex-direction:column;gap:4px;}
 .wall-card{position:relative;aspect-ratio:9/14;border-radius:9px;overflow:hidden;cursor:pointer;
   border:1px solid rgba(var(--ink),.14);background:rgba(var(--ink),.05);}
@@ -1809,7 +1822,7 @@ const WALLS=[
   {id:'crystal',name:'Кристали',         file:'wall_crystal', loc:'caves'},
   {id:'water',  name:'Підводна',         file:'wall_water',   loc:'shore'},
   {id:'cyber',  name:'Кіберпанк',        file:'wall_cyber',   loc:'map2'},
-  {id:'night',  name:'Ніч',              file:'wall_night',   ach:'longestBook',tier:1, unit:'стор. в книзі'},
+  {id:'night',  name:'Ніч',              file:'wall_night',   loc:'pallet'},
   {id:'mush',   name:'Гриби',            file:'wall_mush',    ach:'quests',     tier:2, unit:'квестів'},
   {id:'fire',   name:'Вогняний світ',    file:'wall_fire',    ach:'monthBooks', tier:1, unit:'книг за місяць'},
   {id:'ice',    name:'Лід',              file:'wall_ice',     ach:'coinsSpent', tier:3, unit:'монет'},
@@ -1828,6 +1841,7 @@ const WALLS=[
   {id:'dystopia',name:'Останнє місто',   file:'wall_dystopia',ach:'gDystopia',  tier:0, unit:'антиутопій'},
   {id:'cafe',   name:'Книжкова кава',    file:'wall_cafe',    ach:'gRealism',   tier:0, unit:'реалізму'},
   {id:'garden', name:'Сад під місяцем',  file:'wall_garden',  ach:'gRomance',   tier:0, unit:'романтики'},
+  {id:'tome',   name:'Велетенський том', file:'wall_tome',    ach:'longestBook',tier:1, unit:'стор. в книзі'},
 ];
 const DEFAULT_WALL='classic';
 function wallById(id){return WALLS.find(w=>w.id===id)||WALLS[0];}
@@ -1857,6 +1871,26 @@ function applyWall(){
   document.documentElement.classList.add('has-wall');
 }
 function toggleWallLocks(){_wallLocksOpen=!_wallLocksOpen;openProfileSettings();}
+// Арт на весь екран, БЕЗ заслінки: у грі він навмисно приглушений, тож
+// інакше подивитись на нього ніде.
+function openWallPreview(id){
+  const d=pd();const w=wallById(id);
+  if(!d||!wallUnlocked(d,w))return;
+  const isCur=curWall().id===w.id;
+  closeWallPreview(true);
+  document.body.insertAdjacentHTML('beforeend',
+    '<div class="wall-fs" id="wall-fs" onclick="closeWallPreview()">'+
+      '<div class="wall-fs-img" style="background-image:url(\''+w.file+'.webp\')"></div>'+
+      '<div class="wall-fs-bar" onclick="event.stopPropagation()">'+
+        '<div class="wall-fs-nm">'+w.name+'</div>'+
+        (isCur
+          ?'<div class="wall-fs-cur">✓ Твої обої</div>'
+          :'<button class="btn-ok" onclick="setWall(\''+w.id+'\');closeWallPreview(true)">Поставити</button>')+
+        '<button class="btn-cancel" onclick="closeWallPreview(true)">Закрити</button>'+
+      '</div>'+
+    '</div>');
+}
+function closeWallPreview(){const el=document.getElementById('wall-fs');if(el)el.remove();}
 function setWall(id){
   const d=pd();if(!d)return;
   const w=wallById(id);
@@ -1898,7 +1932,7 @@ function wallCardHTML(w,d,act){
   // Мініатюра, а не повний арт: карточка 67 px, повний файл — 100 КБ.
   // loading="lazy" довантажує нижні рядки лише коли до них доскролили.
   return '<div class="wall-item">'+
-    '<div class="wall-card'+(act?' act':'')+'" onclick="setWall(\''+w.id+'\')" title="'+w.name+'">'+
+    '<div class="wall-card'+(act?' act':'')+'" onclick="openWallPreview(\''+w.id+'\')" title="'+w.name+'">'+
     '<img src="'+w.file+'_t.webp" loading="lazy" decoding="async" alt=""'+
     ' onerror="this.style.display=\'none\'"></div>'+
     '<div class="wall-cap'+(act?' act':'')+'">'+w.name+'</div></div>';
@@ -1990,17 +2024,15 @@ function renderAchievementsGridHTML(d){
   const{unlocked,total}=achievementsTotals(d);
   const base=ACHIEVEMENTS.filter(a=>!a.genre);
   const gens=ACHIEVEMENTS.filter(a=>a.genre);
-  const gensDone=gens.filter(a=>a.valueFn(d)>=a.tiers[0]).length;
   const body=_achTab==='genre'
-    ?`<div class="gen-shelf">${gens.map(a=>genreRowHTML(a,d)).join('')}</div>
-       <div class="gen-note">За кожен жанр — свої обої. Сходинок немає: 10 книг і нагорода твоя.</div>`
+    ?`<div class="gen-shelf">${gens.map(a=>genreRowHTML(a,d)).join('')}</div>`
     :`<div class="ach-grid">${base.map(a=>achBadgeHTML(a,d)).join('')}</div>`;
   return`${M_CLOSE_BTN}<div class="ach-modal-hdr">
       <div class="m-title" style="margin-bottom:2px">🏆 Досягнення</div>
-      <div style="font-size:12px;color:var(--txt-3)">${unlocked} з ${total} нагород відкрито</div>
+      <div style="font-size:12px;color:var(--txt-3)">${unlocked} з ${total} рівнів відкрито · обидві вкладки</div>
       <div class="goal-tabs" style="margin-top:9px">
         <button class="goal-tab${_achTab==='genre'?'':' act'}" onclick="setAchTab('base')">Базові</button>
-        <button class="goal-tab${_achTab==='genre'?' act':''}" onclick="setAchTab('genre')">Жанри · ${gensDone}/${gens.length}</button>
+        <button class="goal-tab${_achTab==='genre'?' act':''}" onclick="setAchTab('genre')">Жанри</button>
       </div>
     </div>
     <div class="ach-grid-scroll">${body}</div>`;
@@ -4037,7 +4069,9 @@ function openProfileSettings(){
   const avInner=url
     ?`<img src="${url}" style="width:100%;height:100%;object-fit:cover;display:block" onerror="psAvatarBroken(this)">`
     :avatarPlaceholderSVG(curClr,86);
-  const html=`${M_CLOSE_BTN}<div class="m-title">⚙️ Налаштування</div>
+  const html=`${M_CLOSE_BTN}
+    <div class="ps-hdr"><div class="m-title" style="margin:0">⚙️ Налаштування</div></div>
+    <div class="ps-body">
     <div style="position:relative;width:86px;height:86px;margin:2px auto 12px">
       <div id="ps-av-box" onclick="togglePsAvatarForm()" title="Змінити аватар"
         style="width:100%;height:100%;border-radius:50%;overflow:hidden;cursor:pointer;border:3px solid ${curClr};box-sizing:border-box;background:rgba(var(--ink),.04)">${avInner}</div>
@@ -4070,9 +4104,7 @@ function openProfileSettings(){
         ?`<div class="wall-grid" id="ps-walls-locked" style="margin-top:7px">${wallLockedCards}</div>
            <button class="wall-more" onclick="toggleWallLocks()">Згорнути ▴</button>`
         :`<button class="wall-more" onclick="toggleWallLocks()">Ще ${wallLocked.length} — за локації та досягнення ▾</button>`):''}
-      <div style="font-size:10px;line-height:1.4;color:var(--txt-3);margin-top:6px">
-        Нові приходять за нові локації на мапі й за читацькі досягнення.
-      </div>
+
     </div>
     <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(var(--ink),.08);display:flex;flex-direction:column;gap:7px">
       <div style="font-size:10.5px;color:var(--txt-3);text-align:center">
@@ -4082,12 +4114,13 @@ function openProfileSettings(){
       <button class="btn-cancel" style="width:100%" onclick="openChangePass()">Змінити пароль</button>
       <button class="btn-cancel" style="width:100%" onclick="openAbout()">Про проєкт</button>
       <button class="btn-cancel" style="width:100%" onclick="closeModal();confirmLogout()">Вийти з профілю</button>
+    </div>
     </div>`;
   // Якщо модалка вже відкрита (нас покликали після зміни аватара) —
   // перемальовуємо її вміст, а не кладемо другий оверлей поверх першого.
   const box=document.querySelector('#mOv .modal-box');
   if(box){box.innerHTML=html;return;}
-  mHTML(html);
+  mHTML(html,false,'ps-modal');
 }
 
 function openAbout(){
