@@ -1712,6 +1712,9 @@ const ACHIEVEMENTS=[
   {key:'gDystopia',  title:'Бунтар',      emoji:'🏙️', genre:'Антиутопія',          unit:'антиутопій',     tiers:[10]},
   {key:'gRealism',   title:'Спостерігач', emoji:'☕', genre:'Реалізм',             unit:'книг реалізму',  tiers:[10]},
   {key:'gRomance',   title:'Мрійник',     emoji:'🌸', genre:'Романтика',           unit:'романтики',      tiers:[10]},
+  {key:'gFantasy',   title:'Світоходець', emoji:'🌍', genre:'Фентезі',             unit:'фентезі',        tiers:[10]},
+  {key:'gClassic',   title:'Класик',      emoji:'🏛️', genre:'Класика',             unit:'класики',        tiers:[10]},
+  {key:'gHistory',   title:'Літописець',  emoji:'📜', genre:'Історичне',           unit:'книг про минуле',tiers:[10]},
   {key:'genreVariety',title:'Всеїдний читач',emoji:'🎭',unit:'жанрів серед прочитаного',tiers:[3,6,10,15],
     valueFn:d=>new Set((d.books||[]).map(b=>b.genre).filter(Boolean)).size,
     reward:{pid:146,name:'Молтрес'},
@@ -1842,6 +1845,9 @@ const WALLS=[
   {id:'cafe',   name:'Книжкова кава',    file:'wall_cafe',    ach:'gRealism',   tier:0, unit:'реалізму'},
   {id:'garden', name:'Сад під місяцем',  file:'wall_garden',  ach:'gRomance',   tier:0, unit:'романтики'},
   {id:'tome',   name:'Велетенський том', file:'wall_tome',    ach:'longestBook',tier:1, unit:'стор. в книзі'},
+  {id:'doors',  name:'Двері між світами',file:'wall_doors',   ach:'gFantasy',   tier:0, unit:'фентезі'},
+  {id:'victorian',name:'Вікторіанська зала',file:'wall_victorian',ach:'gClassic',tier:0, unit:'класики'},
+  {id:'papyrus',name:'Зала папірусів',   file:'wall_papyrus', ach:'gHistory',   tier:0, unit:'про минуле'},
 ];
 const DEFAULT_WALL='classic';
 function wallById(id){return WALLS.find(w=>w.id===id)||WALLS[0];}
