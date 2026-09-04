@@ -27,6 +27,7 @@
   --acc:126,206,255; --gold-rgb:251,191,36; --ok-rgb:74,222,128;
   --bad-rgb:239,68,68; --pri-rgb:37,99,235; --tl-rgb:45,212,191;
   --bg:#1a1a2e; --app:#16213e; --panel:#1e2d4a; --panel-rgb:30,45,74;
+  --app-rgb:22,33,62; --wall-veil:.78;
   --pop:#243554; --seg-act:#2a3550;
   --chrome:rgba(0,0,0,.45); --chrome-2:rgba(0,0,0,.5);
   --sunken:rgba(0,0,0,.3); --sunken-2:rgba(0,0,0,.2); --sunken-3:rgba(0,0,0,.25);
@@ -43,15 +44,24 @@
   --tip-bg:#fff; --tip-txt:#1e2d4a;
   --jn-road-op:.62;
 }
-/* Якщо нові (легкі) картинки ще не залиті — тихо лишаємось на старих PNG.
-   Клас ставить перевірка при завантаженні, див. «картинки». */
-html.no-webp .sel-bg{background-image:url('start.jpg');}
+/* Обої (--wall) кладуться під інтерфейс і накриваються заслінкою кольору
+   теми: --app-rgb дає той самий колір у rgb, --wall-veil — щільність.
+   Темним темам достатньо .78, світлим потрібно .82, бо під світлою
+   заслінкою картинка блякне швидше. Нижче .70 текст на напівпрозорих
+   підкладках уже нечитабельний — саме це перевіряє theme-test.js.
+   Обої НЕ залежать від теми: який саме арт — вирішує d.wall. */
+/* Екран входу — той самий арт, що й стартові обої «Класика»: перше, що
+   людина бачить, вона потім і отримує в грі. Це єдина картинка з jpg-двійником:
+   решта обоїв лише webp, бо без них інтерфейс цілком робочий, а тут екран
+   лишився б голим. Клас ставить перевірка при завантаженні, див. «картинки». */
+html.no-webp .sel-bg{background-image:url('wall_classic.jpg');}
 html[data-theme="day"]{
   color-scheme:light;
   --ink:23,37,66; --shadow:100,116,139;
   --acc:3,105,161; --gold-rgb:217,119,6; --ok-rgb:22,163,74;
   --bad-rgb:220,38,38; --pri-rgb:37,99,235; --tl-rgb:13,148,136;
   --bg:#e8ecf3; --app:#f6f8fc; --panel:#fff; --panel-rgb:255,255,255;
+  --app-rgb:246,248,252; --wall-veil:.82;
   --pop:#fff; --seg-act:#fff;
   --chrome:rgba(23,37,66,.05); --chrome-2:rgba(23,37,66,.04);
   --sunken:rgba(23,37,66,.035); --sunken-2:rgba(23,37,66,.025); --sunken-3:rgba(23,37,66,.06);
@@ -74,6 +84,7 @@ html[data-theme="ocean"]{
   --acc:2,132,199; --gold-rgb:202,138,4; --ok-rgb:13,148,136;
   --bad-rgb:225,29,72; --pri-rgb:3,105,161; --tl-rgb:6,148,162;
   --bg:#d7e9f7; --app:#eaf5fd; --panel:#fff; --panel-rgb:255,255,255;
+  --app-rgb:234,245,253; --wall-veil:.82;
   --pop:#f4fbff; --seg-act:#fff;
   --chrome:rgba(2,132,199,.09); --chrome-2:rgba(2,132,199,.08);
   --sunken:rgba(8,47,73,.045); --sunken-2:rgba(8,47,73,.03); --sunken-3:rgba(8,47,73,.07);
@@ -96,6 +107,7 @@ html[data-theme="paper"]{
   --acc:146,94,42; --gold-rgb:161,98,7; --ok-rgb:101,163,13;
   --bad-rgb:159,18,57; --pri-rgb:138,90,36; --tl-rgb:15,118,110;
   --bg:#e9dcc6; --app:#f7efe0; --panel:#fffaf1; --panel-rgb:255,250,241;
+  --app-rgb:247,239,224; --wall-veil:.82;
   --pop:#fdf6ea; --seg-act:#fffaf1;
   --chrome:rgba(62,44,26,.07); --chrome-2:rgba(62,44,26,.06);
   --sunken:rgba(62,44,26,.05); --sunken-2:rgba(62,44,26,.035); --sunken-3:rgba(62,44,26,.08);
@@ -116,6 +128,7 @@ html[data-theme="forest"]{
   color-scheme:dark;
   --acc:110,231,183; --ok-rgb:134,239,172; --pri-rgb:21,128,61;
   --bg:#08150f; --app:#0c2118; --panel:#143425; --panel-rgb:20,52,37;
+  --app-rgb:12,33,24; --wall-veil:.78;
   --pop:#1b4530; --seg-act:#1f5138;
   --chrome:rgba(0,0,0,.4); --sunken:rgba(0,0,0,.28);
   --glass:rgba(8,24,17,.82);
@@ -131,6 +144,7 @@ html[data-theme="plum"]{
   color-scheme:dark;
   --acc:216,180,254; --bad-rgb:251,113,133; --pri-rgb:124,58,237;
   --bg:#130a1e; --app:#1c1030; --panel:#2a1740; --panel-rgb:42,23,64;
+  --app-rgb:28,16,48; --wall-veil:.78;
   --pop:#372050; --seg-act:#3f2860;
   --chrome:rgba(0,0,0,.4); --sunken:rgba(0,0,0,.28);
   --glass:rgba(20,10,32,.82);
@@ -147,6 +161,13 @@ html[data-theme="plum"]{
 html,body{height:100%;overflow:hidden;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);}
 .app{max-width:480px;margin:0 auto;height:100vh;height:100dvh;background:var(--app);position:relative;overflow:hidden;}
+/* Клас ставить applyWall(), а не CSS: до входу в гру обоїв нема. Екран
+   входу має власну картинку (.sel-bg) і перекриває це повністю. */
+html.has-wall .app{
+  background-color:var(--app);
+  background-image:linear-gradient(rgba(var(--app-rgb),var(--wall-veil)),rgba(var(--app-rgb),var(--wall-veil))),var(--wall);
+  background-size:cover;background-position:center top;background-repeat:no-repeat;
+}
 .screen{display:none;height:100%;flex-direction:column;}.screen.active{display:flex;}
 
 /* SELECT */
@@ -156,7 +177,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sel-title{margin:11vh 0 auto;text-align:center;font-weight:800;line-height:1.1;
   font-size:clamp(26px,7.4vw,40px);color:#fff;letter-spacing:.005em;
   text-shadow:0 2px 14px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.6);}
-.sel-bg{background:url('start.webp') center top/cover no-repeat;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 1rem calc(6rem + env(safe-area-inset-bottom, 0px));overflow-y:auto;}
+.sel-bg{background:url('wall_classic.webp') center top/cover no-repeat;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 1rem calc(6rem + env(safe-area-inset-bottom, 0px));overflow-y:auto;}
 .spill{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;background:rgba(var(--acc),.15);color:var(--accent);display:inline-block;margin:2px 1px;}
 
 /* LOGIN */
@@ -377,6 +398,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ach-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold-solid),var(--ok-solid));border-radius:4px;}
 .ach-arrow{font-size:20px;color:var(--accent);flex-shrink:0;}
 .ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:10px 4px;}
+/* Полиця жанрів: кожен рядок — книжка корінцем до нас. Колір корінця й
+   заповнення беруться з GENRE_COLORS, тобто з даних, а не з теми. */
+.gen-shelf{display:flex;flex-direction:column;gap:7px;}
+.gen-row{position:relative;border-radius:11px;overflow:hidden;cursor:pointer;
+  background:rgba(var(--ink),.05);border-left:4px solid transparent;transition:background .15s;}
+.gen-row:hover{background:rgba(var(--ink),.09);}
+.gen-row.done{background:rgba(var(--ok-rgb),.10);}
+.gen-fill{position:absolute;top:0;bottom:0;left:0;opacity:.20;pointer-events:none;}
+.gen-body{position:relative;display:flex;align-items:center;gap:9px;padding:9px 11px;}
+.gen-em{font-size:16px;line-height:1;flex-shrink:0;}
+.gen-name{flex:1;min-width:0;font-size:13px;font-weight:700;color:var(--txt-hi);line-height:1.2;}
+.gen-name i{display:block;font-style:normal;font-size:10px;font-weight:500;color:var(--txt-3);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.gen-cnt{font-size:11.5px;font-weight:700;color:var(--txt-2);font-variant-numeric:tabular-nums;flex-shrink:0;}
+.gen-thumb{width:26px;height:37px;border-radius:4px;object-fit:cover;display:block;flex-shrink:0;}
+.gen-lock{font-size:13px;opacity:.55;width:26px;text-align:center;flex-shrink:0;}
+.gen-note{font-size:10.5px;line-height:1.45;color:var(--txt-3);text-align:center;padding:10px 6px 2px;}
 .ach-badge{display:flex;flex-direction:column;align-items:center;cursor:pointer;text-align:center;padding:4px 2px;border-radius:10px;transition:background .15s;}
 .ach-badge:hover{background:rgba(var(--ink),.06);}
 .ach-badge-lbl{font-size:9px;font-weight:600;color:var(--txt);margin-top:4px;max-width:70px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.25;}
@@ -544,6 +582,28 @@ select option{background:var(--panel);color:var(--txt-hi);}
 ::-webkit-scrollbar-thumb{background:rgba(var(--ink),.15);border-radius:2px;}
 
 /* рядок з мініатюрами тем у налаштуваннях */
+.wall-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+.wall-more{width:100%;margin-top:9px;padding:9px;border-radius:11px;cursor:pointer;
+  font-family:inherit;font-size:11.5px;font-weight:600;color:var(--txt-3);
+  background:rgba(var(--ink),.04);border:1px dashed rgba(var(--ink),.16);}
+.wall-more:hover{color:var(--accent);border-color:var(--accent);}
+.wall-item{display:flex;flex-direction:column;gap:4px;}
+.wall-card{position:relative;aspect-ratio:9/14;border-radius:9px;overflow:hidden;cursor:pointer;
+  border:1px solid rgba(var(--ink),.14);background:rgba(var(--ink),.05);}
+.wall-card img{width:100%;height:100%;object-fit:cover;display:block;}
+.wall-card.act{border-color:var(--accent);box-shadow:0 0 0 2px rgba(var(--acc),.3);}
+/* Закриті обої НЕ показують картинку: розкриття лишається на момент
+   нагороди. Видно тільки замок і звідки арт прийде. */
+.wall-card.lk{cursor:default;border-style:dashed;background:rgba(var(--ink),.05);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;}
+.wall-lock{font-size:14px;line-height:1;opacity:.65;}
+.wall-req{font-size:7.5px;font-weight:600;color:var(--txt-3);text-align:center;line-height:1.2;padding:0 2px;}
+.wall-cap{font-size:8.5px;font-weight:600;color:var(--txt-3);text-align:center;line-height:1.2;}
+.wall-cap.act{color:var(--accent);}
+/* Широка обрізка арту для модалки «Нові обої» — портрет у 130px нікуди
+   не влазить, тому беремо смугу з верхньої третини. */
+.wall-hero{width:100%;aspect-ratio:16/10;border-radius:12px;margin-bottom:12px;
+  background-size:cover;background-position:center 32%;}
 .theme-row{display:flex;gap:8px;overflow-x:auto;padding:2px 0 5px;scrollbar-width:thin;scrollbar-color:rgba(var(--ink),.15) transparent;}
 .theme-row::-webkit-scrollbar{height:3px;}
 .theme-row::-webkit-scrollbar-thumb{background:rgba(var(--ink),.15);border-radius:2px;}
@@ -895,6 +955,7 @@ function initState(id){
   if(!state.players[id]) state.players[id]={
     coins:0, bookPoints:0, booksRead:0,
     location:'oak', region:'kanto', unlockedLocs:['oak'],
+    wall:DEFAULT_WALL, wallsSeen:[DEFAULT_WALL],
     progress:{}, progressOrder:[], books:[],
     monthlyGoal:null, yearlyGoal:null,
     totalBought:0, totalCoinsSpent:0,
@@ -1578,11 +1639,10 @@ function maxByAuthor(d){
   const vals=Object.values(counts);
   return vals.length?Math.max(...vals):0;
 }
-function maxByGenre(d){
-  const counts={};
-  (d.books||[]).forEach(b=>{if(b.genre)counts[b.genre]=(counts[b.genre]||0)+1;});
-  const vals=Object.values(counts);
-  return vals.length?Math.max(...vals):0;
+// Скільки книг прочитано в конкретному жанрі. Назва жанру мусить точно
+// збігатися з рядком у GENRES — інакше ачівка тихо стоятиме на нулі.
+function booksInGenre(d,genre){
+  return (d.books||[]).filter(b=>b.genre===genre).length;
 }
 function distinctActiveMonths(d){
   const months=new Set();
@@ -1611,7 +1671,7 @@ const ACHIEVEMENTS=[
     valueFn:d=>(d.books||[]).reduce((s,b)=>s+(b.pages||0),0),
     reward:{pid:150,name:'Мьюту'},
     desc:t=>`Прочитати ${t} сторінок`},
-  {key:'longestBook',title:'Товстенна книга',emoji:'📔',unit:'стор. в 1 книзі',tiers:[500,900,1200],
+  {key:'longestBook',title:'Товстенна книга',emoji:'📔',unit:'стор. в 1 книзі',tiers:[500,700,900],
     valueFn:d=>(d.books||[]).reduce((m,b)=>Math.max(m,b.pages||0),0),
     desc:t=>`Прочитати книгу на ${t}+ сторінок`},
   {key:'fiveStars',title:'Найвища оцінка',emoji:'⭐',unit:'книг з оцінкою 5',tiers:[5,10,20],
@@ -1624,10 +1684,21 @@ const ACHIEVEMENTS=[
     reward:{pid:144,name:'Артикуно'},
     desc:t=>`Прочитати ${t} ${bookWord(t)} одного автора`},
   // ── жанри й мови ──
-  {key:'genreFan',title:'Знавець жанру',emoji:'📗',unit:'книг одного жанру',tiers:[5,10,25,50],
-    valueFn:maxByGenre,
-    reward:{pid:244,name:'Ентей'},
-    desc:t=>`Прочитати ${t} ${bookWord(t)} одного жанру`},
+  // П'ять жанрових: кожна дає обої свого настрою. Поріг — 5 книг на
+  // другій полиці; перша (3) це рання галочка, третя (10) довга мета.
+  // key НЕ перейменовувати: він лежить у прогресі ачівок.
+  // ЖАНРОВІ. Живуть на власній вкладці й влаштовані інакше за базові:
+  // жодних сходинок, одна мета — 10 книг жанру, і за неї свої обої.
+  // valueFn їм ставиться нижче з поля genre, щоб назва жанру не могла
+  // розійтися між полем і функцією.
+  {key:'gDetective', title:'Шерлок',      emoji:'🔍', genre:'Детектив',            unit:'детективів',     tiers:[10]},
+  {key:'gScifi',     title:'Астронавт',   emoji:'🚀', genre:'Наукова фантастика',  unit:'книг фантастики',tiers:[10]},
+  {key:'gHorror',    title:'Привид',      emoji:'👻', genre:'Жахи / Містика',      unit:'книг містики',   tiers:[10]},
+  {key:'gAdventure', title:'Скарбошукач', emoji:'🧭', genre:'Пригоди',             unit:'пригод',         tiers:[10]},
+  {key:'gManga',     title:'Манґака',     emoji:'🎴', genre:'Комікс / Манга',      unit:'манги',          tiers:[10]},
+  {key:'gDystopia',  title:'Бунтар',      emoji:'🏙️', genre:'Антиутопія',          unit:'антиутопій',     tiers:[10]},
+  {key:'gRealism',   title:'Спостерігач', emoji:'☕', genre:'Реалізм',             unit:'книг реалізму',  tiers:[10]},
+  {key:'gRomance',   title:'Мрійник',     emoji:'🌸', genre:'Романтика',           unit:'романтики',      tiers:[10]},
   {key:'genreVariety',title:'Всеїдний читач',emoji:'🎭',unit:'жанрів серед прочитаного',tiers:[3,6,10,15],
     valueFn:d=>new Set((d.books||[]).map(b=>b.genre).filter(Boolean)).size,
     reward:{pid:146,name:'Молтрес'},
@@ -1648,6 +1719,7 @@ const ACHIEVEMENTS=[
     desc:t=>`Виростити ${t} ${pokeWord(t)} до Мега-еволюції`},
   {key:'locations',title:'Дослідник',emoji:'🗺️',unit:'локацій',tiers:[3,5,7],
     valueFn:d=>(d.unlockedLocs||[]).length,
+    reward:{pid:244,name:'Ентей'},   // переїхав зі знятої «Знавець жанру»
     desc:t=>`Відкрити ${t} ${locWord(t)}`},
   {key:'bought',title:'Покупець',emoji:'🛒',unit:'покупок',tiers:[3,10,25,50],
     valueFn:d=>d.totalBought||0,
@@ -1672,6 +1744,14 @@ const ACHIEVEMENTS=[
     reward:{pid:250,name:'Хо-Ох'},
     desc:t=>`Прочитати хоча б 1 книгу у ${t} різних місяцях`},
 ];
+// Жанровим ачівкам valueFn і desc робляться з поля genre: інакше назва
+// жанру дублювалась би в трьох місцях і могла тихо розійтися з GENRES.
+ACHIEVEMENTS.forEach(a=>{
+  if(!a.genre)return;
+  a.valueFn=d=>booksInGenre(d,a.genre);
+  a.desc=t=>`Прочитати ${t} ${bookWord(t)} у жанрі «${a.genre}»`;
+  if(!GENRES.includes(a.genre))console.warn('[ach] жанру немає в GENRES:',a.genre);
+});
 function achievementTierInfo(a,d){
   const val=a.valueFn(d);
   let unlockedCount=0;
@@ -1703,6 +1783,125 @@ function newlyCompletedAchievements(d,beforeSet){
 }
 function celebrateNewAchievements(d,beforeSet){
   newlyCompletedAchievements(d,beforeSet).forEach(a=>qM(()=>showAchievementCelebration(a)));
+  celebrateNewWalls();   // ачівка могла дійти до тіру з обоями
+}
+
+// ═══════════ WALLPAPERS ═══════════
+// Обої й тема — дві незалежні речі. Тема дає кольори інтерфейсу й
+// щільність заслінки (--wall-veil), обої — картинку під ними. Ніякої
+// мапи «тема → арт» немає: заслінка перекрашує будь-який арт у свій
+// відтінок, тож будь-яка пара працює.
+// Порядок у списку — це порядок появи в грі, він же порядок у пікері:
+// спершу старт, далі локації по мапі, далі читацькі ачівки.
+// Локації винагороджують лов, ачівки — читання, щоб обої отримував і
+// той, хто ловить, і той, хто просто багато читає.
+// Правило: ОДНА ачівка — ОДНА нагорода. Обої висять лише на тих, де немає
+// легендарного покемона в ACHIEVEMENTS.reward, інакше одна й та сама
+// полиця давала б два подарунки, а половина ачівок — жодного.
+// Тір — ДРУГИЙ (tier:1), а не третій: у гравців зараз 11, 8 і 3 книги й
+// дві відкриті локації, тож третя полиця це «колись», а перша прилітає
+// одразу й нічого не варта. Виросте масштаб — тіри можна підняти.
+const WALLS=[
+  {id:'classic',name:'Класика',          file:'wall_classic'},
+  {id:'elven',  name:'Ельфійська',       file:'wall_elven',   loc:'forest'},
+  {id:'ruins',  name:'Руїни',            file:'wall_ruins',   loc:'glade'},
+  {id:'air',    name:'Повітря',          file:'wall_air',     loc:'butterfly'},
+  {id:'crystal',name:'Кристали',         file:'wall_crystal', loc:'caves'},
+  {id:'water',  name:'Підводна',         file:'wall_water',   loc:'shore'},
+  {id:'cyber',  name:'Кіберпанк',        file:'wall_cyber',   loc:'map2'},
+  {id:'night',  name:'Ніч',              file:'wall_night',   ach:'longestBook',tier:1, unit:'стор. в книзі'},
+  {id:'mush',   name:'Гриби',            file:'wall_mush',    ach:'quests',     tier:2, unit:'квестів'},
+  {id:'fire',   name:'Вогняний світ',    file:'wall_fire',    ach:'monthBooks', tier:1, unit:'книг за місяць'},
+  {id:'ice',    name:'Лід',              file:'wall_ice',     ach:'coinsSpent', tier:3, unit:'монет'},
+  // Єдиний виняток із правила «друга полиця»: англійська набігає сама,
+  // бо detectBookLanguage() віддає 'en' будь-якій латиниці без діакритики,
+  // а Goodreads саме таку й підставляє. Тож 3 мови — це українська плюс
+  // заглушка плюс одна справжня; чесна межа тут четверта.
+  {id:'tower',  name:'Вавилонська вежа', file:'wall_tower',   ach:'polyglot',   tier:2, unit:'мови'},
+  {id:'bazaar', name:'Книжковий базар',  file:'wall_bazaar',  ach:'bought',     tier:2, unit:'покупок'},
+  // Жанрові: настрій арту = настрій жанру, це найпряміший зв'язок у грі.
+  {id:'express',name:'Східний експрес',  file:'wall_express', ach:'gDetective', tier:0, unit:'детективів'},
+  {id:'solar',  name:'Соларпанк',        file:'wall_solar',   ach:'gScifi',     tier:0, unit:'фантастики'},
+  {id:'gothic', name:'Готика',           file:'wall_gothic',  ach:'gHorror',    tier:0, unit:'містики'},
+  {id:'lantern',name:'Тисяча ліхтарів',  file:'wall_lanterns',ach:'gAdventure', tier:0, unit:'пригод'},
+  {id:'tatami', name:'Дім у саду',       file:'wall_tatami',  ach:'gManga',     tier:0, unit:'манги'},
+  {id:'dystopia',name:'Останнє місто',   file:'wall_dystopia',ach:'gDystopia',  tier:0, unit:'антиутопій'},
+  {id:'cafe',   name:'Книжкова кава',    file:'wall_cafe',    ach:'gRealism',   tier:0, unit:'реалізму'},
+  {id:'garden', name:'Сад під місяцем',  file:'wall_garden',  ach:'gRomance',   tier:0, unit:'романтики'},
+];
+const DEFAULT_WALL='classic';
+function wallById(id){return WALLS.find(w=>w.id===id)||WALLS[0];}
+function wallForAch(key){return WALLS.find(w=>w.ach===key)||null;}
+function wallAch(w){return w.ach?ACHIEVEMENTS.find(a=>a.key===w.ach):null;}
+function wallUnlocked(d,w){
+  if(!w.loc&&!w.ach)return true;
+  if(!d)return false;
+  if(w.loc)return (d.unlockedLocs||[]).includes(w.loc);
+  const a=wallAch(w);
+  return !!a&&a.valueFn(d)>=a.tiers[w.tier];
+}
+function unlockedWallIds(d){return WALLS.filter(w=>wallUnlocked(d,w)).map(w=>w.id);}
+// Умова людською мовою: «🌲 Вірідіан» або «📖 10000 сторінок».
+function wallReqText(w){
+  if(w.loc){const l=LOCS[w.loc];return l?l.emoji+' '+l.mLabel:'';}
+  const a=wallAch(w);
+  return a?a.emoji+' '+a.tiers[w.tier]+' '+(w.unit||a.unit):'';
+}
+function curWall(){
+  const d=pd();
+  const w=wallById((d&&d.wall)||DEFAULT_WALL);
+  return wallUnlocked(d,w)?w:WALLS[0];   // арт зник із відкритих — вертаємось на старт
+}
+function applyWall(){
+  document.documentElement.style.setProperty('--wall',"url('"+curWall().file+".webp')");
+  document.documentElement.classList.add('has-wall');
+}
+function toggleWallLocks(){_wallLocksOpen=!_wallLocksOpen;openProfileSettings();}
+function setWall(id){
+  const d=pd();if(!d)return;
+  const w=wallById(id);
+  if(!wallUnlocked(d,w))return;   // клік по замку нічого не робить
+  d.wall=w.id;
+  applyWall();
+  saveToCloud(cur);
+  // перемальовуємо ЛИШЕ налаштування: з модалки «Нові обої» цей же
+  // setWall викликається кнопкою «Поставити», і підміняти її вміст не можна.
+  if(document.getElementById('ps-walls'))openProfileSettings();
+}
+// Що вже показали — лежить у сейві списком, а не рахується щоразу:
+// інакше модалка загубиться, якщо гру закрили до того, як її побачили.
+function checkWallUnlocks(){
+  const d=pd();if(!d)return[];
+  if(!d.wallsSeen)d.wallsSeen=[DEFAULT_WALL];
+  const fresh=WALLS.filter(w=>wallUnlocked(d,w)&&!d.wallsSeen.includes(w.id));
+  if(!fresh.length)return[];
+  fresh.forEach(w=>d.wallsSeen.push(w.id));
+  saveToCloud(cur);
+  return fresh;
+}
+function celebrateNewWalls(){
+  checkWallUnlocks().forEach(w=>qM(()=>mHTML(
+    M_CLOSE_BTN+
+    '<div class="wall-hero" style="background-image:url(\''+w.file+'.webp\')"></div>'+
+    '<div class="m-title" style="text-align:center">Нові обої!</div>'+
+    '<div class="m-desc" style="text-align:center">«'+w.name+'» — тепер твої.</div>'+
+    '<div class="m-btns">'+
+      '<button class="btn-ok" onclick="setWall(\''+w.id+'\');closeModal()">Поставити</button>'+
+      '<button class="btn-cancel" onclick="closeModal()">Пізніше</button>'+
+    '</div>')));
+}
+function wallCardHTML(w,d,act){
+  const open=wallUnlocked(d,w);
+  if(!open)return '<div class="wall-item"><div class="wall-card lk" title="Ще не відкрито">'+
+    '<span class="wall-lock">🔒</span><span class="wall-req">'+wallReqText(w)+'</span></div>'+
+    '<div class="wall-cap">&nbsp;</div></div>';
+  // Мініатюра, а не повний арт: карточка 67 px, повний файл — 100 КБ.
+  // loading="lazy" довантажує нижні рядки лише коли до них доскролили.
+  return '<div class="wall-item">'+
+    '<div class="wall-card'+(act?' act':'')+'" onclick="setWall(\''+w.id+'\')" title="'+w.name+'">'+
+    '<img src="'+w.file+'_t.webp" loading="lazy" decoding="async" alt=""'+
+    ' onerror="this.style.display=\'none\'"></div>'+
+    '<div class="wall-cap'+(act?' act':'')+'">'+w.name+'</div></div>';
 }
 function _achievementCelebrationContentHTML(a){
   const marksHtml=a.tiers.map(t=>`<div class="tier-mark reached"><span class="tier-mark-icon">✅</span><span class="tier-mark-val">${t}</span></div>`).join('');
@@ -1765,15 +1964,48 @@ function achBadgeHTML(a,d){
     <div class="ach-badge-tier">${info.unlockedCount}/${info.totalTiers}</div>
   </div>`;
 }
+// Жанрові показуються НЕ кружечками: у них немає сходинок, зате є колір
+// жанру й одна мета, тому вони читаються як книжки на полиці — смуга
+// заповнюється, поки набираються книги.
+function genreRowHTML(a,d){
+  const need=a.tiers[0], val=a.valueFn(d), done=val>=need;
+  const pct=Math.min(100,Math.round(val/need*100));
+  const clr=GENRE_COLORS[a.genre]||'#9ca3af';   // колір жанру — це дані, не тема
+  const w=wallForAch(a.key);
+  const prize=done&&w
+    ?`<img class="gen-thumb" src="${w.file}_t.webp" loading="lazy" decoding="async" alt="">`
+    :'<span class="gen-lock">🔒</span>';
+  return `<div class="gen-row${done?' done':''}" style="border-left-color:${clr}"
+      onclick="openAchievementDetail('${a.key}')" title="${esc(a.genre)}">
+    <div class="gen-fill" style="width:${pct}%;background:${clr}"></div>
+    <div class="gen-body">
+      <span class="gen-em">${a.emoji}</span>
+      <span class="gen-name">${a.title}<i>${esc(a.genre)}</i></span>
+      <span class="gen-cnt">${Math.min(val,need)}/${need}</span>
+      ${prize}
+    </div>
+  </div>`;
+}
 function renderAchievementsGridHTML(d){
   const{unlocked,total}=achievementsTotals(d);
-  const badges=ACHIEVEMENTS.map(a=>achBadgeHTML(a,d)).join('');
+  const base=ACHIEVEMENTS.filter(a=>!a.genre);
+  const gens=ACHIEVEMENTS.filter(a=>a.genre);
+  const gensDone=gens.filter(a=>a.valueFn(d)>=a.tiers[0]).length;
+  const body=_achTab==='genre'
+    ?`<div class="gen-shelf">${gens.map(a=>genreRowHTML(a,d)).join('')}</div>
+       <div class="gen-note">За кожен жанр — свої обої. Сходинок немає: 10 книг і нагорода твоя.</div>`
+    :`<div class="ach-grid">${base.map(a=>achBadgeHTML(a,d)).join('')}</div>`;
   return`${M_CLOSE_BTN}<div class="ach-modal-hdr">
       <div class="m-title" style="margin-bottom:2px">🏆 Досягнення</div>
       <div style="font-size:12px;color:var(--txt-3)">${unlocked} з ${total} нагород відкрито</div>
+      <div class="goal-tabs" style="margin-top:9px">
+        <button class="goal-tab${_achTab==='genre'?'':' act'}" onclick="setAchTab('base')">Базові</button>
+        <button class="goal-tab${_achTab==='genre'?' act':''}" onclick="setAchTab('genre')">Жанри · ${gensDone}/${gens.length}</button>
+      </div>
     </div>
-    <div class="ach-grid-scroll"><div class="ach-grid">${badges}</div></div>`;
+    <div class="ach-grid-scroll">${body}</div>`;
 }
+function setAchTab(t){_achTab=t;openAchievementsModal();}
 function achievementDetailHTML(a,d){
   const info=achievementTierInfo(a,d);
   const locked=info.unlockedCount===0;
@@ -1789,8 +2021,25 @@ function achievementDetailHTML(a,d){
   });
   const barHtml=segs.map(s=>`<div class="tier-seg"><div class="tier-seg-fill" style="width:${s.pct}%"></div></div>`).join('');
   const marksHtml=segs.map(s=>`<div class="tier-mark ${s.reached?'reached':''}"><span class="tier-mark-icon">${s.reached?'✅':'🔒'}</span><span class="tier-mark-val">${s.target}</span></div>`).join('');
-  const captionText=info.nextTier?`${Math.min(info.val,info.nextTier)}/${info.nextTier} до наступного рівня`:'Усі рівні відкрито!';
+  const single=a.tiers.length===1;
+  const captionText=info.nextTier
+    ?(single?`${Math.min(info.val,info.nextTier)}/${info.nextTier} ${a.unit}`
+            :`${Math.min(info.val,info.nextTier)}/${info.nextTier} до наступного рівня`)
+    :(single?'Нагорода відкрита!':'Усі рівні відкрито!');
   const maxed=info.unlockedCount>=info.totalTiers;
+  // Обої — така сама нагорода, як легендарний покемон, і на екрані
+  // ачівки їх теж треба показати, інакше незрозуміло, за що стараєшся.
+  const wal=wallForAch(a.key);
+  const walNeed=wal?a.tiers[wal.tier]:0;
+  const wallBox=wal?(info.val>=walNeed
+    ?`<div class="ach-reward-box unlocked">
+        <img src="${wal.file}_t.webp" style="width:44px;height:63px;border-radius:5px;object-fit:cover;display:block" onerror="this.style.display='none'">
+        <div class="ach-reward-lbl">Обої «${wal.name}» — відкрито</div>
+      </div>`
+    :`<div class="ach-reward-box">
+        <div class="ach-reward-lock">🔒</div>
+        <div class="ach-reward-lbl">Обої за ${walNeed} ${wal.unit||a.unit}</div>
+      </div>`):'';
   const rewardBox=a.reward?(maxed
     ?`<div class="ach-reward-box unlocked">
         <img src="${img(a.reward.pid)}" style="width:56px;height:56px;image-rendering:pixelated" onerror="this.style.display='none'">
@@ -1807,8 +2056,8 @@ function achievementDetailHTML(a,d){
       <div class="m-desc" style="margin-bottom:4px">${a.resets?'Скидається щомісяця. ':''}Поточний показник: <b>${info.val}</b> ${a.unit}</div>
       <div class="tier-caption">${captionText}</div>
       <div class="tier-bar">${barHtml}</div>
-      <div class="tier-marks">${marksHtml}</div>
-      ${rewardBox}
+      ${single?``:`<div class="tier-marks">${marksHtml}</div>`}
+      ${rewardBox}${wallBox}
     </div>`;
 }
 function openAchievementsModal(){
@@ -2127,6 +2376,11 @@ async function loadStateFor(userId,tryCloud,pre){
   }
   state.players[userId]=Object.assign({},state.players[userId],r.state);
   mergeCovers(state.players[userId],r.covers);
+  // Обої: хмара могла принести і свій d.wall, і свій список показаних.
+  // enterGame() працював з локальною копією, тому застосовуємо ще раз.
+  const _wd=state.players[userId];
+  if(!_wd.wallsSeen)_wd.wallsSeen=unlockedWallIds(_wd);
+  if(userId===cur)applyWall();
   if(migrateBookDates(state.players[userId]))mig=true;
   saveLocal('rpg_state_'+userId,JSON.stringify(state.players[userId]));
   // Перенесене треба один раз відправити нагору, інакше в хмарі `date`
@@ -2145,6 +2399,10 @@ function enterGame(){
   else if(['shelves','wall','journey'].includes(_d.libView))_libViewMode=_d.libView;
   if(['size','genre','author'].includes(_d.libSort))_libSortBy=_d.libSort;
   if(['date','genre'].includes(_d.libPath))_libPath=_d.libPath;
+  // Старий сейв без обоїв: усе вже заслужене вважаємо показаним, інакше
+  // на першому ж вході прилетіла б купа модалок за минулі заслуги.
+  if(!_d.wallsSeen)_d.wallsSeen=unlockedWallIds(_d);
+  applyWall();
   renderGuestBar();
   friendsData={friends:[],incoming:[],outgoing:[],reax:[]};
   if(!me.guest){
@@ -3770,6 +4028,11 @@ function openProfileSettings(){
   const curClr=pClr(p,d);
   const thm=curTheme();
   const themeCards=THEMES.map(t=>themeCardHTML(t,t.id===thm)).join('');
+  const wallNow=curWall();
+  const wallOpen=WALLS.filter(w=>wallUnlocked(d,w));
+  const wallLocked=WALLS.filter(w=>!wallUnlocked(d,w));
+  const wallCards=wallOpen.map(w=>wallCardHTML(w,d,w.id===wallNow.id)).join('');
+  const wallLockedCards=wallLocked.map(w=>wallCardHTML(w,d,false)).join('');
   const swatches=PROFILE_COLORS.map(c=>`<div onclick="selectProfileColor('${c}')" id="pclr${c.replace('#','')}" style="width:36px;height:36px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${c===curClr?'var(--txt-hi)':'transparent'};box-sizing:border-box;flex-shrink:0"></div>`).join('');
   const avInner=url
     ?`<img src="${url}" style="width:100%;height:100%;object-fit:cover;display:block" onerror="psAvatarBroken(this)">`
@@ -3799,6 +4062,17 @@ function openProfileSettings(){
       <div class="flbl">Кольорова гама</div>
       <div class="theme-row" id="ps-themes">${themeCards}</div>
       <div id="ps-theme-note" style="font-size:10px;line-height:1.4;color:var(--txt-3)">${themeById(thm).desc}</div>
+    </div>
+    <div style="text-align:left;margin-top:16px;padding-top:14px;border-top:1px solid rgba(var(--ink),.08)">
+      <div class="flbl">Обої · ${wallOpen.length} з ${WALLS.length}</div>
+      <div class="wall-grid" id="ps-walls">${wallCards}</div>
+      ${wallLocked.length?(_wallLocksOpen
+        ?`<div class="wall-grid" id="ps-walls-locked" style="margin-top:7px">${wallLockedCards}</div>
+           <button class="wall-more" onclick="toggleWallLocks()">Згорнути ▴</button>`
+        :`<button class="wall-more" onclick="toggleWallLocks()">Ще ${wallLocked.length} — за локації та досягнення ▾</button>`):''}
+      <div style="font-size:10px;line-height:1.4;color:var(--txt-3);margin-top:6px">
+        Нові приходять за нові локації на мапі й за читацькі досягнення.
+      </div>
     </div>
     <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(var(--ink),.08);display:flex;flex-direction:column;gap:7px">
       <div style="font-size:10.5px;color:var(--txt-3);text-align:center">
@@ -4126,6 +4400,11 @@ function _renderBookHTML(book, i, sc=1){
 }
 
 let _libViewMode='shelves',_libSortBy='size',_libPath='date';
+// Закриті обої згорнуті за замовчуванням — при вісімнадцяти артах це
+// сімнадцять замків, і вони давлять сильніше, ніж мотивують.
+let _wallLocksOpen=false;
+// Вкладка екрана досягнень: базові кружечками, жанрові полицею.
+let _achTab='base';
 function _computeShelfGroups(withIdx,sortBy){
   if(sortBy==='genre'){
     const groups={};
@@ -4862,8 +5141,10 @@ function locIconEl(locId,size=64){
 }
 
 // Одна дрібна перевірка: беремо найлегший із нових файлів (6 КБ, і він
-// однаково потрібен на мапі). Немає — кажемо CSS, і стартовий екран
-// візьме старий PNG.
+// однаково потрібен на мапі). Немає webp — ставимо клас, і екран входу
+// бере jpg-двійник класики (html.no-webp .sel-bg). Картинки локацій
+// і мапи мають свої фолбеки через onerror, тому вони цим класом не
+// керуються — і їхні .jpg видаляти не можна.
 (function(){const i=new Image();i.onerror=function(){document.documentElement.classList.add('no-webp');};i.src='loc_oak.webp';})();
 boot();
 window.addEventListener('visibilitychange',()=>{
