@@ -242,7 +242,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .rx-chip-av{width:16px;height:16px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;overflow:hidden;}
 .rx-chip-av img{width:100%;height:100%;object-fit:cover;}
 .rx-chip-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.rx-new{flex-shrink:0;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--bad);background:rgba(var(--bad-rgb),.14);border-radius:10px;padding:2px 6px;}
 
 /* GUEST BAR — звичайний flex-елемент над нижнім меню, не fixed:
    так вона фізично не може перекрити ні контент, ні кнопки. */
@@ -253,7 +252,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* HEADER */
 .hdr{background:var(--chrome);padding:9px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(var(--ink),.08);flex-shrink:0;}
-.back-btn{background:none;border:none;cursor:pointer;font-size:18px;color:var(--accent);padding:2px 6px;}
 .hdr-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;overflow:hidden;}
 .hdr-info{display:none;}
 .hdr-name{font-size:13px;font-weight:600;color:var(--txt-hi);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -284,7 +282,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   background:rgba(var(--ink),.08);border-radius:6px;overflow:hidden;}
 .dex-img{width:calc(100% + 6px);height:68px;object-fit:contain;object-position:bottom center;image-rendering:pixelated;margin:0 -3px;display:block;}
 .dex-name{font-size:8px;color:var(--txt);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2;}
-.dex-sub{font-size:8px;color:var(--accent);line-height:1.2;}
 .dex-empty{flex:1;text-align:center;padding:.6rem;color:var(--txt-4);font-size:12px;}
 .chain-row{display:flex;flex-direction:row;overflow-x:auto;gap:6px;margin-bottom:10px;padding-bottom:4px;scrollbar-width:thin;scrollbar-color:rgba(var(--ink),.1) transparent;}
 .chain-row::-webkit-scrollbar{height:3px;}.chain-row::-webkit-scrollbar-thumb{background:rgba(var(--ink),.15);border-radius:2px;}
@@ -301,12 +298,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* ACTIONS */
 .act-card{background:var(--sunken);border:1px solid rgba(var(--ink),.07);border-radius:14px;overflow:hidden;margin-bottom:8px;}
-.act-hdr{display:flex;flex-direction:row;align-items:center;text-align:left;gap:10px;padding:8px 12px;background:rgba(var(--ink),.03);border-bottom:1px solid rgba(var(--ink),.05);}
-.act-hdr-emoji{font-size:18px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}.act-hdr-emoji img{width:38px;height:38px;border-radius:50%;object-fit:cover;}
-.act-hdr-info{flex:1;min-width:0;}
-.act-hdr-name{font-size:13px;font-weight:600;color:var(--txt-hi);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.act-hdr-desc{font-size:10px;color:var(--accent);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.act-hdr-badge{font-size:9px;font-weight:600;padding:3px 9px;border-radius:20px;flex-shrink:0;white-space:nowrap;}
 .act-list{padding:10px;}
 .act-row{display:flex;align-items:center;gap:8px;padding:9px 10px;background:rgba(var(--ink),.04);border:1px solid rgba(var(--ink),.05);border-radius:10px;cursor:pointer;transition:all .15s;}
 .act-row:hover{background:rgba(var(--ink),.09);border-color:rgba(var(--ink),.12);}
@@ -314,7 +305,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .act-body{flex:1;}
 .act-title{font-size:12px;font-weight:600;color:var(--txt-hi);}
 .act-desc{font-size:10px;color:var(--txt-3);margin-top:1px;}
-.act-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
 
 /* CATCH BUTTON */
 .catch-btn{width:100%;padding:16px;font-size:15px;font-weight:700;border-radius:14px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--pri),var(--pri-hi));color:var(--pri-txt);display:flex;align-items:center;justify-content:center;gap:8px;}
@@ -431,7 +421,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .form-section{background:rgba(var(--ink),.03);border:1px solid rgba(var(--ink),.06);border-radius:12px;padding:12px;margin-bottom:14px;}
 .form-section-title{font-size:12px;font-weight:700;color:var(--txt-hi);margin-bottom:10px;}
 .cover-preview-box{width:52px;height:74px;border-radius:8px;background:rgba(var(--ink),.06);border:1px dashed rgba(var(--ink),.2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden;}
-.cover-pencil-btn{background:rgba(var(--acc),.12);border:1px solid rgba(var(--acc),.3);border-radius:8px;color:var(--accent);font-size:14px;padding:8px 10px;cursor:pointer;font-family:inherit;}
 .finput{width:100%;background:rgba(var(--ink),.07);border:1px solid rgba(var(--ink),.15);border-radius:10px;padding:9px 12px;color:var(--txt-hi);font-size:13px;outline:none;margin-bottom:10px;}
 .finput:focus{border-color:var(--accent);}
 select option{background:var(--panel);color:var(--txt-hi);}
@@ -475,7 +464,6 @@ select option{background:var(--panel);color:var(--txt-hi);}
 .jn-info{min-width:0;flex:1;}
 .jn-title{font-size:12.5px;font-weight:700;color:var(--txt-hi);line-height:1.28;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .jn-author{font-size:11px;color:var(--txt-3);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.jn-date{font-size:11px;color:var(--txt-2);margin-top:2px;white-space:nowrap;}
 /* Зірки виносимо під текст окремим рядком — той самий компонент, що в картці
    книги (з половинками), тільки дрібніший і вирівняний по лівому краю. */
 .jn-stars{margin-top:4px;}
@@ -508,7 +496,9 @@ select option{background:var(--panel);color:var(--txt-hi);}
 .jn-years::-webkit-scrollbar{display:none;}
 .jn-year{flex:0 0 auto;font-size:11px;font-weight:700;padding:5px 12px;border-radius:14px;border:1px solid rgba(var(--ink),.14);background:rgba(var(--ink),.04);color:var(--txt-3);cursor:pointer;font-family:inherit;}
 .jn-year.act{background:rgba(var(--gold-rgb),.16);border-color:rgba(var(--gold-rgb),.45);color:var(--gold);}
-.wall-tile{aspect-ratio:2/3;border-radius:6px;overflow:hidden;cursor:pointer;box-shadow:0 2px 6px rgba(var(--shadow),.4);}
+.wall-tile{position:relative;aspect-ratio:2/3;border-radius:6px;overflow:hidden;cursor:pointer;box-shadow:0 2px 6px rgba(var(--shadow),.4);}
+.wall-tile-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:5px;text-align:center;font-size:9px;font-weight:700;color:rgba(255,255,255,.75);overflow:hidden;}
+.wall-tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 .shelf-row{display:flex;flex-direction:column;}
 .shelf-label{font-size:9px;color:var(--shelf-lbl);padding:0 10px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;}
 .shelf-books{display:flex;align-items:flex-end;gap:5px;padding:16px 10px 0;height:192px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;scrollbar-width:thin;scrollbar-color:rgba(var(--ink),.15) transparent;}
@@ -1023,6 +1013,12 @@ function coinsForPages(p){return Math.floor(p/100)+1;}
 let _goalTab='month';
 function curMonthKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
 function curYearKey(){return String(new Date().getFullYear());}
+// Назви місяців у трьох формах, по одному примірнику на кожну: повна —
+// для «Найпродуктивніший місяць» (і у своєму підсумку, і в підсумку друга),
+// коротка — під стовпчиками графіка, родова (UA_MONTHS, нижче) — для дат.
+const UA_MONTHS_FULL=['Січень','Лютий','Березень','Квітень','Травень','Червень',
+                      'Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
+const UA_MONTHS_SHORT=['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'];
 function pluralUA(n,one,few,many){
   const n10=n%10,n100=n%100;
   if(n100>=11&&n100<=14)return many;
@@ -1296,13 +1292,13 @@ let _statsPeriod='month',_chartYear=null,_chartMetric='books';
 function setStatsPeriod(p){_statsPeriod=p;renderGeneralStatsWidget();}
 function setChartYear(y){_chartYear=y;renderGeneralStatsWidget();}
 function setChartMetric(m){_chartMetric=m;renderGeneralStatsWidget();}
-function renderLangDonutHTML(books){
-  const breakdown=langBreakdown(books);
-  const total=books.length;
+// Бублик мов і бублик жанрів — той самий малюнок; різняться лише підписи й
+// те, з чого рахується сума. Тому геометрія живе в одному місці.
+function _donutCardHTML(title,breakdown,total,center,emptyText){
   if(!total){
     return`<div class="stats-chart-card">
-      <div class="stats-chart-title">Топ за мовами</div>
-      <div style="text-align:center;color:var(--txt-4);font-size:12px;padding:20px 0">Немає книг за цей період</div>
+      <div class="stats-chart-title">${title}</div>
+      <div style="text-align:center;color:var(--txt-4);font-size:12px;padding:20px 0">${emptyText}</div>
     </div>`;
   }
   const r=45,cx=60,cy=60,sw=22,circ=2*Math.PI*r,gapLen=breakdown.length>1?4:0;
@@ -1319,15 +1315,19 @@ function renderLangDonutHTML(books){
     `<div class="lang-legend-row"><span class="lang-dot" style="background:${color}"></span><span class="lang-legend-lbl">${label}</span><span class="lang-legend-val">${count}</span></div>`
   ).join('');
   return`<div class="stats-chart-card">
-    <div class="stats-chart-title">Топ за мовами</div>
+    <div class="stats-chart-title">${title}</div>
     <div class="lang-donut-row">
       <svg viewBox="0 0 120 120" class="lang-donut-svg">${arcs}
         <text x="60" y="54" text-anchor="middle" dominant-baseline="central" font-size="24" font-weight="800" style="fill:var(--txt-hi)">${total}</text>
-        <text x="60" y="71" text-anchor="middle" font-size="9" font-weight="600" style="fill:var(--txt-3)">${bookWord(total)}</text>
+        <text x="60" y="71" text-anchor="middle" font-size="9" font-weight="600" style="fill:var(--txt-3)">${center}</text>
       </svg>
       <div class="lang-legend">${legend}</div>
     </div>
   </div>`;
+}
+function renderLangDonutHTML(books){
+  return _donutCardHTML('Топ за мовами',langBreakdown(books),books.length,
+    bookWord(books.length),'Немає книг за цей період');
 }
 function genreBreakdown(books){
   const counts={};
@@ -1337,36 +1337,8 @@ function genreBreakdown(books){
 }
 function renderGenreDonutHTML(books){
   const breakdown=genreBreakdown(books);
-  const total=breakdown.reduce((s,g)=>s+g.count,0);
-  if(!total){
-    return`<div class="stats-chart-card">
-      <div class="stats-chart-title">Топ за жанрами</div>
-      <div style="text-align:center;color:var(--txt-4);font-size:12px;padding:20px 0">Ще не вказано жанр для книг цього періоду</div>
-    </div>`;
-  }
-  const r=45,cx=60,cy=60,sw=22,circ=2*Math.PI*r,gapLen=breakdown.length>1?4:0;
-  let acc=0;
-  const arcs=breakdown.map(({count,color})=>{
-    const len=circ*(count/total);
-    const visLen=Math.max(0,len-gapLen);
-    const offset=-acc;
-    acc+=len;
-    return`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="${sw}"
-      stroke-dasharray="${visLen} ${circ-visLen}" stroke-dashoffset="${offset}" transform="rotate(-90 ${cx} ${cy})"/>`;
-  }).join('');
-  const legend=breakdown.map(({label,color,count})=>
-    `<div class="lang-legend-row"><span class="lang-dot" style="background:${color}"></span><span class="lang-legend-lbl">${label}</span><span class="lang-legend-val">${count}</span></div>`
-  ).join('');
-  return`<div class="stats-chart-card">
-    <div class="stats-chart-title">Топ за жанрами</div>
-    <div class="lang-donut-row">
-      <svg viewBox="0 0 120 120" class="lang-donut-svg">${arcs}
-        <text x="60" y="54" text-anchor="middle" dominant-baseline="central" font-size="24" font-weight="800" style="fill:var(--txt-hi)">${total}</text>
-        <text x="60" y="71" text-anchor="middle" font-size="9" font-weight="600" style="fill:var(--txt-3)">з жанром</text>
-      </svg>
-      <div class="lang-legend">${legend}</div>
-    </div>
-  </div>`;
+  return _donutCardHTML('Топ за жанрами',breakdown,breakdown.reduce((s,g)=>s+g.count,0),
+    'з жанром','Ще не вказано жанр для книг цього періоду');
 }
 const LOC_COLORS={oak:'#4ade80',pallet:'#38bdf8',forest:'#facc15',glade:'#a78bfa',butterfly:'#f472b6',caves:'#94a3b8',shore:'#fb923c'};
 function renderLocationProgressHTML(d){
@@ -1420,7 +1392,9 @@ function renderLocationProgressHTML(d){
 // ═══════════ YEAR IN BOOKS ═══════════
 let _wrapYear=null,_wrapScope='own';
 function setWrapYear(y){_wrapYear=y;renderYearWrapWidget();}
-function setWrapScope(s){_wrapScope=s;renderYearWrapWidget();}
+// Перемикача «Моє / Родина разом» у інтерфейсі немає (див. renderYearWrapWidget),
+// тому й сеттера теж — гілка _wrapScope==='family' лишається робочою й чекає
+// на етап «Друзі».
 function computeYearWrap(books,yearKey){
   const yearBooks=books.filter(b=>bookPeriodKeys(b).year===yearKey);
   const count=yearBooks.length;
@@ -1482,8 +1456,6 @@ function renderYearWrapWidget(){
     :(d.books||[]).map((b,idx)=>({...b,_ownerId:cur,_ownerIdx:idx}));
   const wrap=computeYearWrap(books,_wrapYear);
   const isCurrentYear=_wrapYear===curYearKey();
-  const monthLbls=['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
-
   const controls=`<div class="stats-chart-hdr">
     <select class="stats-year-sel" onchange="setWrapYear(this.value)">
       ${years.map(y=>`<option value="${y}" ${y===_wrapYear?'selected':''}>${y}</option>`).join('')}
@@ -1513,7 +1485,7 @@ function renderYearWrapWidget(){
   ].map(([icon,lbl,val])=>`<div class="wrap-fact-row"><span class="wrap-fact-icon">${icon}</span><span class="wrap-fact-lbl">${lbl}</span><span class="wrap-fact-val">${val}</span></div>`).join('');
   const bestMonthCard=wrap.bestMonth?`<div class="wrap-month-card">
     <div class="wrap-month-lbl">📅 Найпродуктивніший місяць</div>
-    <div class="wrap-month-name">${monthLbls[wrap.bestMonth.idx]}</div>
+    <div class="wrap-month-name">${UA_MONTHS_FULL[wrap.bestMonth.idx]}</div>
     <div class="wrap-month-count">${wrap.bestMonth.count} ${bookWord(wrap.bestMonth.count)}</div>
   </div>`:'';
 
@@ -1535,9 +1507,7 @@ function renderGeneralStatsWidget(){
 
   const years=availableStatsYears(d);
   const breakdown=monthlyBreakdown(d,_chartYear);
-  const maxVal=_chartMetric==='rating'?5:Math.max(1,...breakdown.map(m=>m[_chartMetric]));
-  const monthLbls=['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'];
-  const barW=18,gap=6,chartH=80;
+  const maxVal=_chartMetric==='rating'?5:Math.max(1,...breakdown.map(m=>m[_chartMetric]));  const barW=18,gap=6,chartH=80;
   const bars=breakdown.map((m,i)=>{
     const v=m[_chartMetric];
     const h=v>0?Math.max(3,Math.round((v/maxVal)*chartH)):0;
@@ -1545,7 +1515,7 @@ function renderGeneralStatsWidget(){
     return`<g style="cursor:pointer" onclick="showChartTip(event,${v})">
       <rect x="${x}" y="0" width="${barW}" height="${chartH}" fill="transparent"/>
       <rect class="bar-fill" x="${x}" y="${chartH-h}" width="${barW}" height="${h}" rx="4" fill="url(#statBarGrad)"/>
-      <text x="${x+barW/2}" y="${chartH+11}" font-size="7" style="fill:var(--txt-3)" text-anchor="middle">${monthLbls[i]}</text>
+      <text x="${x+barW/2}" y="${chartH+11}" font-size="7" style="fill:var(--txt-3)" text-anchor="middle">${UA_MONTHS_SHORT[i]}</text>
     </g>`;
   }).join('');
   const chartWidth=12*(barW+gap)-gap;
@@ -2127,7 +2097,9 @@ function finishGuest(g){
 // Порівнюємо мітку _ts, яку ставить saveToCloud. Якщо мітки немає хоча б з
 // одного боку (сейв створений до цієї зміни) — поводимось як раніше й
 // віримо хмарі: вона там точно не старіша за міграцію.
-async function loadStateFor(userId,tryCloud){
+// `pre` — сейв, який уже приїхав чужим рейсом (bootSync бере його разом із
+// сесією). Немає — ходимо по нього самі, як раніше.
+async function loadStateFor(userId,tryCloud,pre){
   initState(userId);
   const local=lsGet('rpg_state_'+userId,null);
   if(local)state.players[userId]=Object.assign({},state.players[userId],local);
@@ -2138,7 +2110,7 @@ async function loadStateFor(userId,tryCloud){
     if(mig)saveLocal('rpg_state_'+userId,JSON.stringify(state.players[userId]));
   };
   if(!(tryCloud&&me&&me.token)){keepLocal();return;}
-  const r=await _api({action:'load',userId:userId,token:me.token});
+  const r=pre||await _api({action:'load',userId:userId,token:me.token});
   // Локальна копія лишається робочою, але сказати про причину треба:
   // інакше пошкоджений сейв виглядає як «просто нічого не підтяглось».
   if(r&&r.error&&r.error!=='auth'&&r.error!=='network')showToast(r.error);
@@ -2194,7 +2166,10 @@ function enterGame(){
 // відправляємо на вхід, але дані на пристрої лишаються цілі.
 async function bootSync(){
   if(!me||me.guest||!me.token)return;
-  const r=await _api({action:'session',userId:me.userId,token:me.token});
+  // Сейв просимо ТИМ САМИМ рейсом: раніше старт чекав `session`, а вже потім
+  // `load`, і на холодному Apps Script це були два очікування замість одного.
+  // Старий бекенд прапорця не знає й сейву не поверне — тоді ходимо окремо.
+  const r=await _api({action:'session',userId:me.userId,token:me.token,withState:1});
   if(r&&r.error==='auth'){
     localStorage.removeItem(LS_SESSION);
     me=null;showLogin();
@@ -2205,7 +2180,9 @@ async function bootSync(){
   me.nick=r.nick;me.role=r.role;
   lsSet(LS_SESSION,me);
   const before=JSON.stringify(state.players[me.userId]||{});
-  await loadStateFor(me.userId,true);
+  const pre=r.state!==undefined||r.stateError
+    ?{ok:true,state:r.state,covers:r.covers,error:r.stateError}:null;
+  await loadStateFor(me.userId,true,pre);
   if(JSON.stringify(state.players[me.userId]||{})===before)return;
   // Хмара принесла інше (грали з іншого пристрою) — перемальовуємо видиме.
   applyTheme(curTheme());
@@ -2788,11 +2765,26 @@ const Q_MS=Q_DAYS*86400000;
 const Q_INV_MS=7*86400000;             // запрошення без відповіді — 7 днів
 const Q_SEEN_MS=2*86400000;
 const Q_DECL_MS=60*86400000;           // «вже відмовився» — підказка, не заборона
+const Q_DEC_MS=86400000;               // «друг відхилив» — показуємо добу
+const Q_DECID_MS=8*86400000;           // пам'ять про відхилене запрошення
 const Q_BOARD_MAX=60;                  // дошка: скільки квестів пам'ятаємо
 const Q_PUB_MAX=12;                    // скільки квестів їде другові у зліпку            // dec/done — доки другий бік побачить
 function qList(){const d=pd();if(!d)return[];if(!d.quests)d.quests=[];return d.quests;}
 function qDone(){const d=pd();if(!d)return[];if(!d.questsDone)d.questsDone=[];return d.questsDone;}
 function qDecl(){const d=pd();if(!d)return{};if(!d.questDecl)d.questDecl={};return d.questDecl;}
+// Відхилені ЗАПРОШЕННЯ — по id, а не по жанру. Раніше пам'ять була
+// «друг+жанр», і через неї друг більше не міг прислати той самий жанр
+// удруге: запрошення мовчки не доходило. Тепер пам'ять лише про те
+// конкретне запрошення, яке вже відхилили, щоб воно не поверталось.
+function qDeclIds(){const d=pd();if(!d)return{};if(!d.questDeclIds)d.questDeclIds={};return d.questDeclIds;}
+// Нік у записі — знімок на момент створення. Людина могла перейменуватись,
+// тому показуємо ЖИВИЙ нік зі списку друзів, а збережений лишається запасом.
+function qNick(q){
+  if(!q)return'друг';
+  const id=String(q.with||q.from||'');
+  const f=(friendsData.friends||[]).find(x=>String(x.userId)===id);
+  return (f&&f.nick)||q.withNick||q.fromNick||'друг';
+}
 function qNewId(){return 'q'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 function qDaysLeft(q){return Math.max(0,Math.ceil((q.ts0+Q_MS-Date.now())/86400000));}
 function qActive(){return qList().filter(q=>q.st==='act');}
@@ -2845,16 +2837,17 @@ function qTheirOk(t){return!!(t&&(t.m||t.st==='done'));}
 function qIncoming(){
   if(!me)return[];
   const mine=qList();
-  const decl=qDecl();
+  const declIds=qDeclIds();
   const out=[];
   (friendsData.friends||[]).forEach(f=>{
     if(!Array.isArray(f.q))return;
     f.q.forEach(x=>{
       if(!x||x.st!=='inv'||String(x.w)!==String(me.userId))return;
       if(mine.some(q=>q.id===x.id))return;
-      // Своя відмова живе два дні, а чуже запрошення — сім. Без цієї
-      // перевірки відхилений квест повертався, якщо друг не заходив у гру.
-      if(decl[String(f.userId)+'|'+String(x.g||'')])return;
+      // Пропускаємо ЛИШЕ те саме запрошення, яке вже відхилили (інакше воно
+      // поверталось би, коли службовий запис згорить). Той самий жанр друг
+      // може прислати заново — це нове запрошення з новим id.
+      if(declIds[x.id])return;
       out.push({id:x.id,from:String(f.userId),fromNick:f.nick,g:String(x.g||'')});
     });
   });
@@ -2870,11 +2863,18 @@ function questsTick(){
     if(!q||!q.id||!q.with)return false;
     const friend=(friendsData.friends||[]).some(x=>String(x.userId)===String(q.with));
     if(_frState==='ok'&&!friend)return false;
+    // Нік міг змінитись — підтягуємо в запис, щоб не показувати старий.
+    const fr=(friendsData.friends||[]).find(x=>String(x.userId)===String(q.with));
+    if(fr&&fr.nick&&q.withNick!==fr.nick)q.withNick=fr.nick;
     const age=Date.now()-(+q.tsUp||+q.ts0||0);
     if(q.st==='act'&&q.ts0&&Date.now()-q.ts0>Q_MS)return false;
     if(q.st==='inv'&&age>Q_INV_MS)return false;
-    if((q.st==='dec'||q.st==='done')&&age>Q_SEEN_MS)return false;
+    if(q.st==='dec'&&age>Q_DEC_MS)return false;      // сповіщення живе добу
+    if(q.st==='done'&&age>Q_SEEN_MS)return false;
     const t=qTheirs(q);
+    // Друг скасував квест або його запис уже згорів — тримати сповіщення
+    // «він відхилив» нема сенсу, воно вже ні про що.
+    if(q.st==='dec'&&q.by!=='me'&&_frState==='ok'&&!t)return false;
     // Друг відмовився. НЕ видаляємо тихо: інакше запрошення просто зникає,
     // і людина не розуміє, що сталось (і чому жанр більше не пропонується).
     // Помічаємо своє й лишаємо на Q_SEEN_MS — далі воно згорить саме.
@@ -2884,6 +2884,11 @@ function questsTick(){
     }
     if(q.st==='inv'&&t&&t.st==='act'){q.st='act';q.ts0=+t.ts0||Date.now();q.tsUp=Date.now();}
     return true;
+  });
+  // Те саме для дошки пройдених: там нік теж лежить знімком.
+  (d.questsDone||[]).forEach(r=>{
+    const f=(friendsData.friends||[]).find(x=>String(x.userId)===String(r.with));
+    if(f&&f.nick&&r.withNick!==f.nick)r.withNick=f.nick;
   });
   const changed=JSON.stringify(d.quests)!==before;
   if(changed)saveToCloud(cur);
@@ -2920,7 +2925,7 @@ function questsSettle(silent){
       const r=fresh[0];
       mHTML(`${M_CLOSE_BTN}<div class="m-emoji">🤝</div>
         <div class="m-title">Квест пройдено!</div>
-        <div class="m-desc" style="margin-bottom:14px">Ти і ${esc(r.withNick)} прочитали «${esc(r.g)}».
+        <div class="m-desc" style="margin-bottom:14px">Ти і ${esc(qNick(r))} прочитали «${esc(r.g)}».
           Обидві книги — на дошці пройдених квестів.</div>
         ${qPairHTML(r)}
         <button class="btn-ok" style="width:100%;margin-top:14px;padding:12px" onclick="closeModal()">Клас</button>`);
@@ -2985,7 +2990,10 @@ function acceptQuest(id){
 function declineQuest(id,counter){
   const inc=qIncoming().find(x=>x.id===id);
   if(!inc)return;
-  qDecl()[inc.from+'|'+inc.g]=Date.now();
+  qDecl()[inc.from+'|'+inc.g]=Date.now();     // підказка у виборі жанру
+  const ids=qDeclIds();
+  ids[inc.id]=Date.now();
+  Object.keys(ids).forEach(k=>{if(Date.now()-(+ids[k]||0)>Q_DECID_MS)delete ids[k];});
   qList().push({id:inc.id,with:inc.from,withNick:inc.fromNick,g:inc.g,
                 ts0:0,tsUp:Date.now(),st:'dec',by:'me'});
   saveToCloud(cur);
@@ -2995,6 +3003,14 @@ function declineQuest(id,counter){
 // Скасувати можна лише СВОЄ запрошення, яке ще не прийняли: домовленості
 // ще немає, тому втрачати нічого. Активний квест не завершується руками —
 // або зарахується сам, або згорить за 30 днів.
+// Сповіщення «друг відхилив» людина може прибрати сама, не чекаючи доби.
+// Це саме сповіщення: воно нічого не тримає й нікому більше не потрібне.
+function dismissQuestNote(id){
+  const d=pd();if(!d)return;
+  d.quests=(d.quests||[]).filter(x=>!(x.id===id&&x.st==='dec'));
+  saveToCloud(cur);
+  renderFriendsTab();
+}
 function cancelInvite(id){
   const q=qList().find(x=>x.id===id&&x.st==='inv');
   if(!q)return;
@@ -3034,7 +3050,7 @@ function qPairHTML(r){
   return`<div class="q-pair">
     <div class="q-pair-side">${qCoverHTML(qMyCover(r),'q-cover')}<div class="q-pair-n">Ти</div></div>
     <div class="q-pair-plus">🤝</div>
-    <div class="q-pair-side">${qCoverHTML(r.their,'q-cover')}<div class="q-pair-n">${esc(r.withNick)}</div></div>
+    <div class="q-pair-side">${qCoverHTML(r.their,'q-cover')}<div class="q-pair-n">${esc(qNick(r))}</div></div>
   </div>`;
 }
 function questsBoardHTML(){
@@ -3062,7 +3078,7 @@ function questsBlockHTML(){
   const cards=[];
   inc.forEach(x=>cards.push(`<div class="q-card">
     <div class="q-hdr"><span class="q-emoji">🤝</span>
-      <div><div class="q-title">${esc(x.fromNick)} пропонує квест</div>
+      <div><div class="q-title">${esc(qNick(x))} пропонує квест</div>
         <div class="q-sub">Жанр: ${esc(x.g)} · по книзі з кожного</div></div></div>
     <div class="q-btns">
       <button class="fr-btn ok" onclick="acceptQuest('${esc(x.id)}')">Прийняти</button>
@@ -3073,15 +3089,18 @@ function questsBlockHTML(){
     if(q.st==='dec'){
       cards.push(`<div class="q-card">
         <div class="q-hdr"><span class="q-emoji">🚫</span>
-          <div><div class="q-title">${esc(q.withNick)} відхилив квест</div>
+          <div><div class="q-title">${esc(qNick(q))} відхилив квест</div>
             <div class="q-sub">Жанр: ${esc(q.g)}</div></div></div>
-        <div class="q-btns"><button class="fr-btn" onclick="openQuestCreate('${esc(q.with)}','${esc(q.g)}')">Запропонувати інший жанр</button></div>
+        <div class="q-btns">
+          <button class="fr-btn" onclick="openQuestCreate('${esc(q.with)}')">Запропонувати ще раз</button>
+          <button class="fr-btn" onclick="dismissQuestNote('${esc(q.id)}')">Прибрати</button>
+        </div>
       </div>`);
       return;
     }
     if(q.st==='inv'){
       const t=qTheirs(q);
-      const txt=t&&t.st==='dec'?`Відмова · ${esc(q.withNick)}`:`Чекаємо · ${esc(q.withNick)}`;
+      const txt=t&&t.st==='dec'?`Відмова · ${esc(qNick(q))}`:`Чекаємо · ${esc(qNick(q))}`;
       cards.push(`<div class="q-card">
         <div class="q-hdr"><span class="q-emoji">⏳</span>
           <div><div class="q-title">${txt}</div>
@@ -3097,11 +3116,11 @@ function questsBlockHTML(){
     cards.push(`<div class="q-card">
       <div class="q-hdr"><span class="q-emoji">🤝</span>
         <div><div class="q-title">${esc(q.g)}</div>
-          <div class="q-sub">${esc(q.withNick)} · ${days} ${pluralUA(days,'день','дні','днів')} лишилось</div></div></div>
+          <div class="q-sub">${esc(qNick(q))} · ${days} ${pluralUA(days,'день','дні','днів')} лишилось</div></div></div>
       <div class="q-side"><span class="q-tick${meOk?' on':''}">${meOk?'✓':'○'}</span>
         Ти${myBook?` · <span class="q-bk">${esc(myBook.title)}</span>`:''}</div>
       <div class="q-side"><span class="q-tick${themOk?' on':''}">${themOk?'✓':'○'}</span>
-        ${esc(q.withNick)}${(t&&t.b&&t.b.t)?` · <span class="q-bk">${esc(t.b.t)}</span>`:''}</div>
+        ${esc(qNick(q))}${(t&&t.b&&t.b.t)?` · <span class="q-bk">${esc(t.b.t)}</span>`:''}</div>
       ${meOk?'':`<div class="q-hint">Прочитай книгу з жанром «${esc(q.g)}»</div>`}
     </div>`);
   });
@@ -3260,10 +3279,7 @@ function openFriendWrap(id){
   const years=Object.keys(f.wraps).sort().reverse();
   if(!_frWrapYear[id]||!f.wraps[_frWrapYear[id]])_frWrapYear[id]=years[0];
   const y=_frWrapYear[id];
-  const w=f.wraps[y];
-  const monthLbls=['Січень','Лютий','Березень','Квітень','Травень','Червень',
-                   'Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
-  // Верстка навмисно та сама, що у власному «Рік у книгах»: ті самі класи
+  const w=f.wraps[y];  // Верстка навмисно та сама, що у власному «Рік у книгах»: ті самі класи
   // .stat-tiles / .wrap-book-row / .wrap-facts / .wrap-month-card, тому
   // розміри, шрифти й секції збігаються з рештою статистики.
   const card=(b,label,stat)=>b?`<div class="wrap-book-card" style="cursor:default">
@@ -3283,7 +3299,7 @@ function openFriendWrap(id){
   ].map(([icon,lbl,val])=>`<div class="wrap-fact-row"><span class="wrap-fact-icon">${icon}</span><span class="wrap-fact-lbl">${lbl}</span><span class="wrap-fact-val">${esc(val)}</span></div>`).join('');
   const bestMonthCard=w.bestMonth?`<div class="wrap-month-card">
     <div class="wrap-month-lbl">📅 Найпродуктивніший місяць</div>
-    <div class="wrap-month-name">${esc(monthLbls[w.bestMonth.idx])}</div>
+    <div class="wrap-month-name">${esc(UA_MONTHS_FULL[w.bestMonth.idx])}</div>
     <div class="wrap-month-count">${esc(w.bestMonth.count)} ${bookWord(w.bestMonth.count)}</div>
   </div>`:'';
   const yearTabs=years.length>1
@@ -3327,7 +3343,11 @@ function renderMain(){
   const d=pd();const p=pl();
   const av=document.getElementById('hdr-av');
   const clr=pClr(p,d);
-  if(d.avatarUrl){av.innerHTML=`<img src="${d.avatarUrl}" style="width:100%;height:100%;object-fit:cover" onerror="this.innerHTML='${p.emoji}'">`;av.style.background='transparent';}
+  // innerHTML на <img> нічого не малює — void-елемент. Раніше битий аватар
+  // лишався іконкою «зламано», а емодзі тихо лежало текстом усередині img.
+  // Тому підміняємо вміст БАТЬКА, як це вже робить psAvatarBroken.
+  av.dataset.em=p.emoji;av.dataset.clr=clr;
+  if(escUrl(d.avatarUrl)){av.innerHTML=`<img src="${escUrl(d.avatarUrl)}" style="width:100%;height:100%;object-fit:cover" onerror="hdrAvatarBroken(this)">`;av.style.background='transparent';}
   else{av.innerHTML='';av.textContent=p.emoji;av.style.background=clr;}
   av.style.border='2px solid '+clr;
   document.getElementById('hdr-name').textContent=d.customName||p.name;
@@ -3424,6 +3444,25 @@ function checkUnlocks(){
 }
 
 // ═══════════ MAP ═══════════
+// Фішки гравців малюються однаково в обох регіонах — різняться лише радіус
+// вузла, розмір фішки й набір локацій. Раніше цей блок стояв двічі копією.
+function _mapMarkersHTML(locs,region,up,dotR,strokeW){
+  const byLoc={};
+  PLAYERS.forEach(p=>{
+    const sp=state.players[p.id];if(!sp)return;
+    if((sp.region||'kanto')!==region)return;
+    (byLoc[sp.location]||(byLoc[sp.location]=[])).push(p);
+  });
+  let mh='';
+  Object.entries(byLoc).forEach(([lid,list])=>{
+    const loc=locs[lid];if(!loc)return;
+    list.forEach((p,i)=>{
+      const dx=(i-(list.length-1)/2)*16;
+      mh+=`<circle cx="${loc.cx+dx}" cy="${loc.cy-up}" r="${dotR}" fill="${pClr(p,state.players[p.id])}" stroke="#fff" stroke-width="${strokeW}"${p.friend?` style="cursor:pointer" onclick="openFriendCard('${p.id}')"`:``}/>`;
+    });
+  });
+  return mh;
+}
 function renderMap(){
   const d=pd();
   const region=d.region||'kanto';
@@ -3451,15 +3490,7 @@ function renderMap(){
         +`</g>`;
     });
     document.getElementById('map-nodes').innerHTML=nh;
-    const byLoc={};
-    PLAYERS.forEach(p=>{if((state.players[p.id].region||'kanto')==='johto'){const lid=state.players[p.id].location;if(!byLoc[lid])byLoc[lid]=[];byLoc[lid].push(p);}});
-    let mh='';
-    Object.entries(byLoc).forEach(([lid,list])=>{
-      const loc=LOCS_JOHTO[lid];if(!loc)return;
-      const nr=22;const offs=list.map((_,i)=>(i-(list.length-1)/2)*16);
-      list.forEach((p,i)=>{mh+=`<circle cx="${loc.cx+offs[i]}" cy="${loc.cy-nr-9}" r="5" fill="${pClr(p,state.players[p.id])}" stroke="#fff" stroke-width="1.5"${p.friend?` style="cursor:pointer" onclick="openFriendCard('${p.id}')"`:``}/>`;});
-    });
-    document.getElementById('map-markers').innerHTML=mh;
+    document.getElementById('map-markers').innerHTML=_mapMarkersHTML(LOCS_JOHTO,'johto',22+9,5,1.5);
     return;
   }
   document.getElementById('map-png').style.display='';
@@ -3493,15 +3524,7 @@ function renderMap(){
     +`<text x="${SHOP_NODE.cx}" y="${SHOP_NODE.cy+22+11}" text-anchor="middle" font-size="8.5" fill="#e2e8f0" font-family="sans-serif" font-weight="600">Магазин</text>`
     +`</g>`;
   document.getElementById('map-nodes').innerHTML=nh;
-  const byLoc={};
-  PLAYERS.forEach(p=>{if((state.players[p.id].region||'kanto')==='kanto'){const lid=state.players[p.id].location;if(!byLoc[lid])byLoc[lid]=[];byLoc[lid].push(p);}});
-  let mh='';
-  Object.entries(byLoc).forEach(([lid,list])=>{
-    const loc=LOCS[lid];if(!loc)return;
-    const offs=list.map((_,i)=>(i-(list.length-1)/2)*16);
-    list.forEach((p,i)=>{mh+=`<circle cx="${loc.cx+offs[i]}" cy="${loc.cy-r-7}" r="6" fill="${pClr(p,state.players[p.id])}" stroke="#fff" stroke-width="2"${p.friend?` style="cursor:pointer" onclick="openFriendCard('${p.id}')"`:``}/>`;});
-  });
-  document.getElementById('map-markers').innerHTML=mh;
+  document.getElementById('map-markers').innerHTML=_mapMarkersHTML(LOCS,'kanto',r+7,6,2);
 }
 
 function showLockedHint(locId){
@@ -3697,6 +3720,12 @@ function avatarPlaceholderSVG(clr,size){
     <path d="M24 27.5c-8 0-14 5-15.5 13.5h31C38 32.5 32 27.5 24 27.5z" fill="${clr}" opacity=".72"/>
   </svg>`;
 }
+// Аватарка в шапці не завантажилась — повертаємо емодзі й колір гравця.
+function hdrAvatarBroken(im){
+  const box=im&&im.parentElement;if(!box)return;
+  box.textContent=box.dataset.em||'📖';
+  box.style.background=box.dataset.clr||'';
+}
 function psAvatarBroken(img){
   const box=img.parentElement;
   if(box)box.innerHTML=avatarPlaceholderSVG(document.getElementById('ps-color')?.value||'#22c55e',86);
@@ -3706,7 +3735,12 @@ function togglePsAvatarForm(){
   if(!f)return;
   const open=f.style.display==='none';
   f.style.display=open?'block':'none';
-  if(open)document.getElementById('ps-avatar')?.focus();
+  // Виділяємо весь рядок: посилання на картинку правлять не по літері, а
+  // замінюють цілком — щоб можна було одразу вставити нове.
+  if(open){
+    const el=document.getElementById('ps-avatar');
+    if(el){el.focus();el.select();}
+  }
 }
 function savePsAvatar(remove){
   const d=pd();
@@ -4124,12 +4158,18 @@ function _computeShelfGroups(withIdx,sortBy){
 }
 function _buildWallHTML(books){
   const withIdx=[...books].map((b,i)=>({b,i})).reverse();
+  // Заглушка лежить ПІД картинкою, як у полицях: битий лінк просто ховає
+  // <img>, і плитка лишається кольоровою з назвою, а не іконкою «зламано».
+  // loading="lazy" тут обов'язковий: без нього 300-книжна стіна тягла 300
+  // картинок одразу (перевірено в браузері), тоді як «Подорож» і «Жанри» —
+  // по два десятки.
   const tiles=withIdx.map(({b,i})=>{
     const[top,bot]=_colorFor(b.title);
-    const cover=b.coverUrl
-      ?`<img src="${b.coverUrl}" style="width:100%;height:100%;object-fit:cover">`
-      :`<div style="width:100%;height:100%;background:linear-gradient(150deg,${top},${bot});display:flex;align-items:center;justify-content:center;padding:5px;text-align:center;font-size:9px;font-weight:700;color:rgba(255,255,255,.75);overflow:hidden">${b.title}</div>`;
-    return`<div class="wall-tile" onclick="openBookDetail(${i})">${cover}</div>`;
+    const u=escUrl(b.coverUrl);
+    return`<div class="wall-tile" onclick="openBookDetail(${i})" style="background:linear-gradient(150deg,${top},${bot})">`
+      +`<div class="wall-tile-ph">${esc(b.title)}</div>`
+      +(u?`<img src="${u}" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'">`:'')
+      +`</div>`;
   }).join('');
   return`<div class="wall-grid">${tiles}</div>`;
 }
@@ -4216,7 +4256,7 @@ function _buildJourneyHTML(books){
         <div class="jn-info">
           <div class="jn-title">${b.q?'<span class="q-mark" title="Прочитано в спільному квесті">🤝 </span>':''}${esc(b.title)}</div>
           <div class="jn-author">${esc(b.author||'')}</div>
-          <div class="jn-date">${esc(uaDate(b))}</div>
+
           ${b.rating?`<div class="jn-stars">${starRatingHTML(b.rating,false)}</div>`:''}
         </div>
       </div>`;
@@ -4745,6 +4785,14 @@ function _jsonp(url){
 }
 
 let _pubWarned=0,_saveWarnTs=0;
+// Хмарний рейс іде ПО ОДНОМУ на гравця, і це не про трафік. Два паралельні
+// POST-и — це втрата даних: повільніший може фінішувати останнім, і в
+// таблиці лишиться СТАРІШИЙ стан. Тому поки один рейс у дорозі, наступні
+// виклики лише піднімають прапорець, а коли він повернеться — відправляється
+// ОДИН запит із тим, що в пам'яті на той момент. Заодно три тапи в
+// налаштуваннях бібліотеки перестають заливати всю бібліотеку тричі.
+const _saveBusy={};    // pid → проміс рейсу, що зараз у дорозі
+const _saveAgain={};   // pid → поки рейс ішов, просили зберегти ще раз
 async function saveToCloud(pid){
   if(!pid)return;
   // Мітка часу збереження — по ній loadStateFor вирішує, чия копія новіша.
@@ -4753,6 +4801,15 @@ async function saveToCloud(pid){
   saveLocal('rpg_state_'+pid,stateJson);
   // Гість у хмару не пишеться взагалі — його на сервері не існує.
   if(!me||me.guest||!me.token||!SCRIPT_URL)return;
+  // Уже їдемо — досить позначити, що дані змінились після відправки.
+  if(_saveBusy[pid]){_saveAgain[pid]=1;return _saveBusy[pid];}
+  const run=(async()=>{
+    do{_saveAgain[pid]=0;await _pushSave(pid);}while(_saveAgain[pid]);
+  })().then(()=>{delete _saveBusy[pid];delete _saveAgain[pid];});
+  _saveBusy[pid]=run;
+  return run;
+}
+async function _pushSave(pid){
   showSaveStatus('saving');
   const split=splitCovers(state.players[pid]);
   // POST (not GET+JSONP) — a big library of books would otherwise blow past the
